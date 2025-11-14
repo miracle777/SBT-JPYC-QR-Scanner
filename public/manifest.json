@@ -1,12 +1,13 @@
 {
-  "name": "SBT-JPYC-QR-Scanner",
+  "name": "SBT JPYC QR Scanner",
   "short_name": "SBT Scanner",
-  "description": "SBT表示とネットワーク検証機能付きJPYC決済アプリ",
+  "description": "SBT表示とネットワーク検証機能付きJPYC決済スキャナーアプリ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#627EEA",
   "orientation": "portrait",
+  "categories": ["finance", "utilities"],
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -19,6 +20,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "QRスキャン",
+      "short_name": "スキャン",
+      "description": "QRコードをスキャンして決済",
+      "url": "/",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

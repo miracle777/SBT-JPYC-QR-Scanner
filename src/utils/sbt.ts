@@ -2,7 +2,7 @@
  * SBT (Soulbound Token) 関連のユーティリティ関数
  */
 
-import { SBT, SBTBalance, SBTPaymentRule, NetworkType } from '@/src/types';
+import { SBT, SBTBalance, SBTPaymentRule, NetworkType } from '../types';
 import axios from 'axios';
 import { getAddress } from 'viem';
 

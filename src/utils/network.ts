@@ -2,7 +2,7 @@
  * ネットワーク関連のユーティリティ関数
  */
 
-import { NetworkType, PaymentNetwork, PaymentQRData, NetworkValidationResult } from '@/src/types';
+import { NetworkType, PaymentNetwork, PaymentQRData, NetworkValidationResult } from '../types';
 
 /**
  * サポートされているネットワーク設定

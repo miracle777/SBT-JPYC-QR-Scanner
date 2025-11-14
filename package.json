@@ -4,9 +4,9 @@
   "description": "SBT and JPYC payment scanner with network validation",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
-    "dev-http": "next dev",
-    "build": "next build",
+    "dev": "next dev --experimental-https --webpack",
+    "dev-http": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint . --fix"
   },

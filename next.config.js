@@ -3,6 +3,7 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/api\..*/,
@@ -22,11 +23,26 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Next.js 16 では Turbopack がデフォルト
-  turbopack: {},
-  webpack: (config) => {
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
-    config.resolve.fallback = { fs: false, net: false, tls: false };
+  // Turbopackの問題を回避するため、webpackビルドを使用
+  experimental: {
+    forceSwcTransforms: true,
+  },
+  // webpackでビルド時にサーバー専用パッケージを外部化
+  serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream', 'lokijs', 'encoding'],
+  
+  webpack: (config, { isServer }) => {
+    // クライアント側でNode.js専用モジュールを外部化
+    if (!isServer) {
+      config.externals.push('pino-pretty', 'lokijs', 'encoding');
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    }
+    
     return config;
   },
   // スマホからのアクセスを許可
