@@ -22,9 +22,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
+  // Next.js 16 では Turbopack がデフォルト
+  turbopack: {},
 };
 
 module.exports = withPWA(nextConfig);
