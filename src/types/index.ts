@@ -39,9 +39,7 @@ export type NetworkType =
   | 'polygon-mumbai'
   // Arbitrum
   | 'arbitrum' 
-  | 'arbitrum-sepolia'
-  // Optimism
-  | 'optimism';
+  | 'arbitrum-sepolia';
 
 export interface PaymentNetwork {
   name: NetworkType;

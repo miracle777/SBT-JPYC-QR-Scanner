@@ -274,7 +274,7 @@ npm run build && npm run start
 4. ✅ QRコード生成: createPaymentQRCode(...)
 ```
 
-## 📊 対応ネットワーク（7チェーン）
+## 📊 対応ネットワーク（6チェーン - JPYC対応）
 
 ### Ethereum 系
 
@@ -296,12 +296,6 @@ npm run build && npm run start
 |------------|---------|------|---------|---------|
 | Arbitrum One | 42161 | **本番** | `https://arb1.arbitrum.io/rpc` | 🔵 #28A0F0 |
 | Arbitrum Sepolia | 421614 | テスト | `https://sepolia-rollup.arbitrum.io/rpc` | 🟦 #12D9FF |
-
-### その他
-
-| ネットワーク | ChainID | 環境 | RPC URL | 色コード |
-|------------|---------|------|---------|---------|
-| Optimism Mainnet | 10 | **本番** | `https://mainnet.optimism.io` | 🔴 #FF0420 |
 
 ## 🎓 主要な実装ポイント
 

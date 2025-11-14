@@ -79,20 +79,6 @@ export const SUPPORTED_NETWORKS: Record<NetworkType, PaymentNetwork> = {
     color: '#1A9EFF',
     isMainnet: false,
   },
-
-  // ============================================
-  // Optimism
-  // ============================================
-  optimism: {
-    name: 'optimism',
-    chainId: 10,
-    rpcUrl: 'https://mainnet.optimism.io',
-    blockExplorerUrl: 'https://optimistic.etherscan.io',
-    currencySymbol: 'ETH',
-    displayName: 'Optimism Mainnet',
-    color: '#FF0420',
-    isMainnet: true,
-  },
 };
 
 /**
