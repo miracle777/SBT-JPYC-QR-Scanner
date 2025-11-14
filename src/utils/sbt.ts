@@ -62,7 +62,7 @@ export const SAMPLE_SBTS: SBT[] = [
   },
 
   // ============================================
-  // Polygon Mumbai Testnet
+  // Polygon Amoy Testnet
   // ============================================
   {
     id: 'community-contributor',
@@ -72,8 +72,8 @@ export const SAMPLE_SBTS: SBT[] = [
     issuer: 'JPYC Community',
     issuerAddress: '0x3333333333333333333333333333333333333333' as `0x${string}`,
     description: 'JPYC コミュニティへの貢献者',
-    network: 'polygon-mumbai',
-    chainId: 80001,
+    network: 'polygon-amoy',
+    chainId: 80002,
     rank: 'bronze',
     imageUrl: 'https://via.placeholder.com/150?text=Community+Contributor',
   },
@@ -131,7 +131,7 @@ export const SBT_PAYMENT_RULES: Record<string, SBTPaymentRule> = {
     minBalance: BigInt(1),
     discount: 5, // 5% 割引
     maxTransactionAmount: BigInt(500000) * BigInt(10 ** 18),
-    allowedNetworks: ['sepolia', 'polygon', 'polygon-mumbai'],
+    allowedNetworks: ['sepolia', 'polygon', 'polygon-amoy'],
     rank: 'silver',
   },
 
@@ -145,13 +145,13 @@ export const SBT_PAYMENT_RULES: Record<string, SBTPaymentRule> = {
     rank: 'platinum',
   },
 
-  // Polygon Mumbai Testnet
+  // Polygon Amoy Testnet
   'community-contributor': {
     sbtId: 'community-contributor',
     minBalance: BigInt(1),
     discount: 2, // 2% 割引
     maxTransactionAmount: BigInt(100000) * BigInt(10 ** 18),
-    allowedNetworks: ['polygon-mumbai', 'arbitrum-sepolia'],
+    allowedNetworks: ['polygon-amoy', 'arbitrum-sepolia'],
     rank: 'bronze',
   },
 

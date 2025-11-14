@@ -288,7 +288,7 @@ npm run build && npm run start
 | ネットワーク | ChainID | 環境 | RPC URL | 色コード |
 |------------|---------|------|---------|---------|
 | Polygon Mainnet | 137 | **本番** | `https://polygon-rpc.com` | 🟣 #8247E5 |
-| Mumbai Testnet | 80001 | テスト | `https://rpc-mumbai.maticvigil.com` | 🟤 #A29EE3 |
+| Amoy Testnet | 80002 | テスト | `https://rpc-amoy.polygon.technology` | 🟤 #A29EE3 |
 
 ### Arbitrum 系
 

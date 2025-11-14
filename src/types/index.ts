@@ -36,7 +36,7 @@ export type NetworkType =
   | 'sepolia'
   // Polygon
   | 'polygon' 
-  | 'polygon-mumbai'
+  | 'polygon-amoy'
   // Arbitrum
   | 'arbitrum' 
   | 'arbitrum-sepolia';
