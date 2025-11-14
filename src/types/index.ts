@@ -39,7 +39,10 @@ export type NetworkType =
   | 'polygon-amoy'
   // Arbitrum
   | 'arbitrum' 
-  | 'arbitrum-sepolia';
+  | 'arbitrum-sepolia'
+  // Avalanche
+  | 'avalanche'
+  | 'avalanche-fuji';
 
 export interface PaymentNetwork {
   name: NetworkType;

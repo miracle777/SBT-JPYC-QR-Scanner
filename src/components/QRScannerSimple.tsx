@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import QrScanner from 'qr-scanner';
-import { Camera, CameraOff, AlertCircle, Type } from 'lucide-react';
+import { Camera, CameraOff, AlertCircle, Zap, Wallet } from 'lucide-react';
+
+type ScanMode = 'jpyc' | 'wallet-connect';
 
 interface QRScannerComponentProps {
   onScanResult: (data: string) => void;
@@ -14,38 +16,46 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasCamera, setHasCamera] = useState<boolean | null>(null);
-  const [showManualInput, setShowManualInput] = useState(false);
-  const [manualInput, setManualInput] = useState('');
+  const [scanMode, setScanMode] = useState<ScanMode>('jpyc');
   const videoRef = useRef<HTMLVideoElement>(null);
   const scannerRef = useRef<QrScanner | null>(null);
 
   const generateSampleData = useCallback(() => {
     const now = Date.now();
-    // 接続されたウォレットのアドレスを使用、未接続の場合はサンプル用の汎用アドレス
     const sampleAddress = address || '0x1234567890123456789012345678901234567890';
     
-    return [
-      JSON.stringify({
-        type: 'JPYC_PAYMENT',
-        version: '1.0',
-        amount: '100',
-        currency: 'JPYC',
-        network: 'sepolia',
-        contractAddress: '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB',
-        contractName: '公式JPYC (Sepolia)',
-        merchant: {
-          name: 'テストショップ',
-          id: 'JPYC_TEST123',
-          description: 'サンプル店舗'
-        },
-        to: sampleAddress,
-        timestamp: now,
-        expires: now + (5 * 60 * 1000)
-      }),
-      `ethereum:${sampleAddress}`,
-      `jpyc:amount=50&to=${sampleAddress}`
-    ];
-  }, [address]);
+    if (scanMode === 'wallet-connect') {
+      // WalletConnect/MetaMask形式のサンプル (EIP-681)
+      return [
+        `ethereum:${sampleAddress}?value=1000000000000000000`, // 1 ETH
+        `ethereum:${sampleAddress}@1?value=5e17`, // 0.5 ETH on Mainnet
+        `ethereum:0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB@11155111?value=1e18`, // Sepolia
+      ];
+    } else {
+      // JPYC形式のサンプル
+      return [
+        JSON.stringify({
+          type: 'JPYC_PAYMENT',
+          version: '1.0',
+          amount: '100',
+          currency: 'JPYC',
+          network: 'sepolia',
+          contractAddress: '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB',
+          contractName: '公式JPYC (Sepolia)',
+          merchant: {
+            name: 'テストショップ',
+            id: 'JPYC_TEST123',
+            description: 'サンプル店舗'
+          },
+          to: sampleAddress,
+          timestamp: now,
+          expires: now + (5 * 60 * 1000)
+        }),
+        `ethereum:${sampleAddress}`,
+        `jpyc:amount=50&to=${sampleAddress}`
+      ];
+    }
+  }, [address, scanMode]);
 
   const stopScanning = () => {
     if (scannerRef.current) {
@@ -100,11 +110,7 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
   };
 
   const handleManualSubmit = () => {
-    if (manualInput.trim()) {
-      onScanResult(manualInput.trim());
-      setManualInput('');
-      setShowManualInput(false);
-    }
+    // 手動入力機能を削除
   };
 
   useEffect(() => {
@@ -160,6 +166,45 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
 
   return (
     <div className="space-y-4">
+      {/* スキャンモード切り替え */}
+      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          スキャンモード
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setScanMode('jpyc')}
+            disabled={isScanning}
+            className={`p-4 rounded-lg border-2 transition-all ${
+              scanMode === 'jpyc'
+                ? 'border-blue-600 bg-blue-50'
+                : 'border-gray-200 bg-white hover:border-gray-300'
+            } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <Zap className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'jpyc' ? 'text-blue-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-sm ${scanMode === 'jpyc' ? 'text-blue-700' : 'text-gray-600'}`}>
+              JPYCモード
+            </div>
+            <div className="text-xs mt-1 text-gray-500">カスタムQR形式</div>
+          </button>
+          <button
+            onClick={() => setScanMode('wallet-connect')}
+            disabled={isScanning}
+            className={`p-4 rounded-lg border-2 transition-all ${
+              scanMode === 'wallet-connect'
+                ? 'border-purple-600 bg-purple-50'
+                : 'border-gray-200 bg-white hover:border-gray-300'
+            } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <Wallet className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'wallet-connect' ? 'text-purple-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-sm ${scanMode === 'wallet-connect' ? 'text-purple-700' : 'text-gray-600'}`}>
+              WalletConnect
+            </div>
+            <div className="text-xs mt-1 text-gray-500">MetaMask等の標準形式</div>
+          </button>
+        </div>
+      </div>
+
       {/* プラットフォーム情報 */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div className="flex items-center gap-2 text-blue-800 text-sm">
@@ -246,46 +291,6 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
         </div>
       )}
 
-      {/* 手動入力セクション（動作確認用） */}
-      {showManualInput && (
-        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <Type className="h-4 w-4 text-gray-600" />
-            <span className="font-medium text-gray-800">手動入力（テスト用）</span>
-          </div>
-          <div className="text-xs text-gray-600 mb-2">
-            動作確認用：QRコードの代わりにテストデータを直接入力できます
-          </div>
-          <div className="space-y-2">
-            <textarea
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              placeholder="例: ethereum:0x1234... または JSON形式の決済データ"
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm resize-none"
-              rows={3}
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={handleManualSubmit}
-                disabled={!manualInput.trim()}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                データを送信
-              </button>
-              <button
-                onClick={() => {
-                  setShowManualInput(false);
-                  setManualInput('');
-                }}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                キャンセル
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* コントロールボタン */}
       <div className="space-y-2">
         {/* カメラコントロール */}
@@ -309,22 +314,13 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
             </button>
           )}
         </div>
-
-        {/* 手動入力（動作確認用サンプルのみ） */}
-        {!showManualInput && !isScanning && (
-          <button
-            onClick={() => setShowManualInput(true)}
-            className="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            <Type className="h-4 w-4" />
-            手動入力（テスト用）
-          </button>
-        )}
       </div>
 
       {/* デモ用サンプルデータ */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-        <div className="text-yellow-800 text-xs font-medium mb-2">💡 動作確認用サンプルデータ：</div>
+        <div className="text-yellow-800 text-xs font-medium mb-2">
+          💡 動作確認用サンプルデータ（{scanMode === 'jpyc' ? 'JPYC形式' : 'WalletConnect形式'}）：
+        </div>
         <div className="space-y-1">
           {generateSampleData().map((sample, index) => (
             <button
@@ -333,7 +329,9 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
               className="w-full text-left text-xs font-mono bg-white border border-yellow-300 rounded p-2 hover:bg-yellow-50 transition-colors text-gray-700 truncate"
               title={sample}
             >
-              {index === 0 ? '新形式JPYC決済' : index === 1 ? 'Ethereumアドレス' : 'JPYC旧形式'}
+              {scanMode === 'wallet-connect' 
+                ? `WC例${index + 1}: ${sample.substring(0, 40)}...`
+                : index === 0 ? '新形式JPYC決済' : index === 1 ? 'Ethereumアドレス' : 'JPYC旧形式'}
             </button>
           ))}
         </div>
@@ -342,7 +340,7 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
       {/* 使い方ガイド */}
       <div className="text-xs text-gray-500 text-center space-y-1">
         <p>📱 スマートフォン: QRコードをカメラに向けてスキャン</p>
-        <p>💻 PC: 手動入力またはサンプルデータでテスト</p>
+        <p>💻 モード切替: {scanMode === 'jpyc' ? 'カスタムJPYC形式' : 'MetaMask標準形式(EIP-681)'}</p>
       </div>
     </div>
   );

@@ -408,6 +408,13 @@ MIT License - 詳細は `LICENSE` ファイルを参照
 - **wagmi** - Web3ライブラリ
 - **Ethereum Foundation** - テストネット提供
 
+## 📮 お仕事問い合わせ先
+
+お仕事のご相談はこちらからお願いします：
+
+- **X (Twitter)**: <https://x.com/masaru21>
+- **リンクイット**: <https://lit.link/itsapotamk>
+
 ---
 
 **完成予定日**: 2025年11月15日

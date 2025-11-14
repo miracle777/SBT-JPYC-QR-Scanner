@@ -6,6 +6,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { QRScannerComponent } from '../components/QRScannerSimple';
 import { WalletConnector } from '../components/WalletConnector';
 import { SBTDisplay } from '../components/SBTDisplay';
+import { JPYCBalance } from '../components/JPYCBalance';
 import { CheckCircle } from 'lucide-react';
 
 export default function Home() {
@@ -49,12 +50,16 @@ export default function Home() {
         </div>
 
         {isConnected && address && (
-          <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-              🎖️ 保有SBT
-            </h2>
-            <SBTDisplay userAddress={address} compact={true} />
-          </div>
+          <>
+            <JPYCBalance />
+            
+            <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                🎖️ 保有SBT
+              </h2>
+              <SBTDisplay userAddress={address} compact={true} />
+            </div>
+          </>
         )}
 
         {isConnected && (
@@ -88,7 +93,7 @@ export default function Home() {
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
-              <span><strong>マルチチェーン対応:</strong> Ethereum、Polygon、Arbitrumの6ネットワークをサポート</span>
+              <span><strong>マルチチェーン対応:</strong> Ethereum、Polygon、Arbitrum、Avalancheの8ネットワークをサポート</span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
@@ -126,8 +131,59 @@ export default function Home() {
               <div className="font-semibold text-blue-400">Arbitrum Sepolia</div>
               <div className="text-sm text-gray-600">ChainID: 421614</div>
             </div>
+            <div className="border border-red-200 rounded p-3">
+              <div className="font-semibold text-red-600">Avalanche</div>
+              <div className="text-sm text-gray-600">ChainID: 43114</div>
+            </div>
+            <div className="border border-red-200 rounded p-3">
+              <div className="font-semibold text-red-400">Avalanche Fuji</div>
+              <div className="text-sm text-gray-600">ChainID: 43113</div>
+            </div>
           </div>
         </div>
+
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+            📮 お仕事問い合わせ先
+          </h2>
+          <p className="text-gray-600 mb-4">お仕事のご相談はこちらからお願いします：</p>
+          <div className="space-y-3">
+            <a
+              href="https://x.com/masaru21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex-shrink-0 w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="font-semibold text-gray-800">X (Twitter)</div>
+                <div className="text-sm text-gray-600">@masaru21</div>
+              </div>
+            </a>
+            <a
+              href="https://lit.link/itsapotamk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">L</span>
+              </div>
+              <div>
+                <div className="font-semibold text-gray-800">リンクイット</div>
+                <div className="text-sm text-gray-600">lit.link/itsapotamk</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <footer className="mt-8 text-center text-sm text-gray-500 pb-6">
+          <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
+        </footer>
       </div>
     </main>
   );

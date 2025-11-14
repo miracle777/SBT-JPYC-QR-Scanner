@@ -79,6 +79,30 @@ export const SUPPORTED_NETWORKS: Record<NetworkType, PaymentNetwork> = {
     color: '#1A9EFF',
     isMainnet: false,
   },
+
+  // ============================================
+  // Avalanche (本番 + テストネット)
+  // ============================================
+  avalanche: {
+    name: 'avalanche',
+    chainId: 43114,
+    rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
+    blockExplorerUrl: 'https://snowtrace.io',
+    currencySymbol: 'AVAX',
+    displayName: 'Avalanche C-Chain',
+    color: '#E84142',
+    isMainnet: true,
+  },
+  'avalanche-fuji': {
+    name: 'avalanche-fuji',
+    chainId: 43113,
+    rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc',
+    blockExplorerUrl: 'https://testnet.snowtrace.io',
+    currencySymbol: 'AVAX',
+    displayName: 'Avalanche Fuji Testnet',
+    color: '#FF6B6B',
+    isMainnet: false,
+  },
 };
 
 /**
