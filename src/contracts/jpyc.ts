@@ -47,8 +47,12 @@ export const JPYC_ABI = [
 export const JPYC_ADDRESSES = {
   // Ethereum Mainnet
   ethereum: getAddress('0x2370f9d504c7a6e775bf6e14b3f12846b594cd53'),
-  // Ethereum Sepolia Testnet
-  sepolia: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  // Ethereum Sepolia Testnet - Official Faucet (100 JPYC)
+  sepolia: getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
+  // Ethereum Sepolia Testnet - Community Faucet (882 JPYC)
+  'sepolia-community': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  // Ethereum Sepolia Testnet - Additional Faucet (0 JPYC)
+  'sepolia-additional': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // Polygon Mainnet
   polygon: getAddress('0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c'),
