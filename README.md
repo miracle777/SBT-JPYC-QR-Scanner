@@ -16,7 +16,11 @@
 
 #### 2. **決済ネットワーク情報のQRコード埋め込み**
 - ✅ QRコード内にネットワーク情報を含める
-- ✅ 複数ネットワーク対応（Ethereum/Sepolia/Polygon/Arbitrum/Optimism）
+- ✅ 複数ネットワーク対応（本番 + テストネット）
+  - Ethereum / Sepolia
+  - **Polygon Mainnet / Mumbai Testnet**（新）
+  - **Arbitrum One / Sepolia Testnet**（新）
+  - Optimism Mainnet
 - ✅ QRコードフォーマット拡張:
   - `payment:address?network=sepolia&amount=100`
   - `sbt-payment:address?network=ethereum&sbt=id1,id2&sbt-rank=gold`
@@ -167,9 +171,12 @@ NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 # ネットワーク設定
 NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_DEFAULT_NETWORK=sepolia
+# 利用可能な値: ethereum | sepolia | polygon | polygon-mumbai | arbitrum | arbitrum-sepolia | optimism
 
-# JPYC コントラクト
-NEXT_PUBLIC_JPYC_CONTRACT_ADDRESS=0xd3eF95d29A198868241FE374A999fc25F6152253
+# JPYC コントラクトアドレス
+NEXT_PUBLIC_JPYC_CONTRACT_SEPOLIA=0xd3eF95d29A198868241FE374A999fc25F6152253  # 必須
+NEXT_PUBLIC_JPYC_CONTRACT_POLYGON=0x...  # オプション（Polygon Mainnet）
+NEXT_PUBLIC_JPYC_CONTRACT_ARBITRUM=0x...  # オプション（Arbitrum One）
 
 # アプリ設定
 NEXT_PUBLIC_APP_NAME=SBT-JPYC-QR-Scanner
@@ -267,13 +274,34 @@ npm run build && npm run start
 4. ✅ QRコード生成: createPaymentQRCode(...)
 ```
 
-## 📊 ネットワーク別カラースキーム
+## 📊 対応ネットワーク（7チェーン）
 
-- 🟣 **Ethereum** - #627EEA (Purple)
-- 🟠 **Sepolia** - #FF8C00 (Orange)
-- 🟣 **Polygon** - #8247E5 (Purple)
-- 🔵 **Arbitrum** - #28A0F0 (Blue)
-- 🔴 **Optimism** - #FF0420 (Red)
+### Ethereum 系
+
+| ネットワーク | ChainID | 環境 | RPC URL | 色コード |
+|------------|---------|------|---------|---------|
+| Ethereum | 1 | **本番** | `https://eth.public.rpc...` | 🟣 #627EEA |
+| Sepolia | 11155111 | テスト | `https://1rpc.io/sepolia` | 🟠 #FF8C00 |
+
+### Polygon 系
+
+| ネットワーク | ChainID | 環境 | RPC URL | 色コード |
+|------------|---------|------|---------|---------|
+| Polygon Mainnet | 137 | **本番** | `https://polygon-rpc.com` | 🟣 #8247E5 |
+| Mumbai Testnet | 80001 | テスト | `https://rpc-mumbai.maticvigil.com` | 🟤 #A29EE3 |
+
+### Arbitrum 系
+
+| ネットワーク | ChainID | 環境 | RPC URL | 色コード |
+|------------|---------|------|---------|---------|
+| Arbitrum One | 42161 | **本番** | `https://arb1.arbitrum.io/rpc` | 🔵 #28A0F0 |
+| Arbitrum Sepolia | 421614 | テスト | `https://sepolia-rollup.arbitrum.io/rpc` | 🟦 #12D9FF |
+
+### その他
+
+| ネットワーク | ChainID | 環境 | RPC URL | 色コード |
+|------------|---------|------|---------|---------|
+| Optimism Mainnet | 10 | **本番** | `https://mainnet.optimism.io` | 🔴 #FF0420 |
 
 ## 🎓 主要な実装ポイント
 

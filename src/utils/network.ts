@@ -8,6 +8,9 @@ import { NetworkType, PaymentNetwork, PaymentQRData, NetworkValidationResult } f
  * サポートされているネットワーク設定
  */
 export const SUPPORTED_NETWORKS: Record<NetworkType, PaymentNetwork> = {
+  // ============================================
+  // Ethereum
+  // ============================================
   ethereum: {
     name: 'ethereum',
     chainId: 1,
@@ -28,33 +31,65 @@ export const SUPPORTED_NETWORKS: Record<NetworkType, PaymentNetwork> = {
     color: '#FF8C00',
     isMainnet: false,
   },
+
+  // ============================================
+  // Polygon (本番 + テストネット)
+  // ============================================
   polygon: {
     name: 'polygon',
     chainId: 137,
     rpcUrl: 'https://polygon-rpc.com',
     blockExplorerUrl: 'https://polygonscan.com',
     currencySymbol: 'MATIC',
-    displayName: 'Polygon',
+    displayName: 'Polygon Mainnet',
     color: '#8247E5',
     isMainnet: true,
   },
+  'polygon-mumbai': {
+    name: 'polygon-mumbai',
+    chainId: 80001,
+    rpcUrl: 'https://rpc-mumbai.maticvigil.com',
+    blockExplorerUrl: 'https://mumbai.polygonscan.com',
+    currencySymbol: 'MATIC',
+    displayName: 'Polygon Mumbai Testnet',
+    color: '#A29EE3',
+    isMainnet: false,
+  },
+
+  // ============================================
+  // Arbitrum (本番 + テストネット)
+  // ============================================
   arbitrum: {
     name: 'arbitrum',
     chainId: 42161,
     rpcUrl: 'https://arb1.arbitrum.io/rpc',
     blockExplorerUrl: 'https://arbiscan.io',
     currencySymbol: 'ETH',
-    displayName: 'Arbitrum One',
+    displayName: 'Arbitrum One Mainnet',
     color: '#28A0F0',
     isMainnet: true,
   },
+  'arbitrum-sepolia': {
+    name: 'arbitrum-sepolia',
+    chainId: 421614,
+    rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
+    blockExplorerUrl: 'https://sepolia.arbiscan.io',
+    currencySymbol: 'ETH',
+    displayName: 'Arbitrum Sepolia Testnet',
+    color: '#1A9EFF',
+    isMainnet: false,
+  },
+
+  // ============================================
+  // Optimism
+  // ============================================
   optimism: {
     name: 'optimism',
     chainId: 10,
     rpcUrl: 'https://mainnet.optimism.io',
     blockExplorerUrl: 'https://optimistic.etherscan.io',
     currencySymbol: 'ETH',
-    displayName: 'Optimism',
+    displayName: 'Optimism Mainnet',
     color: '#FF0420',
     isMainnet: true,
   },

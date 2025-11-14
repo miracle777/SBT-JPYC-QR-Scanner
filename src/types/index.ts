@@ -30,7 +30,18 @@ export interface SBTBalance {
  * 決済ネットワーク情報
  */
 
-export type NetworkType = 'ethereum' | 'sepolia' | 'polygon' | 'arbitrum' | 'optimism';
+export type NetworkType = 
+  // Ethereum
+  | 'ethereum' 
+  | 'sepolia'
+  // Polygon
+  | 'polygon' 
+  | 'polygon-mumbai'
+  // Arbitrum
+  | 'arbitrum' 
+  | 'arbitrum-sepolia'
+  // Optimism
+  | 'optimism';
 
 export interface PaymentNetwork {
   name: NetworkType;
