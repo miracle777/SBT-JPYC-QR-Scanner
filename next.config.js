@@ -29,6 +29,8 @@ const nextConfig = {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
   },
+  // スマホからのアクセスを許可
+  allowedDevOrigins: ['172.20.10.11'],
 };
 
 module.exports = withPWA(nextConfig);
