@@ -5,9 +5,9 @@
 'use client';
 
 import React from 'react';
-import { PaymentQRData, NetworkValidationResult } from '@/src/types';
+import { PaymentQRData, NetworkValidationResult } from '../types';
 import { AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
-import { getNetworkDisplayName, getNetworkColor } from '@/src/utils/network';
+import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
 
 interface NetworkValidationProps {
   validation: NetworkValidationResult;

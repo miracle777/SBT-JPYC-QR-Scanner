@@ -5,9 +5,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SBT, SBTBalance } from '@/src/types';
-import { fetchUserSBTs, getSBTBadgeColor, getRankDescription } from '@/src/utils/sbt';
-import { getNetworkDisplayName, getNetworkColor } from '@/src/utils/network';
+import { SBT, SBTBalance } from '../types';
+import { fetchUserSBTs, getSBTBadgeColor, getRankDescription } from '../utils/sbt';
+import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
 import { Award, Shield, Badge } from 'lucide-react';
 
 interface SBTDisplayProps {

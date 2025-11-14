@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { QRScannerComponent } from '@/components/QRScannerSimple';
-import { WalletConnector } from '@/components/WalletConnector';
-import { SBTDisplay } from '@/components/SBTDisplay';
+import { QRScannerComponent } from '../components/QRScannerSimple';
+import { WalletConnector } from '../components/WalletConnector';
+import { SBTDisplay } from '../components/SBTDisplay';
 import { CheckCircle } from 'lucide-react';
 
 export default function Home() {
