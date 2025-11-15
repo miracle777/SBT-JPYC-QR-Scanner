@@ -66,6 +66,11 @@ export interface PaymentQRData {
   amount?: string;
   network?: NetworkType;
   chainId?: number;
+  contractAddress?: `0x${string}`;
+  shopName?: string;
+  shopId?: string;
+  paymentId?: string;
+  expiresAt?: number;
   sbtRequired?: string[];
   minimumSBTRank?: 'bronze' | 'silver' | 'gold' | 'platinum';
   memo?: string;
@@ -113,6 +118,12 @@ export interface PaymentHistory {
   txHash?: string;
   timestamp: Date;
   memo?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+    address?: string;
+  };
   sbtUsed?: string[];
   discount?: number;
   status: 'pending' | 'success' | 'failed';

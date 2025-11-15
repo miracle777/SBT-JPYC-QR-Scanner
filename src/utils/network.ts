@@ -127,6 +127,31 @@ export function getNetworkInfo(network: NetworkType): PaymentNetwork {
  */
 export function parseQRCodeData(qrString: string): PaymentQRData | null {
   try {
+    // JSON形式（店舗QRコード）
+    if (qrString.trim().startsWith('{')) {
+      const data = JSON.parse(qrString);
+      
+      if (data.type === 'payment' && data.shopWallet && data.contractAddress) {
+        // Wei単位からJPYC単位に変換（18桁）
+        const amountInJPYC = data.amount ? 
+          (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
+          undefined;
+        
+        return {
+          type: 'payment',
+          address: data.shopWallet as `0x${string}`,
+          amount: amountInJPYC,
+          chainId: data.chainId,
+          contractAddress: data.contractAddress as `0x${string}`,
+          shopName: data.shopName,
+          shopId: data.shopId,
+          paymentId: data.paymentId,
+          expiresAt: data.expiresAt,
+          memo: data.description || data.shopName,
+        };
+      }
+    }
+
     // ethereum: 形式: ethereum:0xaddress?amount=100&network=sepolia
     if (qrString.startsWith('ethereum:')) {
       const url = new URL(qrString.replace('ethereum:', 'https://dummy/'));

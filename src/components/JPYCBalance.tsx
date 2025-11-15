@@ -152,19 +152,21 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
 
   return (
     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
         <div 
-          className="w-2 h-2 rounded-full" 
+          className="w-2 h-2 rounded-full flex-shrink-0" 
           style={{ backgroundColor: color }}
         />
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {displayName}
-        </span>
-        <span className="text-xs text-gray-400 font-mono">
-          ({contractAddress.slice(0, 6)}...{contractAddress.slice(-4)})
-        </span>
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+            {displayName}
+          </span>
+          <span className="text-xs text-gray-400 font-mono truncate">
+            ({contractAddress.slice(0, 6)}...{contractAddress.slice(-4)})
+          </span>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         {isLoading ? (
           <RefreshCw className="h-4 w-4 animate-spin text-gray-400" />
         ) : (

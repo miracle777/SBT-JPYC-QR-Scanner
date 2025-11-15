@@ -41,6 +41,12 @@ const nextConfig = {
         tls: false,
         crypto: false,
       };
+      
+      // React Native専用パッケージの警告を抑制
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@react-native-async-storage/async-storage': false,
+      };
     }
     
     return config;

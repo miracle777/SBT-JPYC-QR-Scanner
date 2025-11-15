@@ -7,15 +7,39 @@ import { QRScannerComponent } from '../components/QRScannerSimple';
 import { WalletConnector } from '../components/WalletConnector';
 import { SBTDisplay } from '../components/SBTDisplay';
 import { JPYCBalance } from '../components/JPYCBalance';
+import { PaymentHistoryComponent } from '../components/PaymentHistory';
+import { PaymentProcessor } from '../components/PaymentProcessor';
+import { ManualPayment } from '../components/ManualPayment';
 import { CheckCircle } from 'lucide-react';
 
 export default function Home() {
   const { isConnected, address } = useAccount();
   const [scannedData, setScannedData] = useState<string | null>(null);
+  const [showPaymentProcessor, setShowPaymentProcessor] = useState(false);
 
   const handleScanResult = (data: string) => {
     console.log('Scanned data:', data);
     setScannedData(data);
+    setShowPaymentProcessor(true);
+  };
+
+  const handleManualPayment = (data: { address: string; amount: string; memo?: string }) => {
+    // 手動入力データをQRコード形式に変換
+    const qrData = JSON.stringify({
+      type: 'payment',
+      address: data.address,
+      amount: data.amount,
+      memo: data.memo,
+      network: 'sepolia',
+      chainId: 11155111,
+    });
+    setScannedData(qrData);
+    setShowPaymentProcessor(true);
+  };
+
+  const handlePaymentComplete = () => {
+    setScannedData(null);
+    setShowPaymentProcessor(false);
   };
 
   return (
@@ -63,19 +87,37 @@ export default function Home() {
         )}
 
         {isConnected && (
-          <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              📸 QRコードをスキャン
-            </h2>
-            <QRScannerComponent onScanResult={handleScanResult} />
-            
-            {scannedData && (
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm font-medium text-green-800 mb-2">スキャン成功!</p>
-                <p className="text-xs font-mono text-green-700 break-all">{scannedData}</p>
+          <>
+            {!showPaymentProcessor && (
+              <>
+                <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                    📸 QRコードをスキャン
+                  </h2>
+                  <QRScannerComponent onScanResult={handleScanResult} />
+                </div>
+
+                <div className="mb-6">
+                  <ManualPayment onSubmit={handleManualPayment} />
+                </div>
+              </>
+            )}
+
+            {showPaymentProcessor && scannedData && (
+              <div className="mb-6">
+                <PaymentProcessor 
+                  qrData={scannedData} 
+                  onComplete={handlePaymentComplete}
+                />
               </div>
             )}
-          </div>
+
+            {address && (
+              <div className="mb-6">
+                <PaymentHistoryComponent />
+              </div>
+            )}
+          </>
         )}
 
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">

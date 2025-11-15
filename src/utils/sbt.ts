@@ -5,6 +5,9 @@
 import { SBT, SBTBalance, SBTPaymentRule, NetworkType } from '../types';
 import axios from 'axios';
 import { getAddress } from 'viem';
+import { createPublicClient, http } from 'viem';
+import { sepolia } from 'viem/chains';
+import { SBT_ABI, SBT_ADDRESSES, REGISTERED_SHOPS } from '../contracts/sbt';
 
 /**
  * サンプル SBT データ（デモ用）
@@ -215,20 +218,113 @@ export const RANK_INFO = {
 };
 
 /**
- * SBT 情報を取得（ここではモック実装）
+ * SBT 情報を取得（ブロックチェーンから実際に取得）
  */
 export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> {
   try {
-    // 実装例：ブロックチェーンから SBT 情報を取得
-    // 現在はモック実装
     console.log(`Fetching SBTs for address: ${userAddress}`);
+    
+    const sbts: SBT[] = [];
+    
+    // Sepoliaネットワークから実際のSBTを取得
+    if (SBT_ADDRESSES.sepolia) {
+      try {
+        const client = createPublicClient({
+          chain: sepolia,
+          transport: http(),
+        });
+        
+        const contractAddress = SBT_ADDRESSES.sepolia;
+        console.log('Checking SBT contract:', contractAddress);
+        
+        // ユーザーが保有するSBTの数を取得
+        const balance = await client.readContract({
+          address: contractAddress,
+          abi: SBT_ABI,
+          functionName: 'balanceOf',
+          args: [userAddress],
+        }) as bigint;
+        
+        console.log('SBT balance:', balance.toString());
+        
+        // 各SBTのトークンIDを取得
+        for (let i = 0; i < Number(balance); i++) {
+          try {
+            const tokenId = await client.readContract({
+              address: contractAddress,
+              abi: SBT_ABI,
+              functionName: 'tokenOfOwnerByIndex',
+              args: [userAddress, BigInt(i)],
+            }) as bigint;
+            
+            console.log('Token ID:', tokenId.toString());
+            
+            // トークンURIを取得
+            const tokenURI = await client.readContract({
+              address: contractAddress,
+              abi: SBT_ABI,
+              functionName: 'tokenURI',
+              args: [tokenId],
+            }) as string;
+            
+            console.log('Token URI:', tokenURI);
+            
+            // メタデータを取得（JSONの場合）
+            let metadata: any = {};
+            if (tokenURI.startsWith('data:application/json;base64,')) {
+              // Base64エンコードされたJSON
+              const base64Data = tokenURI.replace('data:application/json;base64,', '');
+              const jsonString = Buffer.from(base64Data, 'base64').toString('utf-8');
+              metadata = JSON.parse(jsonString);
+            } else if (tokenURI.startsWith('http')) {
+              // HTTPSのメタデータURL
+              try {
+                const response = await axios.get(tokenURI);
+                metadata = response.data;
+              } catch (e) {
+                console.error('Failed to fetch metadata from URL:', e);
+              }
+            }
+            
+            // shopIdを特定（tokenIdから推測、またはメタデータから）
+            const shopId = 1; // Shop ID: 1 (SBT JPYC Pay Demo Store)
+            const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
+            
+            const sbt: SBT = {
+              id: `sbt-${contractAddress}-${tokenId}`,
+              name: metadata.name || shopInfo?.name || `SBT #${tokenId}`,
+              symbol: 'SBT',
+              address: contractAddress,
+              issuer: shopInfo?.name || 'Unknown Shop',
+              issuerAddress: shopInfo?.wallet || contractAddress,
+              description: metadata.description || `Shop loyalty SBT for ${shopInfo?.name || 'shop'}`,
+              network: 'sepolia',
+              chainId: 11155111,
+              tokenId: tokenId,
+              metadata: metadata,
+              imageUrl: metadata.image,
+              rank: 'bronze', // デフォルトランク
+              issuedDate: new Date(),
+            };
+            
+            sbts.push(sbt);
+          } catch (tokenError) {
+            console.error(`Failed to fetch token ${i}:`, tokenError);
+          }
+        }
+        
+        if (sbts.length > 0) {
+          console.log(`✅ Found ${sbts.length} SBTs on Sepolia`);
+          return sbts;
+        }
+      } catch (error) {
+        console.error('Failed to fetch SBTs from Sepolia:', error);
+      }
+    }
 
-    // APIでデータを取得する場合の例
-    // const response = await axios.get(`/api/sbt/user/${userAddress}`);
-    // return response.data;
-
-    // デモ用にサンプルデータを返す
-    return SAMPLE_SBTS;
+    // SBTが見つからない場合はサンプルデータを表示しない
+    console.log('⚠️ No SBTs found on blockchain');
+    return [];
   } catch (error) {
     console.error('Failed to fetch SBTs:', error);
     return [];
@@ -355,3 +451,109 @@ export function normalizeSBTAddress(address: string): `0x${string}` {
     return address as `0x${string}`;
   }
 }
+
+/**
+ * ユーザーのショップ訪問回数を取得
+ */
+export async function getUserVisitCount(
+  userAddress: `0x${string}`,
+  shopId: number
+): Promise<number> {
+  try {
+    if (!SBT_ADDRESSES.sepolia) {
+      console.log('SBT contract not deployed on Sepolia');
+      return 0;
+    }
+
+    const client = createPublicClient({
+      chain: sepolia,
+      transport: http(),
+    });
+
+    const visits = await client.readContract({
+      address: SBT_ADDRESSES.sepolia,
+      abi: SBT_ABI,
+      functionName: 'userVisits',
+      args: [userAddress, BigInt(shopId)],
+    }) as bigint;
+
+    console.log(`User ${userAddress} has ${visits} visits to shop ${shopId}`);
+    return Number(visits);
+  } catch (error) {
+    console.error('Failed to get user visit count:', error);
+    return 0;
+  }
+}
+
+/**
+ * ユーザーが特定ショップのSBTを保有しているか確認
+ */
+export async function checkUserHasSBT(
+  userAddress: `0x${string}`,
+  shopId: number
+): Promise<boolean> {
+  try {
+    if (!SBT_ADDRESSES.sepolia) {
+      console.log('SBT contract not deployed on Sepolia');
+      return false;
+    }
+
+    const client = createPublicClient({
+      chain: sepolia,
+      transport: http(),
+    });
+
+    const hasSBT = await client.readContract({
+      address: SBT_ADDRESSES.sepolia,
+      abi: SBT_ABI,
+      functionName: 'hasSBT',
+      args: [userAddress, BigInt(shopId)],
+    }) as boolean;
+
+    console.log(`User ${userAddress} has SBT for shop ${shopId}: ${hasSBT}`);
+    return hasSBT;
+  } catch (error) {
+    console.error('Failed to check SBT:', error);
+    return false;
+  }
+}
+
+/**
+ * ショップ情報を取得
+ */
+export async function getShopInfo(shopId: number): Promise<{
+  shopWallet: string;
+  shopName: string;
+  requiredVisits: number;
+  isActive: boolean;
+} | null> {
+  try {
+    if (!SBT_ADDRESSES.sepolia) {
+      console.log('SBT contract not deployed on Sepolia');
+      return null;
+    }
+
+    const client = createPublicClient({
+      chain: sepolia,
+      transport: http(),
+    });
+
+    const shopInfo = await client.readContract({
+      address: SBT_ADDRESSES.sepolia,
+      abi: SBT_ABI,
+      functionName: 'shops',
+      args: [BigInt(shopId)],
+    }) as [string, string, bigint, boolean];
+
+    return {
+      shopWallet: shopInfo[0],
+      shopName: shopInfo[1],
+      requiredVisits: Number(shopInfo[2]),
+      isActive: shopInfo[3],
+    };
+  } catch (error) {
+    console.error('Failed to get shop info:', error);
+    return null;
+  }
+}
+

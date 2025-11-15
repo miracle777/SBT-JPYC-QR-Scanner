@@ -6,9 +6,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { SBT, SBTBalance } from '../types';
-import { fetchUserSBTs, getSBTBadgeColor, getRankDescription } from '../utils/sbt';
+import { fetchUserSBTs, getSBTBadgeColor, getRankDescription, getUserVisitCount } from '../utils/sbt';
 import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
-import { Award, Shield, Badge } from 'lucide-react';
+import { Award, Shield, Badge, RefreshCw } from 'lucide-react';
+import { REGISTERED_SHOPS } from '../contracts/sbt';
 
 interface SBTDisplayProps {
   userAddress: `0x${string}` | undefined;
@@ -20,10 +21,12 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
   const [sbts, setSBTs] = useState<SBT[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSBT, setSelectedSBT] = useState<string | null>(null);
+  const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
 
   useEffect(() => {
     if (userAddress) {
       loadSBTs();
+      loadVisitCounts();
     }
   }, [userAddress]);
 
@@ -34,11 +37,24 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
       setLoading(true);
       const fetchedSBTs = await fetchUserSBTs(userAddress);
       setSBTs(fetchedSBTs);
+      console.log('Loaded SBTs:', fetchedSBTs);
     } catch (error) {
       console.error('Failed to load SBTs:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadVisitCounts = async () => {
+    if (!userAddress) return;
+
+    const counts: Record<number, number> = {};
+    for (const shopId of Object.keys(REGISTERED_SHOPS)) {
+      const count = await getUserVisitCount(userAddress, Number(shopId));
+      counts[Number(shopId)] = count;
+    }
+    setVisitCounts(counts);
+    console.log('Visit counts:', counts);
   };
 
   const handleSBTClick = (sbt: SBT) => {
@@ -65,9 +81,26 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
 
   if (sbts.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-6">
-        <Shield className="mx-auto h-8 w-8 mb-2 opacity-50" />
-        <p>SBT がまだありません</p>
+      <div className="text-center py-6">
+        <Shield className="mx-auto h-8 w-8 mb-2 opacity-50 text-gray-400" />
+        <p className="text-gray-500 mb-4">SBT がまだありません</p>
+        
+        {/* 訪問回数表示 */}
+        {Object.keys(visitCounts).length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-gray-600 font-semibold">📍 訪問回数</p>
+            {Object.entries(REGISTERED_SHOPS).map(([shopId, shop]) => (
+              <div key={shopId} className="text-xs text-gray-600 bg-gray-50 rounded p-2">
+                {shop.name}: {visitCounts[Number(shopId)] || 0}回
+                {visitCounts[Number(shopId)] > 0 && (
+                  <span className="ml-2 text-blue-600">
+                    (あと{Math.max(0, 3 - (visitCounts[Number(shopId)] || 0))}回でSBT獲得!)
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -98,9 +131,14 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
           発行済みSBT ({sbts.length})
         </h3>
         <button
-          onClick={loadSBTs}
-          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          onClick={() => {
+            loadSBTs();
+            loadVisitCounts();
+          }}
+          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition flex items-center gap-1"
+          disabled={loading}
         >
+          <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
           更新
         </button>
       </div>
