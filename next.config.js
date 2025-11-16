@@ -52,6 +52,8 @@ const nextConfig = {
     // クライアント側でNode.js専用モジュールを外部化
     if (!isServer) {
       config.externals.push('pino-pretty', 'lokijs', 'encoding');
+      
+      // fallback設定
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -68,10 +70,10 @@ const nextConfig = {
       config.resolve.alias = {
         ...config.resolve.alias,
         // AsyncStorageのWeb互換性を保つためのポリフィル
-        '@react-native-async-storage/async-storage': require.resolve('./src/utils/asyncStoragePolyfill.ts'),
+        '@react-native-async-storage/async-storage$': require.resolve('./src/utils/asyncStoragePolyfill.ts'),
         // その他のReact Native専用パッケージを無効化
         '@react-native-cookies/cookies': false,
-        'react-native': false,
+        'react-native$': false,
         'react-native-randombytes': false,
         'react-native-get-random-values': false,
       };

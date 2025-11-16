@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
 
 const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME || 'JPYC Payment Scanner',
-  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || 'your_project_id_here',
+  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d', // 本番用実際のプロジェクトID
   chains: [sepolia],
   ssr: true,
 });
