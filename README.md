@@ -23,19 +23,12 @@
   - Optimism Mainnet
 - ✅ QRコードフォーマット拡張:
   - `payment:address?network=sepolia&amount=100`
-  - `sbt-payment:address?network=ethereum&sbt=id1,id2&sbt-rank=gold`
 
 #### 3. **ネットワーク間違い防止UI**
 - ✅ QRスキャン時にネットワーク自動検証
 - ✅ ネットワーク不一致時の詳細な警告表示
 - ✅ ワンクリックでのネットワーク自動切り替え
-- ✅ 明確な色分け表示（Ethereum=Purple, Sepolia=Orange など）
-
-#### 4. **SBTベースの制限・ボーナス機能**
-- ✅ SBT保有による手数料割引（2-15%）
-- ✅ SBTランクに応じた決済制限額の変更
-- ✅ SBTのネットワーク情報に基づく決済制限
-- ✅ ランク別の日次・月次制限額
+- ✅ 明確な色分け表示（Ethereum=Purple、Sepolia=Orange など）
 
 ## 🏗 プロジェクト構造
 
@@ -116,13 +109,9 @@ interface SBT {
 ### QRコードフォーマット
 
 #### 基本的な支払い
-```
-payment:0x1234...?network=ethereum&amount=100&memo=テスト
-```
 
-#### SBT支払い（SBT保有者のみ）
-```
-sbt-payment:0x1234...?network=sepolia&sbt=id1,id2&sbt-rank=gold&amount=50
+```text
+payment:0x1234...?network=ethereum&amount=100&memo=テスト
 ```
 
 ### ネットワーク検証フロー
@@ -236,20 +225,11 @@ npm run build && npm run start
 ### 5. 決済実行
 
 ```
-1. 金額とSBT割引を確認
+1. 金額を確認
 2. 「決済実行」をクリック
 3. MetaMask で署名
 4. 完了画面でトランザクションを確認
 ```
-
-## 🔐 SBT と割引ルール
-
-| ランク | 割引率 | 日次上限 | 月次上限 |
-|--------|--------|---------|---------|
-| Bronze | 2% | 100,000 | 1,000,000 |
-| Silver | 5% | 500,000 | 5,000,000 |
-| Gold | 10% | 1,000,000 | 10,000,000 |
-| Platinum | 15% | 5,000,000 | 50,000,000 |
 
 ## 🧪 テストシナリオ
 
@@ -261,7 +241,6 @@ npm run build && npm run start
 2. ✅ ネットワークフィルター: fetchSBTsByNetwork(address, network)
 3. ✅ SBT保有確認: hasSBT(address, sbtId)
 4. ✅ ランク取得: getUserHighestRank(address)
-5. ✅ 割引計算: calculateDiscount(amount, percent)
 ```
 
 ### ネットワーク検証テスト
@@ -304,9 +283,6 @@ npm run build && npm run start
 ```typescript
 // payment: で始まる決済用QR
 payment:0xAddress?network=sepolia&amount=100&memo=note
-
-// sbt-payment: でSBT限定決済
-sbt-payment:0xAddress?network=ethereum&sbt=id1&sbt-rank=gold
 ```
 
 ### 2. ネットワーク自動検証
@@ -356,11 +332,7 @@ const discountedAmount = calculateDiscount(amount, discount);
 1. **マルチシグウォレット対応**
    - 複数署名者による承認フロー
 
-2. **高度なSBT条件**
-   - SBT保有期間による割引変動
-   - 複数SBT組み合わせ割引
-
-3. **解析・統計機能**
+2. **解析・統計機能**
    - 決済フロー分析
    - ネットワーク別決済統計
 
