@@ -324,17 +324,89 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
       return sbts;
     }
     
-    // 各SBTのトークンIDを取得してメタデータを読み取り
-    for (let i = 0; i < Number(balance); i++) {
-      try {
-        const tokenId = await amoyCreateClient.readContract({
-          address: contractAddress,
-          abi: SBT_ABI,
-          functionName: 'tokenOfOwnerByIndex',
-          args: [userAddress, BigInt(i)],
-        }) as bigint;
+    // イベントログを使用してユーザーが所有するトークンIDを取得
+    console.log('🔍 Getting user tokens via Transfer events...');
+    let userTokenIds: bigint[] = [];
+    
+    try {
+      // Transferイベントを検索してユーザーのトークンを特定
+      const logs = await amoyCreateClient.getLogs({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { name: 'from', type: 'address', indexed: true },
+            { name: 'to', type: 'address', indexed: true },
+            { name: 'tokenId', type: 'uint256', indexed: true }
+          ]
+        },
+        args: {
+          to: userAddress,
+        },
+        fromBlock: 'earliest',
+        toBlock: 'latest'
+      });
+      
+      console.log('📊 Found Transfer events:', logs.length);
+      
+      // トークンIDを抽出
+      for (const log of logs) {
+        if (log.args && log.args.tokenId) {
+          const tokenId = log.args.tokenId as bigint;
+          
+          // そのトークンが現在もユーザーが所有しているかチェック
+          try {
+            const owner = await amoyCreateClient.readContract({
+              address: contractAddress,
+              abi: SBT_ABI,
+              functionName: 'ownerOf',
+              args: [tokenId],
+            }) as string;
+            
+            if (owner.toLowerCase() === userAddress.toLowerCase()) {
+              userTokenIds.push(tokenId);
+              console.log('✅ Confirmed token ownership:', tokenId.toString());
+            }
+          } catch (ownerError) {
+            console.log('⚠️ Token may have been burned:', tokenId.toString());
+          }
+        }
+      }
+    } catch (eventError) {
+      console.error('❌ Error getting Transfer events:', eventError);
+      // フォールバック: 簡単な範囲でトークンIDを試行
+      console.log('🔄 Trying fallback method with token ID range...');
+      for (let tokenId = 1; tokenId <= 1000; tokenId++) {
+        try {
+          const owner = await amoyCreateClient.readContract({
+            address: contractAddress,
+            abi: SBT_ABI,
+            functionName: 'ownerOf',
+            args: [BigInt(tokenId)],
+          }) as string;
+          
+          if (owner.toLowerCase() === userAddress.toLowerCase()) {
+            userTokenIds.push(BigInt(tokenId));
+            console.log('✅ Found owned token via fallback:', tokenId.toString());
+          }
+        } catch {
+          // トークンが存在しないか所有していない
+        }
         
-        console.log('Polygon Amoy Token ID:', tokenId.toString());
+        // 見つかったトークン数がbalanceと一致したら終了
+        if (userTokenIds.length >= Number(balance)) {
+          break;
+        }
+      }
+    }
+    
+    console.log('📋 User token IDs found:', userTokenIds.map(id => id.toString()));
+    
+    // 各トークンのメタデータを取得
+    for (const tokenId of userTokenIds) {
+      try {
+        console.log('🔍 Processing Polygon Amoy token:', tokenId.toString());
         
         // トークンURIを取得
         let tokenURI = '';
@@ -513,17 +585,89 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
       return sbts;
     }
     
-    // 各SBTのトークンIDを取得
-    for (let i = 0; i < Number(balance); i++) {
-      try {
-        const tokenId = await client.readContract({
-          address: contractAddress,
-          abi: SBT_ABI,
-          functionName: 'tokenOfOwnerByIndex',
-          args: [userAddress, BigInt(i)],
-        }) as bigint;
+    // イベントログを使用してユーザーが所有するトークンIDを取得
+    console.log('🔍 Getting user tokens via Transfer events on Sepolia...');
+    let userTokenIds: bigint[] = [];
+    
+    try {
+      // Transferイベントを検索してユーザーのトークンを特定
+      const logs = await client.getLogs({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { name: 'from', type: 'address', indexed: true },
+            { name: 'to', type: 'address', indexed: true },
+            { name: 'tokenId', type: 'uint256', indexed: true }
+          ]
+        },
+        args: {
+          to: userAddress,
+        },
+        fromBlock: 'earliest',
+        toBlock: 'latest'
+      });
+      
+      console.log('📊 Found Transfer events on Sepolia:', logs.length);
+      
+      // トークンIDを抽出
+      for (const log of logs) {
+        if (log.args && log.args.tokenId) {
+          const tokenId = log.args.tokenId as bigint;
+          
+          // そのトークンが現在もユーザーが所有しているかチェック
+          try {
+            const owner = await client.readContract({
+              address: contractAddress,
+              abi: SBT_ABI,
+              functionName: 'ownerOf',
+              args: [tokenId],
+            }) as string;
+            
+            if (owner.toLowerCase() === userAddress.toLowerCase()) {
+              userTokenIds.push(tokenId);
+              console.log('✅ Confirmed Sepolia token ownership:', tokenId.toString());
+            }
+          } catch (ownerError) {
+            console.log('⚠️ Sepolia token may have been burned:', tokenId.toString());
+          }
+        }
+      }
+    } catch (eventError) {
+      console.error('❌ Error getting Transfer events on Sepolia:', eventError);
+      // フォールバック: 簡単な範囲でトークンIDを試行
+      console.log('🔄 Trying fallback method with token ID range on Sepolia...');
+      for (let tokenId = 1; tokenId <= 1000; tokenId++) {
+        try {
+          const owner = await client.readContract({
+            address: contractAddress,
+            abi: SBT_ABI,
+            functionName: 'ownerOf',
+            args: [BigInt(tokenId)],
+          }) as string;
+          
+          if (owner.toLowerCase() === userAddress.toLowerCase()) {
+            userTokenIds.push(BigInt(tokenId));
+            console.log('✅ Found owned Sepolia token via fallback:', tokenId.toString());
+          }
+        } catch {
+          // トークンが存在しないか所有していない
+        }
         
-        console.log('Sepolia Token ID:', tokenId.toString());
+        // 見つかったトークン数がbalanceと一致したら終了
+        if (userTokenIds.length >= Number(balance)) {
+          break;
+        }
+      }
+    }
+    
+    console.log('📋 Sepolia user token IDs found:', userTokenIds.map(id => id.toString()));
+    
+    // 各トークンのメタデータを取得
+    for (const tokenId of userTokenIds) {
+      try {
+        console.log('🔍 Processing Sepolia token:', tokenId.toString());
         
         // トークンURIを取得
         const tokenURI = await client.readContract({
@@ -694,7 +838,7 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
           imageUrl: sbt.imageUrl
         });
       } catch (tokenError) {
-        console.error(`Failed to fetch token ${i}:`, tokenError);
+        console.error(`Failed to fetch Sepolia token ${tokenId.toString()}:`, tokenError);
       }
     }
     
