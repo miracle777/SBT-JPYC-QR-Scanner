@@ -63,8 +63,19 @@ const nextConfig = {
       // React Native専用パッケージの警告を抑制
       config.resolve.alias = {
         ...config.resolve.alias,
-        '@react-native-async-storage/async-storage': false,
+        '@react-native-async-storage/async-storage': require.resolve('./src/utils/asyncStoragePolyfill.ts'),
+        '@react-native-cookies/cookies': false,
+        'react-native': false,
+        'react-native-randombytes': false,
       };
+
+      // MetaMask SDK関連の問題を解決
+      config.module.rules.push({
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      });
     }
     
     return config;
