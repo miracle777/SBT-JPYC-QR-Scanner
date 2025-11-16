@@ -107,8 +107,8 @@ export const SBT_ADDRESSES = {
   'avalanche-fuji': undefined,
 } as const;
 
-// デプロイアカウント
-export const DEPLOYER_ADDRESS = getAddress('0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd');
+// デプロイアカウント（動的に設定）
+export const DEPLOYER_ADDRESS = getAddress('0x0000000000000000000000000000000000000000');
 
 // 登録済みショップ情報
 export const REGISTERED_SHOPS = {

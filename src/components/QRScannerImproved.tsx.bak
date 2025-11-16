@@ -78,7 +78,7 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
     const samples = {
       jpyc: {
         type: 'JPYC_PAYMENT',
-        to: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
+        to: '0x1234567890123456789012345678901234567890',
         amount: '100',
         network: 'sepolia',
         contractAddress: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
@@ -90,14 +90,14 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
         timestamp: new Date().toISOString(),
         expires: new Date(Date.now() + 3600000).toISOString(),
       },
-      walletconnect: `ethereum:0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd@137?value=100000000000000000000`,
+      walletconnect: `ethereum:0x1234567890123456789012345678901234567890@137?value=100000000000000000000`,
       // スクリーンショットと同じ形式のサンプルデータ
       payment: {
         version: '1.0',
         type: 'payment',
         shopId: 'shop-001',
         shopName: 'SBT JPYC Pay Demo Store',
-        shopWallet: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
+        shopWallet: '0x1234567890123456789012345678901234567890',
         amount: '100000000000000000000', // 100 JPYC in Wei
         currency: 'JPYC',
         chainId: 137,

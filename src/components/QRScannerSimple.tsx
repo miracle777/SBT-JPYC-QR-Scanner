@@ -57,7 +57,7 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
           type: 'payment',
           shopId: 'shop-001',
           shopName: 'SBT JPYC Pay Demo Store',
-          shopWallet: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
+          shopWallet: address || '0x1234567890123456789012345678901234567890',
           amount: '100000000000000000000',
           currency: 'JPYC',
           chainId: 137,
