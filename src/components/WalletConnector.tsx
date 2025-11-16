@@ -153,9 +153,7 @@ export function WalletConnector() {
           </ConnectButton.Custom>
 
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5 mt-3">
-            <p>• Sepolia テストネット対応</p>
-            <p>• Polygon Amoy (Chain ID: 80002) 対応</p>
-            <p>• Polygon メインネット対応</p>
+            <p>• Sepolia / Polygon Amoy / Polygon 対応</p>
             <p>• ウォレットのネットワーク設定を優先</p>
             <p>• MetaMask推奨</p>
             <button

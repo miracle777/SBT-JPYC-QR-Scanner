@@ -14,7 +14,19 @@ export interface SBT {
   network: NetworkType;
   chainId: number;
   tokenId?: bigint;
-  metadata?: Record<string, any>;
+  metadata?: {
+    name?: string;
+    description?: string;
+    image?: string;
+    category?: string;
+    shopId?: number;
+    shopName?: string;
+    attributes?: Array<{
+      trait_type: string;
+      value: string | number;
+    }>;
+    [key: string]: any;
+  };
   rank?: 'bronze' | 'silver' | 'gold' | 'platinum';
   issuedDate?: Date;
   expiryDate?: Date;

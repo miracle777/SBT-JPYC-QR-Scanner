@@ -427,6 +427,7 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
         let metadata: any = {};
         let imageUrl = '';
         let actualShopId = 2; // デフォルトはCafe JPYC
+        let categoryInfo = '';
         
         console.log('🔍 Polygon Amoy tokenURI:', tokenURI);
         
@@ -441,6 +442,10 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
             imageUrl = metadata.image || '';
             // メタデータからshopIdを抽出（複数のフィールドを確認）
             actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+            
+            // カテゴリ情報を抽出
+            const categoryFromAttributes = metadata.attributes?.find((attr: any) => attr.trait_type === 'Category' || attr.trait_type === 'category')?.value;
+            const categoryInfo = metadata.category || categoryFromAttributes;
           } catch (e) {
             console.error('❌ Failed to decode Polygon Amoy base64 metadata:', e);
           }
@@ -480,6 +485,10 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
             }
             
             actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+            
+            // カテゴリ情報を抽出
+            const categoryFromAttributes = metadata.attributes?.find((attr: any) => attr.trait_type === 'Category' || attr.trait_type === 'category')?.value;
+            const categoryInfo = metadata.category || categoryFromAttributes;
           } catch (e) {
             console.error('❌ Failed to fetch Polygon Amoy IPFS metadata:', e);
             console.log('🔄 Using fallback for IPFS metadata...');
@@ -518,7 +527,7 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
             },
             {
               trait_type: 'Shop Category', 
-              value: shopInfo?.category || 'カフェ・飲食'
+              value: categoryInfo || shopInfo?.category || 'カフェ・飲食'
             },
             {
               trait_type: 'Rank',
@@ -553,7 +562,7 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
           // 拡張情報
           shopId: actualShopId,
           shopName: shopInfo?.name,
-          shopCategory: shopInfo?.category,
+          shopCategory: categoryInfo || shopInfo?.category,
           benefits: metadata.benefits || (shopInfo?.sbtTemplate?.benefits ? [...shopInfo.sbtTemplate.benefits] : []),
           thumbnailUrl: imageUrl,
           bannerUrl: shopInfo?.bannerUrl,

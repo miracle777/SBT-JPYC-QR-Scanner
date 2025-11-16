@@ -113,21 +113,23 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
+        <div className="mb-6 bg-white rounded-lg shadow-lg p-4 sm:p-6">
           {!isConnected ? (
             <WalletConnector />
           ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <div className="min-w-0">
                   <div className="text-sm font-semibold text-gray-800">接続済み</div>
-                  <div className="text-xs text-gray-600 font-mono">
-                    {address?.slice(0, 10)}......{address?.slice(-8)}
+                  <div className="text-xs text-gray-600 font-mono truncate">
+                    {address?.slice(0, 8)}...{address?.slice(-6)}
                   </div>
                 </div>
               </div>
-              <ConnectButton />
+              <div className="w-full sm:w-auto">
+                <ConnectButton />
+              </div>
             </div>
           )}
         </div>
@@ -143,6 +145,7 @@ export default function Home() {
                 showStats={true}
                 groupByShop={true}
                 enableTagFilter={true}
+                showVisitCardsInitial={true}
               />  
             </div>
           </>

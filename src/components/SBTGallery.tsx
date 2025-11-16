@@ -11,7 +11,7 @@ import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
 import { 
   Award, Shield, Badge, RefreshCw, Store, Calendar, 
   Star, Gift, MapPin, ExternalLink, Filter, Grid3X3,
-  List, Search, ChevronDown, TrendingUp, Users, Trophy
+  List, Search, ChevronDown, TrendingUp, Users, Trophy, X
 } from 'lucide-react';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
 import { useAccount } from 'wagmi';
@@ -22,6 +22,7 @@ interface SBTGalleryProps {
   showStats?: boolean;
   groupByShop?: boolean;
   enableTagFilter?: boolean;
+  showVisitCardsInitial?: boolean;
 }
 
 export function SBTGallery({ 
@@ -29,7 +30,8 @@ export function SBTGallery({
   viewMode: initialViewMode = 'grid',
   showStats = true,
   groupByShop = false,
-  enableTagFilter = false
+  enableTagFilter = false,
+  showVisitCardsInitial = true
 }: SBTGalleryProps) {
   const [sbts, setSBTs] = useState<SBT[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,10 @@ export function SBTGallery({
   const [searchQuery, setSearchQuery] = useState('');
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
   const [stats, setStats] = useState<SBTStats | null>(null);
+  const [availableShops, setAvailableShops] = useState<Set<string>>(new Set());
+  const [availableCategories, setAvailableCategories] = useState<Set<string>>(new Set());
+  const [selectedShopForVisits, setSelectedShopForVisits] = useState<string>('all');
+  const [showVisitCards, setShowVisitCards] = useState(showVisitCardsInitial);
   const { chain } = useAccount();
 
   useEffect(() => {
@@ -53,8 +59,34 @@ export function SBTGallery({
   useEffect(() => {
     if (sbts.length > 0) {
       calculateStats();
+      updateAvailableFilters();
     }
   }, [sbts, visitCounts]);
+
+  const updateAvailableFilters = () => {
+    const shops = new Set<string>();
+    const categories = new Set<string>();
+    
+    sbts.forEach(sbt => {
+      // 店舗情報を収集
+      if (sbt.shopName) {
+        shops.add(sbt.shopName);
+      }
+      
+      // カテゴリ情報を収集
+      if (sbt.shopCategory) {
+        categories.add(sbt.shopCategory);
+      } else if (sbt.metadata?.category) {
+        categories.add(sbt.metadata.category);
+      }
+    });
+    
+    setAvailableShops(shops);
+    setAvailableCategories(categories);
+    
+    console.log('🔍 Available shops:', Array.from(shops));
+    console.log('🔍 Available categories:', Array.from(categories));
+  };
 
   const loadSBTs = async () => {
     if (!userAddress) return;
@@ -169,8 +201,8 @@ export function SBTGallery({
     // ランクフィルター
     if (filterRank !== 'all' && sbt.rank !== filterRank) return false;
     
-    // ショップフィルター
-    if (filterShop !== 'all' && sbt.shopId?.toString() !== filterShop) return false;
+    // ショップフィルター（店舗名ベース）
+    if (filterShop !== 'all' && sbt.shopName !== filterShop) return false;
     
     // タグフィルター（店舗カテゴリ）
     if (enableTagFilter && filterTag !== 'all' && sbt.shopCategory !== filterTag) return false;
@@ -184,10 +216,18 @@ export function SBTGallery({
     
     return true;
   });
+  
+  console.log('🔍 SBT Filtering Debug:', {
+    totalSBTs: sbts.length,
+    filteredSBTs: filteredSBTs.length,
+    availableShops: Array.from(availableShops),
+    availableCategories: Array.from(availableCategories),
+    currentFilters: { filterShop, filterTag, filterRank, searchQuery }
+  });
 
   const groupedSBTs = groupByShop ? 
     filteredSBTs.reduce((acc, sbt) => {
-      const shopKey = sbt.shopId?.toString() || 'unknown';
+      const shopKey = sbt.shopName || 'unknown';
       if (!acc[shopKey]) acc[shopKey] = [];
       acc[shopKey].push(sbt);
       return acc;
@@ -413,6 +453,194 @@ export function SBTGallery({
         </div>
       )}
 
+      {/* 来店回数カード表示 */}
+      {showVisitCards && Object.keys(visitCounts).length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-purple-600" />
+              来店回数・スタンプカード状況
+            </h3>
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedShopForVisits}
+                onChange={(e) => setSelectedShopForVisits(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="all">全店舗</option>
+                {/* 登録済み店舗 */}
+                {Object.values(REGISTERED_SHOPS)
+                  .filter(shop => selectedShopForVisits === 'all' || availableShops.has(shop.name))
+                  .map(shop => (
+                    <option key={`registered-${shop.id}`} value={shop.name}>
+                      🏪 {shop.name}
+                    </option>
+                  ))
+                }
+                {/* 実際のSBTから取得した店舗 */}
+                {Array.from(availableShops)
+                  .filter(shopName => 
+                    !Object.values(REGISTERED_SHOPS).some(shop => shop.name === shopName)
+                  )
+                  .sort()
+                  .map(shopName => (
+                    <option key={`dynamic-${shopName}`} value={shopName}>
+                      🎯 {shopName}
+                    </option>
+                  ))
+                }
+              </select>
+              <button
+                onClick={() => setShowVisitCards(false)}
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                title="カードを非表示"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* 登録済み店舗のカード */}
+            {Object.entries(REGISTERED_SHOPS)
+              .filter(([_, shop]) => 
+                selectedShopForVisits === 'all' || shop.name === selectedShopForVisits
+              )
+              .map(([shopId, shop]) => {
+                const visitCount = visitCounts[Number(shopId)] || 0;
+                const progressPercentage = Math.min((visitCount / shop.requiredVisits) * 100, 100);
+                const hasSBT = sbts.some(sbt => sbt.shopId === Number(shopId));
+                const remainingVisits = Math.max(0, shop.requiredVisits - visitCount);
+                
+                return (
+                  <div key={shopId} className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm mb-1">{shop.name}</h4>
+                        <p className="text-xs text-gray-600">{shop.category}</p>
+                      </div>
+                      {hasSBT && (
+                        <div className="flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
+                          <Trophy className="w-3 h-3" />
+                          SBT取得済み
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">訪問回数</span>
+                        <span className="font-semibold text-purple-700">
+                          {visitCount} / {shop.requiredVisits}回
+                        </span>
+                      </div>
+                      
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${progressPercentage}%` }}
+                        ></div>
+                      </div>
+                      
+                      {!hasSBT && remainingVisits > 0 && (
+                        <p className="text-xs text-purple-600">
+                          あと{remainingVisits}回でSBT獲得！
+                        </p>
+                      )}
+                      
+                      {hasSBT && shop.sbtTemplate?.benefits && (
+                        <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                          <p className="text-xs text-green-700 font-medium mb-1">🎁 利用可能特典:</p>
+                          <ul className="text-xs text-green-600 space-y-1">
+                            {shop.sbtTemplate.benefits.slice(0, 2).map((benefit, index) => (
+                              <li key={index} className="flex items-center gap-1">
+                                <span className="w-1 h-1 bg-green-500 rounded-full"></span>
+                                {benefit}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            }
+
+            {/* 実際のSBTデータから取得した店舗で、REGISTERED_SHOPSに含まれていないもの */}
+            {Array.from(availableShops)
+              .filter(shopName => 
+                (selectedShopForVisits === 'all' || shopName === selectedShopForVisits) &&
+                !Object.values(REGISTERED_SHOPS).some(shop => shop.name === shopName)
+              )
+              .map(shopName => {
+                const shopSBTs = sbts.filter(sbt => sbt.shopName === shopName);
+                const sampleSBT = shopSBTs[0]; // 最初のSBTから情報を取得
+                
+                return (
+                  <div key={`dynamic-${shopName}`} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm mb-1">{shopName}</h4>
+                        <p className="text-xs text-gray-600">{sampleSBT?.shopCategory || '未分類'}</p>
+                      </div>
+                      <div className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                        <Trophy className="w-3 h-3" />
+                        SBT保有中
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">保有SBT</span>
+                        <span className="font-semibold text-blue-700">
+                          {shopSBTs.length}個
+                        </span>
+                      </div>
+                      
+                      <div className="w-full bg-blue-200 rounded-full h-2">
+                        <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full w-full"></div>
+                      </div>
+                      
+                      <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                        <p className="text-xs text-blue-700 font-medium mb-1">🏪 この店舗のSBT:</p>
+                        <ul className="text-xs text-blue-600 space-y-1">
+                          {shopSBTs.slice(0, 3).map((sbt, index) => (
+                            <li key={index} className="flex items-center gap-1">
+                              <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                              {sbt.name}
+                              {sbt.rank && (
+                                <span className="ml-1 text-xs font-bold">({sbt.rank.toUpperCase()})</span>
+                              )}
+                            </li>
+                          ))}
+                          {shopSBTs.length > 3 && (
+                            <li className="text-xs text-blue-500">...他{shopSBTs.length - 3}個</li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+      )}
+      
+      {/* カードが非表示の場合の再表示ボタン */}
+      {!showVisitCards && Object.keys(visitCounts).length > 0 && (
+        <div className="text-center">
+          <button
+            onClick={() => setShowVisitCards(true)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 mx-auto"
+          >
+            <MapPin className="w-4 h-4" />
+            来店回数カードを表示
+          </button>
+        </div>
+      )}
+
       {/* コントロール */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="flex items-center gap-4">
@@ -470,9 +698,9 @@ export function SBTGallery({
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">全店舗</option>
-            {Object.values(REGISTERED_SHOPS).map(shop => (
-              <option key={shop.id} value={shop.id.toString()}>
-                {shop.name}
+            {Array.from(availableShops).sort().map(shopName => (
+              <option key={shopName} value={shopName}>
+                {shopName}
               </option>
             ))}
           </select>
@@ -485,9 +713,23 @@ export function SBTGallery({
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">全カテゴリ</option>
-              <option value="デモ・実験店舗">🧪 デモ・実験店舗</option>
-              <option value="カフェ・飲食">☕ カフェ・飲食</option>
-              <option value="エレクトロニクス">⚡ エレクトロニクス</option>
+              {Array.from(availableCategories).sort().map(category => {
+                // カテゴリに応じたアイコンを動的に生成
+                const getIcon = (cat: string) => {
+                  if (cat.includes('デモ') || cat.includes('実験')) return '🧪';
+                  if (cat.includes('カフェ') || cat.includes('飲食') || cat.includes('レストラン')) return '☕';
+                  if (cat.includes('エレクトロニクス') || cat.includes('テック') || cat.includes('技術')) return '⚡';
+                  if (cat.includes('ショッピング') || cat.includes('小売')) return '🛍️';
+                  if (cat.includes('エンターテイメント') || cat.includes('娯楽')) return '🎭';
+                  return '🏪';
+                };
+                
+                return (
+                  <option key={category} value={category}>
+                    {getIcon(category)} {category}
+                  </option>
+                );
+              })}
             </select>
           )}
           
@@ -546,11 +788,7 @@ export function SBTGallery({
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Store className="w-5 h-5" />
-                    {(() => {
-                      const shopName = REGISTERED_SHOPS[Number(groupKey) as keyof typeof REGISTERED_SHOPS]?.name;
-                      console.log(`🏪 Group ${groupKey} shop name:`, shopName);
-                      return shopName || `Shop ID: ${groupKey}`;
-                    })()}
+                    {groupKey}
                     <span className="text-sm text-gray-500">({groupSBTs.length})</span>
                   </h3>
                 </div>
