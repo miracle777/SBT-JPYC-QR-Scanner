@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import QrScanner from 'qr-scanner';
 import { Camera, CameraOff, AlertCircle, Zap, Wallet } from 'lucide-react';
 
-type ScanMode = 'jpyc' | 'wallet-connect';
+type ScanMode = 'jpyc' | 'wallet-connect' | 'auto';
 
 interface QRScannerComponentProps {
   onScanResult: (data: string) => void;
@@ -16,7 +16,7 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasCamera, setHasCamera] = useState<boolean | null>(null);
-  const [scanMode, setScanMode] = useState<ScanMode>('jpyc');
+  const [scanMode, setScanMode] = useState<ScanMode>('auto');
   const videoRef = useRef<HTMLVideoElement>(null);
   const scannerRef = useRef<QrScanner | null>(null);
 
@@ -32,7 +32,7 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
         `ethereum:0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB@11155111?value=1e18`, // Sepolia
       ];
     } else {
-      // JPYC形式のサンプル
+      // JPYC形式のサンプル（スクリーンショット形式も含む）
       return [
         JSON.stringify({
           type: 'JPYC_PAYMENT',
@@ -50,6 +50,21 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
           to: sampleAddress,
           timestamp: now,
           expires: now + (5 * 60 * 1000)
+        }),
+        // スクリーンショットと同じ形式のサンプル
+        JSON.stringify({
+          version: '1.0',
+          type: 'payment',
+          shopId: 'shop-001',
+          shopName: 'SBT JPYC Pay Demo Store',
+          shopWallet: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
+          amount: '100000000000000000000',
+          currency: 'JPYC',
+          chainId: 137,
+          paymentId: `PAY${Date.now().toString().slice(-8)}`,
+          expiresAt: Math.floor(Date.now() / 1000) + 3600,
+          contractAddress: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
+          description: 'Payment from SBT JPYC Pay Demo Store'
         }),
         `ethereum:${sampleAddress}`,
         `jpyc:amount=50&to=${sampleAddress}`
@@ -171,7 +186,22 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
         <label className="block text-sm font-medium text-gray-700 mb-3">
           スキャンモード
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            onClick={() => setScanMode('auto')}
+            disabled={isScanning}
+            className={`p-4 rounded-lg border-2 transition-all ${
+              scanMode === 'auto'
+                ? 'border-green-600 bg-green-50'
+                : 'border-gray-200 bg-white hover:border-gray-300'
+            } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <Camera className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'auto' ? 'text-green-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-sm ${scanMode === 'auto' ? 'text-green-700' : 'text-gray-600'}`}>
+              自動判別
+            </div>
+            <div className="text-xs mt-1 text-gray-500">すべての形式</div>
+          </button>
           <button
             onClick={() => setScanMode('jpyc')}
             disabled={isScanning}
