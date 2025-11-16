@@ -4,15 +4,33 @@ const withPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  // 強制的にサービスワーカーを更新
+  buildExcludes: [/middleware-manifest\.json$/],
+  // キャッシュバスティングを強化
+  dynamicStartUrlRedirect: '/index.html',
+  fallbacks: {
+    document: '/offline.html',
+  },
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/api\..*/,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'api-cache',
+        cacheName: 'api-cache-v2',
         expiration: {
           maxEntries: 32,
-          maxAgeSeconds: 3600,
+          maxAgeSeconds: 1800, // キャッシュ時間を短縮
+        },
+      },
+    },
+    {
+      urlPattern: /\.(?:js|css|html)$/,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-resources-v2',
+        expiration: {
+          maxEntries: 60,
+          maxAgeSeconds: 86400,
         },
       },
     },

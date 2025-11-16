@@ -4,13 +4,13 @@ import { Providers } from './providers';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 
 export const metadata: Metadata = {
-  title: 'SBT JPYC Scanner',
-  description: 'SBT表示機能付きJPYC決済スキャナーアプリ - PWA対応',
+  title: 'SBT-JPYC-QR-Scanner',
+  description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ - プライバシーポリシー対応 PWA',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'SBT Scanner',
+    title: 'SBT-JPYC-Scanner',
   },
   formatDetection: {
     telephone: false,
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'application-name': 'SBT Scanner',
-    'apple-mobile-web-app-title': 'SBT Scanner',
+    'application-name': 'SBT-JPYC-Scanner',
+    'apple-mobile-web-app-title': 'SBT-JPYC-Scanner',
   },
 };
 
