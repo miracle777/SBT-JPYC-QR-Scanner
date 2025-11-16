@@ -73,37 +73,37 @@ export default function Home() {
           <p className="text-sm text-gray-600">
             SBT表示とネットワーク検証機能付きJPYC決済アプリ
           </p>
-          
-          {/* プライバシーポリシー・利用条件 */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-left">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-semibold text-blue-800 mb-2">
-                  📋 プライバシーポリシー・利用条件
-                </h3>
-                <div className="text-xs text-blue-700 space-y-2">
-                  <div className="bg-white p-3 rounded border">
-                    <strong>🌍 位置情報の利用について</strong>
-                    <p>決済を行った場所を履歴に記録するため、位置情報を使用します。この情報はお客様の決済履歴の管理にのみ使用されます。</p>
-                  </div>
-                  <div className="bg-white p-3 rounded border">
-                    <strong>💾 データの保存について</strong>
-                    <p>このアプリは<span className="font-semibold text-blue-800">UIデモ</span>です。ウォレット機能はありません。すべてのデータは<span className="font-semibold text-blue-800">お客様のブラウザにローカル保存</span>され、サーバーには一切送信・保存されません。</p>
-                  </div>
-                  <div className="bg-white p-3 rounded border">
-                    <strong>🔒 セキュリティについて</strong>
-                    <p>決済履歴、SBT情報、位置情報などはすべてブラウザ内で管理され、外部に送信されることはありません。ブラウザのデータを削除すると履歴も削除されます。</p>
-                  </div>
+        </header>
+
+        {/* プライバシーポリシー・利用条件 - ウォレット接続前に表示 */}
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">
+                📋 プライバシーポリシー・利用条件
+              </h3>
+              <div className="text-xs text-blue-700 space-y-2">
+                <div className="bg-white p-3 rounded border">
+                  <strong>🌍 位置情報の利用について</strong>
+                  <p>決済を行った場所を履歴に記録するため、位置情報を使用します。この情報はお客様の決済履歴の管理にのみ使用されます。</p>
+                </div>
+                <div className="bg-white p-3 rounded border">
+                  <strong>💾 データの保存について</strong>
+                  <p>このアプリは<span className="font-semibold text-blue-800">UIデモ</span>です。ウォレット機能はありません。すべてのデータは<span className="font-semibold text-blue-800">お客様のブラウザにローカル保存</span>され、サーバーには一切送信・保存されません。</p>
+                </div>
+                <div className="bg-white p-3 rounded border">
+                  <strong>🔒 セキュリティについて</strong>
+                  <p>決済履歴、SBT情報、位置情報などはすべてブラウザ内で管理され、外部に送信されることはありません。ブラウザのデータを削除すると履歴も削除されます。</p>
                 </div>
               </div>
             </div>
           </div>
-        </header>
+        </div>
 
         <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
           {!isConnected ? (
