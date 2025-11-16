@@ -170,7 +170,7 @@ export function WalletConnector() {
               }}
               className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
             >
-              📦 MetaMask直接接続
+              🦊 MetaMaskをダウンロード
             </button>
           </div>
         </div>
