@@ -98,15 +98,16 @@ export const SBT_ADDRESSES = {
   // ✅ 対応済み: Polygon Amoy Testnet (Chain ID 80002)
   'polygon-amoy': getAddress('0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E'),
   
-  // ❌ 未デプロイ: 他のネットワーク
+  // ❌ 未デプロイ: 他のネットワーク（ユーザーが接続した場合に備えて準備）
   ethereum: undefined,
   polygon: undefined, // 🚧 未デプロイ（将来対応予定）
   avalanche: undefined,
   'avalanche-fuji': undefined,
 } as const;
 
-// デプロイアカウント（動的に設定）
-export const DEPLOYER_ADDRESS = getAddress('0x0000000000000000000000000000000000000000');
+// デプロイアカウント（実際のSBT発行者のアドレスに更新）
+// 注意: これは実際のコントラクトデプロイ時のアドレスに置き換える必要があります
+export const DEPLOYER_ADDRESS = getAddress('0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4'); // Sepoliaコントラクトアドレスを一時的に使用
 
 // 登録済みショップ情報
 export const REGISTERED_SHOPS = {

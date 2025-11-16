@@ -1,7 +1,7 @@
 'use client';
 
 import { WagmiProvider } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { sepolia, polygon, polygonAmoy } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -37,7 +37,7 @@ const queryClient = new QueryClient({
 const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME || 'JPYC Payment Scanner',
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d', // 本番用実際のプロジェクトID
-  chains: [sepolia],
+  chains: [sepolia, polygon, polygonAmoy], // 複数のネットワークをサポート
   ssr: true,
 });
 
@@ -47,7 +47,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           modalSize="compact"
-          initialChain={sepolia}
+          showRecentTransactions={true}
         >
           {children}
         </RainbowKitProvider>

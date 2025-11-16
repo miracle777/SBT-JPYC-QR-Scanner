@@ -12,6 +12,7 @@ import { Award, Shield, Badge, RefreshCw, ExternalLink, Smartphone } from 'lucid
 import { SBTMetaMaskGuide } from './SBTMetaMaskGuide';
 import { SBTSyncChecker } from './SBTSyncChecker';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
+import { useNetwork } from 'wagmi';
 
 interface SBTDisplayProps {
   userAddress: `0x${string}` | undefined;
@@ -25,6 +26,7 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
   const [selectedSBT, setSelectedSBT] = useState<string | null>(null);
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
   const [showMetaMaskGuide, setShowMetaMaskGuide] = useState(true);
+  const { chain } = useNetwork();
 
   useEffect(() => {
     if (userAddress) {
@@ -38,11 +40,26 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
 
     try {
       setLoading(true);
+      console.log('🔍 SBTDisplay: Loading SBTs for address:', userAddress);
+      console.log('📡 Current network:', chain?.name, 'Chain ID:', chain?.id);
       const fetchedSBTs = await fetchUserSBTs(userAddress);
       setSBTs(fetchedSBTs);
-      console.log('Loaded SBTs:', fetchedSBTs);
+      
+      console.log('📊 SBTDisplay: Loaded SBTs count:', fetchedSBTs.length);
+      fetchedSBTs.forEach((sbt, index) => {
+        console.log(`🏪 SBT ${index + 1}:`, {
+          name: sbt.name,
+          shopName: sbt.shopName,
+          shopId: sbt.shopId,
+          issuer: sbt.issuer,
+          category: sbt.shopCategory,
+          network: sbt.network,
+          chainId: sbt.chainId,
+          metadata: sbt.metadata ? 'Present' : 'Missing'
+        });
+      });
     } catch (error) {
-      console.error('Failed to load SBTs:', error);
+      console.error('❌ SBTDisplay: Failed to load SBTs:', error);
     } finally {
       setLoading(false);
     }
@@ -118,7 +135,18 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
     return (
       <div className="text-center py-6">
         <Shield className="mx-auto h-8 w-8 mb-2 opacity-50 text-gray-400" />
-        <p className="text-gray-500 mb-4">SBT がまだありません</p>
+        <p className="text-gray-500 mb-4">
+          {chain ? 
+            `${chain.name} で発行されたSBTがまだありません` : 
+            'SBT がまだありません'
+          }
+        </p>
+        {chain && (
+          <div className="text-xs text-gray-600 mb-4">
+            <p>現在のネットワーク: {chain.name}</p>
+            <p>Chain ID: {chain.id}</p>
+          </div>
+        )}
         
         {/* 訪問回数表示 */}
         {Object.keys(visitCounts).length > 0 && (
@@ -164,6 +192,11 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Shield className="w-5 h-5" />
           発行済みSBT ({sbts.length})
+          {chain && (
+            <span className="text-sm font-normal text-gray-600">
+              - {chain.name}
+            </span>
+          )}
         </h3>
         <button
           onClick={() => {
@@ -211,7 +244,7 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
                   <div>
                     <span className="text-gray-500">発行者: </span>
                     <span className="font-mono text-xs truncate">
-                      {sbt.issuer}
+                      {sbt.shopName || sbt.issuer}
                     </span>
                   </div>
                   <div>

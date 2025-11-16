@@ -14,6 +14,7 @@ import {
   List, Search, ChevronDown, TrendingUp, Users, Trophy
 } from 'lucide-react';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
+import { useNetwork } from 'wagmi';
 
 interface SBTGalleryProps {
   userAddress: `0x${string}` | undefined;
@@ -40,6 +41,7 @@ export function SBTGallery({
   const [searchQuery, setSearchQuery] = useState('');
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
   const [stats, setStats] = useState<SBTStats | null>(null);
+  const { chain } = useNetwork();
 
   useEffect(() => {
     if (userAddress) {
@@ -59,29 +61,62 @@ export function SBTGallery({
 
     try {
       setLoading(true);
+      console.log('🔍 SBTGallery: Loading SBTs for address:', userAddress);
+      console.log('📡 Current network:', chain?.name, 'Chain ID:', chain?.id);
       const fetchedSBTs = await fetchUserSBTs(userAddress);
+      
+      console.log('📥 SBTGallery: Raw fetched SBTs:', fetchedSBTs.length);
       
       // SBTに店舗情報とメタデータを拡張
       const enrichedSBTs = fetchedSBTs.map(sbt => {
-        const shopInfo = Object.values(REGISTERED_SHOPS).find(shop => 
-          shop.wallet === sbt.issuerAddress
-        );
+        // 既存のshopIdを優先、次にメタデータから、最後にwallet addressで検索
+        let shopInfo = null;
         
-        return {
+        // 1. 既にSBTにshopIdが設定されている場合
+        if (sbt.shopId) {
+          shopInfo = REGISTERED_SHOPS[sbt.shopId as keyof typeof REGISTERED_SHOPS];
+          console.log('Found shop by shopId:', sbt.shopId, shopInfo);
+        }
+        
+        // 2. メタデータからshopIdを取得
+        if (!shopInfo && sbt.metadata?.shopId) {
+          shopInfo = REGISTERED_SHOPS[sbt.metadata.shopId as keyof typeof REGISTERED_SHOPS];
+          console.log('Found shop by metadata shopId:', sbt.metadata.shopId, shopInfo);
+        }
+        
+        // 3. wallet addressで検索（フォールバック）
+        if (!shopInfo) {
+          shopInfo = Object.values(REGISTERED_SHOPS).find(shop => 
+            shop.wallet === sbt.issuerAddress
+          );
+          console.log('Found shop by wallet address:', sbt.issuerAddress, shopInfo);
+        }
+        
+        const enrichedSBT = {
           ...sbt,
-          shopId: shopInfo?.id,
-          shopName: shopInfo?.name || sbt.issuer,
-          shopCategory: shopInfo?.category,
-          benefits: shopInfo?.sbtTemplate?.benefits || [],
+          shopId: shopInfo?.id || sbt.shopId,
+          shopName: shopInfo?.name || sbt.shopName || sbt.issuer,
+          shopCategory: shopInfo?.category || sbt.shopCategory,
+          benefits: sbt.benefits || shopInfo?.sbtTemplate?.benefits || [],
           thumbnailUrl: sbt.imageUrl,
           bannerUrl: shopInfo?.bannerUrl,
         };
+        
+        console.log('🏪 Enriched SBT:', {
+          originalName: sbt.name,
+          enrichedName: enrichedSBT.shopName,
+          shopId: enrichedSBT.shopId,
+          issuer: enrichedSBT.issuer,
+          category: enrichedSBT.shopCategory
+        });
+        
+        return enrichedSBT;
       });
       
       setSBTs(enrichedSBTs);
-      console.log('Loaded enriched SBTs:', enrichedSBTs);
+      console.log('✅ SBTGallery: Loaded enriched SBTs:', enrichedSBTs.length);
     } catch (error) {
-      console.error('Failed to load SBTs:', error);
+      console.error('❌ SBTGallery: Failed to load SBTs:', error);
     } finally {
       setLoading(false);
     }
@@ -384,6 +419,11 @@ export function SBTGallery({
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <Shield className="w-5 h-5" />
             SBT Collection ({filteredSBTs.length})
+            {chain && (
+              <span className="text-sm font-normal text-gray-600">
+                - {chain.name}
+              </span>
+            )}
           </h2>
           
           <button
@@ -506,7 +546,11 @@ export function SBTGallery({
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Store className="w-5 h-5" />
-                    {REGISTERED_SHOPS[Number(groupKey) as keyof typeof REGISTERED_SHOPS]?.name || '不明な店舗'}
+                    {(() => {
+                      const shopName = REGISTERED_SHOPS[Number(groupKey) as keyof typeof REGISTERED_SHOPS]?.name;
+                      console.log(`🏪 Group ${groupKey} shop name:`, shopName);
+                      return shopName || `Shop ID: ${groupKey}`;
+                    })()}
                     <span className="text-sm text-gray-500">({groupSBTs.length})</span>
                   </h3>
                 </div>
