@@ -13,11 +13,19 @@ import { ManualPayment } from '../components/ManualPayment';
 import { CheckCircle } from 'lucide-react';
 
 export default function Home() {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chain } = useAccount();
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [showPaymentProcessor, setShowPaymentProcessor] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
+  
+  // デバッグ情報をコンソールに出力
+  console.log('🔍 Home component state:', {
+    isConnected,
+    address,
+    chainName: chain?.name,
+    chainId: chain?.id,
+  });
 
   const handleScanResult = (data: string) => {
     console.log('Scanned data:', data);

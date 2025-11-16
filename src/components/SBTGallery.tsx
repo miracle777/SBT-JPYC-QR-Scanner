@@ -14,7 +14,7 @@ import {
   List, Search, ChevronDown, TrendingUp, Users, Trophy
 } from 'lucide-react';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 interface SBTGalleryProps {
   userAddress: `0x${string}` | undefined;
@@ -41,7 +41,7 @@ export function SBTGallery({
   const [searchQuery, setSearchQuery] = useState('');
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
   const [stats, setStats] = useState<SBTStats | null>(null);
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   useEffect(() => {
     if (userAddress) {

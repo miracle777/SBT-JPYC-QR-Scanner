@@ -174,16 +174,20 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
     
     // デバッグ: 登録されたショップ情報を表示
     console.log('📋 Registered shops:', REGISTERED_SHOPS);
+    console.log('🔗 Available SBT contract addresses:', SBT_ADDRESSES);
     
     // Sepoliaネットワークから実際のSBTを取得
     if (SBT_ADDRESSES.sepolia) {
       try {
-        console.log('🔗 Checking Sepolia network...');
+        console.log('🔗 Checking Sepolia network...', SBT_ADDRESSES.sepolia);
         const sepoliaSBTs = await fetchSBTsFromNetwork(userAddress, 'sepolia');
+        console.log('📦 Sepolia SBTs found:', sepoliaSBTs.length);
         sbts.push(...sepoliaSBTs);
       } catch (error) {
         console.error('❌ Failed to fetch SBTs from Sepolia:', error);
       }
+    } else {
+      console.log('⚠️ Sepolia contract address not configured');
     }
 
     // Polygon Mainnetネットワークから取得
@@ -204,12 +208,15 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
     // Polygon Amoyネットワークからも取得
     if (SBT_ADDRESSES['polygon-amoy']) {
       try {
-        console.log('🔗 Checking Polygon Amoy...');
+        console.log('🔗 Checking Polygon Amoy...', SBT_ADDRESSES['polygon-amoy']);
         const amoySBTs = await fetchSBTsFromPolygonAmoy(userAddress);
+        console.log('📦 Polygon Amoy SBTs found:', amoySBTs.length);
         sbts.push(...amoySBTs);
       } catch (error) {
         console.error('❌ Failed to fetch SBTs from Polygon Amoy:', error);
       }
+    } else {
+      console.log('⚠️ Polygon Amoy contract address not configured');
     }
     
     if (sbts.length > 0) {
@@ -231,8 +238,20 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
       return sbts;
     }
 
-    // SBTが見つからない場合はサンプルデータを表示しない
-    console.log('⚠️ No SBTs found on any blockchain');
+    // SBTが見つからない場合はログ出力
+    console.log('⚠️ No SBTs found on any blockchain for address:', userAddress);
+    console.log('🔍 Debug: Checked networks:', {
+      sepolia: !!SBT_ADDRESSES.sepolia,
+      polygonAmoy: !!SBT_ADDRESSES['polygon-amoy'],
+      polygon: !!SBT_ADDRESSES.polygon
+    });
+    
+    // デバッグ用: テスト環境でダミーSBTを表示（開発時のみ）
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🧪 Development mode: Consider adding test SBT data');
+      // 開発時にテストデータを表示したい場合は、ここで一時的なSBTを返すことも可能
+    }
+    
     return [];
   } catch (error) {
     console.error('Failed to fetch SBTs:', error);
@@ -260,6 +279,8 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
   const sbts: SBT[] = [];
   
   try {
+    console.log(`🌐 fetchSBTsFromPolygonAmoy: Starting fetch for ${userAddress}`);
+    
     const amoyCreateClient = createPublicClient({
       chain: {
         id: 80002,
@@ -279,17 +300,29 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
     });
 
     const contractAddress = SBT_ADDRESSES['polygon-amoy']!;
-    console.log('Checking SBT contract on Polygon Amoy:', contractAddress);
+    console.log('📋 Polygon Amoy contract address:', contractAddress);
     
     // ユーザーが保有するSBTの数を取得
-    const balance = await amoyCreateClient.readContract({
-      address: contractAddress,
-      abi: SBT_ABI,
-      functionName: 'balanceOf',
-      args: [userAddress],
-    }) as bigint;
+    console.log('🔍 Calling balanceOf on Polygon Amoy...');
+    let balance: bigint;
+    try {
+      balance = await amoyCreateClient.readContract({
+        address: contractAddress,
+        abi: SBT_ABI,
+        functionName: 'balanceOf',
+        args: [userAddress],
+      }) as bigint;
+      
+      console.log('📊 Polygon Amoy SBT balance:', balance.toString());
+    } catch (balanceError) {
+      console.error('❌ Error calling balanceOf on Polygon Amoy:', balanceError);
+      throw new Error(`Failed to get Polygon Amoy balance: ${balanceError}`);
+    }
     
-    console.log('Polygon Amoy SBT balance:', balance.toString());
+    if (balance === 0n) {
+      console.log('💬 No SBTs found for this user on Polygon Amoy');
+      return sbts;
+    }
     
     // 各SBTのトークンIDを取得してメタデータを読み取り
     for (let i = 0; i < Number(balance); i++) {
@@ -447,23 +480,38 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
   const sbts: SBT[] = [];
   
   try {
+    console.log(`🌐 fetchSBTsFromNetwork: Starting ${network} fetch for ${userAddress}`);
+    
     const client = createPublicClient({
       chain: sepolia,
       transport: http(),
     });
     
     const contractAddress = SBT_ADDRESSES.sepolia!;
-    console.log('Checking SBT contract:', contractAddress);
+    console.log('📋 Contract address:', contractAddress);
     
     // ユーザーが保有するSBTの数を取得
-    const balance = await client.readContract({
-      address: contractAddress,
-      abi: SBT_ABI,
-      functionName: 'balanceOf',
-      args: [userAddress],
-    }) as bigint;
+    console.log('🔍 Calling balanceOf...');
+    let balance: bigint;
+    try {
+      balance = await client.readContract({
+        address: contractAddress,
+        abi: SBT_ABI,
+        functionName: 'balanceOf',
+        args: [userAddress],
+      }) as bigint;
+      
+      console.log('📊 SBT balance:', balance.toString());
+    } catch (balanceError) {
+      console.error('❌ Error calling balanceOf:', balanceError);
+      // balanceOf が失敗した場合、コントラクトが存在しないか、アドレスが無効
+      throw new Error(`Failed to get balance: ${balanceError}`);
+    }
     
-    console.log('SBT balance:', balance.toString());
+    if (balance === 0n) {
+      console.log('💬 No SBTs found for this user on Sepolia');
+      return sbts;
+    }
     
     // 各SBTのトークンIDを取得
     for (let i = 0; i < Number(balance); i++) {

@@ -12,7 +12,7 @@ import { Award, Shield, Badge, RefreshCw, ExternalLink, Smartphone } from 'lucid
 import { SBTMetaMaskGuide } from './SBTMetaMaskGuide';
 import { SBTSyncChecker } from './SBTSyncChecker';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 interface SBTDisplayProps {
   userAddress: `0x${string}` | undefined;
@@ -24,16 +24,23 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
   const [sbts, setSBTs] = useState<SBT[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSBT, setSelectedSBT] = useState<string | null>(null);
-  const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
+  const [visitCounts, setVisitCounts] = useState<Record<number, number>>({}>;
   const [showMetaMaskGuide, setShowMetaMaskGuide] = useState(true);
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   useEffect(() => {
     if (userAddress) {
+      console.log('🔄 SBTDisplay useEffect triggered:', {
+        userAddress,
+        chainName: chain?.name,
+        chainId: chain?.id
+      });
       loadSBTs();
       loadVisitCounts();
+    } else {
+      console.log('⚠️ SBTDisplay: No user address provided');
     }
-  }, [userAddress]);
+  }, [userAddress, chain?.id]); // chain?.idも依存配列に追加
 
   const loadSBTs = async () => {
     if (!userAddress) return;
