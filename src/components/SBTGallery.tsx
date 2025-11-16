@@ -209,8 +209,26 @@ export function SBTGallery({
     >
       {viewMode === 'grid' ? (
         <>
+          {/* ネットワークとランクバッジ */}
+          <div className="flex justify-between items-center p-3 pb-2">
+            <div 
+              className="px-2 py-1 rounded text-xs font-medium text-white shadow-sm"
+              style={{ backgroundColor: getNetworkColor(sbt.network) }}
+            >
+              {getNetworkDisplayName(sbt.network)}
+            </div>
+            {sbt.rank && (
+              <div 
+                className="px-2 py-1 rounded-full text-xs font-bold text-white shadow-sm"
+                style={{ backgroundColor: getSBTBadgeColor(sbt.rank) }}
+              >
+                {sbt.rank.toUpperCase()}
+              </div>
+            )}
+          </div>
+          
           {/* 画像部分 */}
-          <div className="relative h-32 overflow-hidden bg-gray-50">
+          <div className="relative h-28 overflow-hidden bg-gray-50 mx-3 mb-3 rounded">
             {sbt.imageUrl ? (
               <img
                 src={sbt.imageUrl}
@@ -229,24 +247,6 @@ export function SBTGallery({
                 {sbt.symbol}
               </div>
             )}
-            
-            {/* ランクバッジ */}
-            {sbt.rank && (
-              <div 
-                className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold text-white shadow-sm"
-                style={{ backgroundColor: getSBTBadgeColor(sbt.rank) }}
-              >
-                {sbt.rank.toUpperCase()}
-              </div>
-            )}
-            
-            {/* ネットワークバッジ */}
-            <div 
-              className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-medium text-white shadow-sm"
-              style={{ backgroundColor: getNetworkColor(sbt.network) }}
-            >
-              {getNetworkDisplayName(sbt.network)}
-            </div>
           </div>
           
           {/* 情報部分 */}
