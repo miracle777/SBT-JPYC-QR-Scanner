@@ -6,7 +6,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { SBT, SBTBalance } from '../types';
-import { MetaMaskWatchAssetParams } from '../types/metamask';
 import { fetchUserSBTs, getSBTBadgeColor, getRankDescription, getUserVisitCount } from '../utils/sbt';
 import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
 import { Award, Shield, Badge, RefreshCw, ExternalLink, Smartphone } from 'lucide-react';
@@ -65,17 +64,18 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
     try {
       if (typeof window.ethereum !== 'undefined') {
         // MetaMaskにSBTを追加
-        const watchAssetParams: MetaMaskWatchAssetParams = {
-          type: 'ERC721',
+        const watchAssetParams = {
+          type: 'ERC721' as const,
           options: {
             address: sbt.address,
             tokenId: sbt.tokenId?.toString() || '0',
           },
         };
         
-        await window.ethereum.request({
+        // @ts-ignore MetaMask API型定義の一時的な回避
+        const result = await window.ethereum.request({
           method: 'wallet_watchAsset',
-          params: [watchAssetParams],
+          params: watchAssetParams,
         });
         
         console.log('SBT added to MetaMask successfully');

@@ -43,5 +43,8 @@
     "use-sync-external-store": {
       "react": "^19.0.0"
     }
+  },
+  "resolutions": {
+    "use-sync-external-store": "1.2.2"
   }
 }

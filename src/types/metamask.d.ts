@@ -13,7 +13,7 @@ export interface MetaMaskWatchAssetParams {
 export interface MetaMaskEthereumProvider {
   request(request: {
     method: 'wallet_watchAsset';
-    params: [MetaMaskWatchAssetParams];
+    params: MetaMaskWatchAssetParams;
   }): Promise<boolean>;
   
   request(request: {

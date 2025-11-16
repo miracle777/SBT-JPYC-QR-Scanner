@@ -17,10 +17,20 @@ dist
 # Misc
 .DS_Store
 *.pem
+
+# Environment variables (sensitive data)
+# すべての環境変数ファイルを除外
+.env
+.env.*
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.*.local
+.environment
 
 # Logs
 npm-debug.log*
