@@ -223,7 +223,7 @@ export default function Home() {
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
-              <span><strong>マルチチェーン対応:</strong> Ethereum、Polygon、Arbitrum、Avalancheの8ネットワークをサポート</span>
+              <span><strong>マルチチェーン対応:</strong> Ethereum、Polygon、Avalancheの6ネットワークをサポート</span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">✅</span>
@@ -236,38 +236,30 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             🌐 対応ネットワーク
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="border border-purple-200 rounded p-3">
-              <div className="font-semibold text-purple-600">Ethereum</div>
-              <div className="text-sm text-gray-600">ChainID: 1</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="border border-purple-200 rounded-lg p-3">
+              <div className="font-semibold text-purple-600 text-sm">Ethereum</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 1</div>
             </div>
-            <div className="border border-orange-200 rounded p-3">
-              <div className="font-semibold text-orange-600">Sepolia</div>
-              <div className="text-sm text-gray-600">ChainID: 11155111</div>
+            <div className="border border-orange-200 rounded-lg p-3">
+              <div className="font-semibold text-orange-600 text-sm">Sepolia</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 11155111</div>
             </div>
-            <div className="border border-purple-200 rounded p-3">
-              <div className="font-semibold text-purple-600">Polygon</div>
-              <div className="text-sm text-gray-600">ChainID: 137</div>
+            <div className="border border-purple-200 rounded-lg p-3">
+              <div className="font-semibold text-purple-600 text-sm">Polygon</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 137</div>
             </div>
-            <div className="border border-purple-200 rounded p-3">
-              <div className="font-semibold text-purple-400">Polygon Amoy</div>
-              <div className="text-sm text-gray-600">ChainID: 80002</div>
+            <div className="border border-purple-200 rounded-lg p-3">
+              <div className="font-semibold text-purple-400 text-sm">Polygon Amoy</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 80002</div>
             </div>
-            <div className="border border-blue-200 rounded p-3">
-              <div className="font-semibold text-blue-600">Arbitrum One</div>
-              <div className="text-sm text-gray-600">ChainID: 42161</div>
+            <div className="border border-red-200 rounded-lg p-3">
+              <div className="font-semibold text-red-600 text-sm">Avalanche</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 43114</div>
             </div>
-            <div className="border border-blue-200 rounded p-3">
-              <div className="font-semibold text-blue-400">Arbitrum Sepolia</div>
-              <div className="text-sm text-gray-600">ChainID: 421614</div>
-            </div>
-            <div className="border border-red-200 rounded p-3">
-              <div className="font-semibold text-red-600">Avalanche</div>
-              <div className="text-sm text-gray-600">ChainID: 43114</div>
-            </div>
-            <div className="border border-red-200 rounded p-3">
-              <div className="font-semibold text-red-400">Avalanche Fuji</div>
-              <div className="text-sm text-gray-600">ChainID: 43113</div>
+            <div className="border border-red-200 rounded-lg p-3">
+              <div className="font-semibold text-red-400 text-sm">Avalanche Fuji</div>
+              <div className="text-xs text-gray-600 break-words">ChainID: 43113</div>
             </div>
           </div>
         </div>
@@ -308,6 +300,72 @@ export default function Home() {
                 <div className="text-sm text-gray-600">lit.link/itsapotamk</div>
               </div>
             </a>
+          </div>
+        </div>
+
+        {/* 重要な注意事項と免責事項 */}
+        <div className="mt-8 bg-yellow-50 border border-yellow-300 rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-yellow-800 flex items-center">
+            <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            ⚠️ 重要な注意事項
+          </h2>
+          
+          <div className="space-y-4 text-sm">
+            {/* PWA注意事項 */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                📱 PWA（スマートフォンアプリ化）について
+              </h3>
+              <div className="text-blue-700">
+                <p className="mb-2">
+                  <strong>ウォレット接続の注意:</strong> ウェブブラウザでウォレットを接続した後、PWA（ホーム画面に追加したアプリ）を起動すると、<span className="font-semibold bg-blue-100 px-1 rounded">新規扱い</span>になりウォレットを再接続する必要があります。
+                </p>
+                <div className="bg-blue-100 p-2 rounded text-xs">
+                  <strong>理由:</strong> PWAとウェブブラウザは異なるセッション環境のため、保存されたウォレット接続情報が共有されません。
+                </div>
+              </div>
+            </div>
+
+            {/* 免責事項 */}
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <h3 className="font-semibold text-red-800 mb-2 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                🔴 重要：免責事項
+              </h3>
+              <div className="text-red-700">
+                <p className="mb-2">
+                  <strong className="bg-red-100 px-1 rounded">このアプリはテスト版です。</strong>
+                  本番環境のJPYCを誤って送金してしまった場合、<span className="font-semibold underline">開発者は一切の責任を負いません。</span>
+                </p>
+                <div className="bg-red-100 p-2 rounded text-xs space-y-1">
+                  <div><strong>• 本番JPYC送金時の損害について一切責任を負いません</strong></div>
+                  <div><strong>• 誤操作による資産損失について責任を負いません</strong></div>
+                  <div><strong>• ネットワーク手数料等の損失について責任を負いません</strong></div>
+                  <div><strong>• 利用は完全に自己責任でお願いします</strong></div>
+                </div>
+                <p className="mt-2 text-xs">
+                  <strong>推奨:</strong> 必ずテストネット（Sepoliaなど）でのみご利用ください。
+                </p>
+              </div>
+            </div>
+
+            {/* テスト用途の説明 */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-800 mb-2">🧪 このアプリの目的</h3>
+              <div className="text-gray-600 text-xs space-y-1">
+                <div>• SBT（ソウルバウンドトークン）表示機能のデモンストレーション</div>
+                <div>• JPYC決済QRコードスキャン機能のテスト</div>
+                <div>• マルチチェーン対応ネットワーク検証機能の検証</div>
+                <div>• <strong>実際の商用利用を意図したものではありません</strong></div>
+              </div>
+            </div>
           </div>
         </div>
 

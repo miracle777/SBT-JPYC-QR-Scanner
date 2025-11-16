@@ -197,11 +197,11 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Camera className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'auto' ? 'text-green-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'auto' ? 'text-green-700' : 'text-gray-600'}`}>
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'auto' ? 'text-green-700' : 'text-gray-600'} leading-tight`}>
               自動判別
             </div>
-            <div className="text-xs mt-1 text-gray-500 hidden sm:block">すべての形式</div>
-            <div className="text-xs text-gray-500 sm:hidden">全形式</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block leading-tight">すべての形式</div>
+            <div className="text-xs text-gray-500 sm:hidden leading-tight">全形式</div>
           </button>
           <button
             onClick={() => setScanMode('jpyc')}
@@ -213,11 +213,12 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Zap className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'jpyc' ? 'text-blue-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'jpyc' ? 'text-blue-700' : 'text-gray-600'}`}>
-              JPYCモード
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'jpyc' ? 'text-blue-700' : 'text-gray-600'} leading-tight`}>
+              <span className="block">JPYC</span>
+              <span className="block">モード</span>
             </div>
-            <div className="text-xs mt-1 text-gray-500 hidden sm:block">カスタムQR形式</div>
-            <div className="text-xs text-gray-500 sm:hidden">カスタム</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block leading-tight">カスタム<br />QR形式</div>
+            <div className="text-xs text-gray-500 sm:hidden leading-tight">カスタム</div>
           </button>
           <button
             onClick={() => setScanMode('wallet-connect')}
@@ -229,12 +230,12 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Wallet className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'wallet-connect' ? 'text-purple-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'wallet-connect' ? 'text-purple-700' : 'text-gray-600'}`}>
-              <span className="sm:hidden">ウォレット</span>
-              <span className="hidden sm:inline">WalletConnect</span>
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'wallet-connect' ? 'text-purple-700' : 'text-gray-600'} leading-tight`}>
+              <span className="block sm:hidden">ウォレット</span>
+              <span className="hidden sm:block">WalletConnect</span>
             </div>
-            <div className="text-xs mt-1 text-gray-500 hidden sm:block">MetaMask等の標準形式</div>
-            <div className="text-xs text-gray-500 sm:hidden">標準形式</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block leading-tight">MetaMask<br />等の標準形式</div>
+            <div className="text-xs text-gray-500 sm:hidden leading-tight">標準形式</div>
           </button>
         </div>
       </div>

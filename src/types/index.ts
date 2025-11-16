@@ -55,9 +55,6 @@ export type NetworkType =
   // Polygon
   | 'polygon' 
   | 'polygon-amoy'
-  // Arbitrum
-  | 'arbitrum' 
-  | 'arbitrum-sepolia'
   // Avalanche
   | 'avalanche'
   | 'avalanche-fuji';

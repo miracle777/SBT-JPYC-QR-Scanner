@@ -56,29 +56,7 @@ export const SUPPORTED_NETWORKS: Record<NetworkType, PaymentNetwork> = {
     isMainnet: false,
   },
 
-  // ============================================
-  // Arbitrum (本番 + テストネット)
-  // ============================================
-  arbitrum: {
-    name: 'arbitrum',
-    chainId: 42161,
-    rpcUrl: 'https://arb1.arbitrum.io/rpc',
-    blockExplorerUrl: 'https://arbiscan.io',
-    currencySymbol: 'ETH',
-    displayName: 'Arbitrum One Mainnet',
-    color: '#28A0F0',
-    isMainnet: true,
-  },
-  'arbitrum-sepolia': {
-    name: 'arbitrum-sepolia',
-    chainId: 421614,
-    rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
-    blockExplorerUrl: 'https://sepolia.arbiscan.io',
-    currencySymbol: 'ETH',
-    displayName: 'Arbitrum Sepolia Testnet',
-    color: '#1A9EFF',
-    isMainnet: false,
-  },
+
 
   // ============================================
   // Avalanche (本番 + テストネット)
