@@ -355,27 +355,23 @@ export default function Home() {
                   </h3>
                   <div className="space-y-4">
                     <p className="text-gray-700">
-                      <strong>対応しているお店でJPYC決済を行うと、SBTを発行してもらえます！</strong>
-                      お店ごとに異なるデザインのSBTをコレクションできます。
+                      <strong>専用のJPYC決済アプリで発行されたSBTのみが表示されます！</strong>
+                      このアプリは「SBT-JPYC-Pay」で発行されたSBTを表示する専用ビューアーです。
                     </p>
-                    <div className="grid md:grid-cols-3 gap-4 mt-4">
-                      <div className="bg-white border border-gray-200 rounded p-4">
-                        <div className="font-semibold text-blue-600 mb-2">🧪 デモ・実験店舗</div>
-                        <div className="text-sm text-gray-600">
-                          技術デモや実証実験に参加した証明
-                        </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                      <h4 className="font-semibold text-blue-800 mb-2">📍 対応店舗・SBT発行元</h4>
+                      <div className="text-sm text-blue-700">
+                        <p>• <strong>SBT JPYC Pay Demo Store</strong> - デモ・実験店舗</p>
+                        <p>• <strong>Cafe JPYC</strong> - JPYCカフェ</p>
+                        <p>• <strong>Tech Store JPYC</strong> - エレクトロニクス専門店</p>
                       </div>
-                      <div className="bg-white border border-gray-200 rounded p-4">
-                        <div className="font-semibold text-orange-600 mb-2">☕ カフェ・飲食</div>
-                        <div className="text-sm text-gray-600">
-                          カフェやレストランでの利用証明
-                        </div>
-                      </div>
-                      <div className="bg-white border border-gray-200 rounded p-4">
-                        <div className="font-semibold text-purple-600 mb-2">💻 エレクトロニクス</div>
-                        <div className="text-sm text-gray-600">
-                          電子機器店舗での購入証明
-                        </div>
+                    </div>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+                      <h4 className="font-semibold text-yellow-800 mb-2">⚙️ 技術詳細</h4>
+                      <div className="text-sm text-yellow-700">
+                        <p>• <strong>コントラクト</strong>: 0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4</p>
+                        <p>• <strong>対応ネットワーク</strong>: Sepolia テストネット・Polygon Amoy</p>
+                        <p>• <strong>標準</strong>: ERC-721準拠（譲渡不可能）</p>
                       </div>
                     </div>
                   </div>
@@ -443,29 +439,34 @@ export default function Home() {
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-yellow-800 mb-3 flex items-center">
                     <span className="mr-2">📋</span>
-                    SBT取得の手順
+                    SBT取得と表示の手順
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">1</div>
                       <div>
-                        <div className="font-semibold">対応店舗で決済</div>
-                        <div className="text-sm text-gray-600">JPYC対応店舗でQRコード決済を実行</div>
+                        <div className="font-semibold">SBT-JPYC-Payアプリで決済</div>
+                        <div className="text-sm text-gray-600">専用の決済アプリで対応店舗でJPYC決済を実行</div>
                       </div>
                     </div>
                     <div className="flex items-center">
                       <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">2</div>
                       <div>
-                        <div className="font-semibold">SBT自動発行</div>
-                        <div className="text-sm text-gray-600">決済完了後、店舗固有のSBTが自動的に発行</div>
+                        <div className="font-semibold">条件達成でSBT自動発行</div>
+                        <div className="text-sm text-gray-600">店舗での決済回数が条件に達するとSBTが自動発行される</div>
                       </div>
                     </div>
                     <div className="flex items-center">
                       <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">3</div>
                       <div>
-                        <div className="font-semibold">コレクション表示</div>
-                        <div className="text-sm text-gray-600">このアプリのギャラリーで取得したSBTを確認</div>
+                        <div className="font-semibold">このアプリでコレクション表示</div>
+                        <div className="text-sm text-gray-600">このアプリで取得したSBTのコレクションを確認・表示</div>
                       </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded">
+                      <p className="text-sm text-orange-700">
+                        <strong>⚠️ 注意:</strong> このアプリは<strong>SBT表示専用</strong>です。SBTの発行は「SBT-JPYC-Pay」アプリで行われます。
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -480,38 +481,48 @@ export default function Home() {
                     <div>
                       <div className="font-semibold text-gray-700 mb-2">対応ネットワーク</div>
                       <ul className="space-y-1 text-gray-600">
-                        <li>• Ethereum Mainnet</li>
-                        <li>• Polygon</li>
-                        <li>• Arbitrum One</li>
-                        <li>• Avalanche</li>
+                        <li>• Sepolia テストネット</li>
+                        <li>• Polygon Amoy テストネット</li>
+                        <li>• （将来的にメインネット対応予定）</li>
                       </ul>
                     </div>
                     <div>
                       <div className="font-semibold text-gray-700 mb-2">標準仕様</div>
                       <ul className="space-y-1 text-gray-600">
                         <li>• ERC-721準拠</li>
-                        <li>• 譲渡機能無効化</li>
-                        <li>• メタデータ標準</li>
-                        <li>• オンチェーン検証</li>
+                        <li>• 譲渡機能無効化（SBT）</li>
+                        <li>• メタデータ標準対応</li>
+                        <li>• 店舗情報埋め込み</li>
                       </ul>
                     </div>
                   </div>
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                    <p className="text-xs text-blue-700">
+                      <strong>コントラクトアドレス:</strong> 0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4
+                    </p>
+                  </div>
                 </div>
 
-                {/* 参加店舗募集 */}
+                {/* 連携アプリ情報 */}
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-pink-800 mb-3 flex items-center">
-                    <span className="mr-2">🤝</span>
-                    参加店舗を募集中
+                    <span className="mr-2">🔗</span>
+                    連携アプリについて
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    あなたのお店もSBT発行に参加しませんか？お客様に特別な体験と証明を提供できます。
+                    このアプリは「SBT-JPYC-Pay」アプリと連携して動作します。SBTの発行は決済アプリで行われ、このアプリではコレクションの表示・管理を行います。
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-pink-100 text-pink-800 text-xs font-semibold px-2 py-1 rounded">顧客体験向上</span>
-                    <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded">ブランド差別化</span>
-                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">リピーター獲得</span>
-                    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">デジタル証明</span>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-semibold text-purple-800 mb-2">📱 SBT-JPYC-Pay（決済アプリ）</h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• 店舗での JPYC 決済機能</li>
+                      <li>• SBT 発行・管理機能</li>
+                      <li>• 店舗登録・訪問回数カウント</li>
+                      <li>• 決済履歴管理</li>
+                    </ul>
+                  </div>
+                  <div className="mt-3 text-xs text-gray-500">
+                    <p>※ 現在プライベート開発中 - 完成後に公開予定</p>
                   </div>
                 </div>
               </div>
