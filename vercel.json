@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
@@ -16,10 +10,5 @@
       },
       "dest": "/$1"
     }
-  ],
-  "functions": {
-    "src/app/**": {
-      "runtime": "@vercel/next@2.8.8"
-    }
-  }
+  ]
 }
