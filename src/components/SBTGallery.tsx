@@ -210,12 +210,12 @@ export function SBTGallery({
       {viewMode === 'grid' ? (
         <>
           {/* 画像部分 */}
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative h-32 overflow-hidden bg-gray-50">
             {sbt.imageUrl ? (
               <img
                 src={sbt.imageUrl}
                 alt={sbt.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                className="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = `https://via.placeholder.com/300x200/${getSBTBadgeColor(sbt.rank)?.replace('#', '')}/FFFFFF?text=${encodeURIComponent(sbt.symbol)}`;
@@ -233,7 +233,7 @@ export function SBTGallery({
             {/* ランクバッジ */}
             {sbt.rank && (
               <div 
-                className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold text-white"
+                className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold text-white shadow-sm"
                 style={{ backgroundColor: getSBTBadgeColor(sbt.rank) }}
               >
                 {sbt.rank.toUpperCase()}
@@ -242,7 +242,7 @@ export function SBTGallery({
             
             {/* ネットワークバッジ */}
             <div 
-              className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white"
+              className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-medium text-white shadow-sm"
               style={{ backgroundColor: getNetworkColor(sbt.network) }}
             >
               {getNetworkDisplayName(sbt.network)}
@@ -250,7 +250,7 @@ export function SBTGallery({
           </div>
           
           {/* 情報部分 */}
-          <div className="p-4">
+          <div className="p-3">
             <div className="flex items-start justify-between mb-2">
               <h3 className="font-bold text-gray-800 text-sm truncate flex-1">
                 {sbt.name}
@@ -284,12 +284,12 @@ export function SBTGallery({
       ) : (
         <>
           {/* リスト表示 */}
-          <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+          <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden">
             {sbt.imageUrl ? (
               <img
                 src={sbt.imageUrl}
                 alt={sbt.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-gray-50"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = `https://via.placeholder.com/64/${getSBTBadgeColor(sbt.rank)?.replace('#', '')}/FFFFFF?text=${encodeURIComponent(sbt.symbol)}`;

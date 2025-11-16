@@ -270,7 +270,7 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
                     <img
                       src={sbt.imageUrl}
                       alt={sbt.name}
-                      className="w-full h-32 object-cover rounded"
+                      className="w-full h-24 object-contain rounded bg-gray-50"
                       onError={(e) => {
                         console.error('Failed to load SBT image:', sbt.imageUrl);
                         // フォールバック画像を表示
