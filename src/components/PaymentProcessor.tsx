@@ -82,8 +82,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           11155111: 'sepolia',
           137: 'polygon',
           80002: 'polygon-amoy',
-          42161: 'arbitrum',
-          421614: 'arbitrum-sepolia',
           43114: 'avalanche',
           43113: 'avalanche-fuji',
         };
@@ -179,8 +177,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       11155111: 'sepolia',
       137: 'polygon',
       80002: 'polygon-amoy',
-      42161: 'arbitrum',
-      421614: 'arbitrum-sepolia',
       43114: 'avalanche',
       43113: 'avalanche-fuji',
     };

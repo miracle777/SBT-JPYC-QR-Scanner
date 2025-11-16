@@ -80,40 +80,6 @@ export const SAMPLE_SBTS: SBT[] = [
     rank: 'bronze',
     imageUrl: 'https://via.placeholder.com/150?text=Community+Contributor',
   },
-
-  // ============================================
-  // Arbitrum One Mainnet
-  // ============================================
-  {
-    id: 'arbitrum-builder',
-    name: 'Arbitrum Builder',
-    symbol: 'ARB-BLD',
-    address: '0x6666666666666666666666666666666666666666' as `0x${string}`,
-    issuer: 'Arbitrum DAO',
-    issuerAddress: '0x7777777777777777777777777777777777777777' as `0x${string}`,
-    description: 'Arbitrum エコシステムのビルダー',
-    network: 'arbitrum',
-    chainId: 42161,
-    rank: 'gold',
-    imageUrl: 'https://via.placeholder.com/150?text=Arbitrum+Builder',
-  },
-
-  // ============================================
-  // Arbitrum Sepolia Testnet
-  // ============================================
-  {
-    id: 'arbitrum-testnet-developer',
-    name: 'Arbitrum Testnet Developer',
-    symbol: 'ARB-DEV',
-    address: '0x8888888888888888888888888888888888888888' as `0x${string}`,
-    issuer: 'Arbitrum Foundation',
-    issuerAddress: '0x9999999999999999999999999999999999999999' as `0x${string}`,
-    description: 'Arbitrum テストネット開発者',
-    network: 'arbitrum-sepolia',
-    chainId: 421614,
-    rank: 'silver',
-    imageUrl: 'https://via.placeholder.com/150?text=Arbitrum+Developer',
-  },
 ];
 
 /**
@@ -154,28 +120,8 @@ export const SBT_PAYMENT_RULES: Record<string, SBTPaymentRule> = {
     minBalance: BigInt(1),
     discount: 2, // 2% 割引
     maxTransactionAmount: BigInt(100000) * BigInt(10 ** 18),
-    allowedNetworks: ['polygon-amoy', 'arbitrum-sepolia'],
+    allowedNetworks: ['polygon-amoy'],
     rank: 'bronze',
-  },
-
-  // Arbitrum One Mainnet
-  'arbitrum-builder': {
-    sbtId: 'arbitrum-builder',
-    minBalance: BigInt(1),
-    discount: 10, // 10% 割引
-    maxTransactionAmount: BigInt(1000000) * BigInt(10 ** 18),
-    allowedNetworks: ['arbitrum'],
-    rank: 'gold',
-  },
-
-  // Arbitrum Sepolia Testnet
-  'arbitrum-testnet-developer': {
-    sbtId: 'arbitrum-testnet-developer',
-    minBalance: BigInt(1),
-    discount: 5, // 5% 割引
-    maxTransactionAmount: BigInt(500000) * BigInt(10 ** 18),
-    allowedNetworks: ['arbitrum-sepolia'],
-    rank: 'silver',
   },
 };
 

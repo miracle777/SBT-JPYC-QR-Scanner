@@ -101,8 +101,6 @@ export const SBT_ADDRESSES = {
   // 他のネットワークは未デプロイ
   ethereum: undefined,
   polygon: undefined,
-  arbitrum: undefined,
-  'arbitrum-sepolia': undefined,
   avalanche: undefined,
   'avalanche-fuji': undefined,
 } as const;
