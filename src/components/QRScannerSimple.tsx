@@ -186,51 +186,55 @@ export function QRScannerComponent({ onScanResult }: QRScannerComponentProps) {
         <label className="block text-sm font-medium text-gray-700 mb-3">
           スキャンモード
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <button
             onClick={() => setScanMode('auto')}
             disabled={isScanning}
-            className={`p-4 rounded-lg border-2 transition-all ${
+            className={`p-2 sm:p-4 rounded-lg border-2 transition-all ${
               scanMode === 'auto'
                 ? 'border-green-600 bg-green-50'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Camera className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'auto' ? 'text-green-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-sm ${scanMode === 'auto' ? 'text-green-700' : 'text-gray-600'}`}>
+            <Camera className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'auto' ? 'text-green-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'auto' ? 'text-green-700' : 'text-gray-600'}`}>
               自動判別
             </div>
-            <div className="text-xs mt-1 text-gray-500">すべての形式</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block">すべての形式</div>
+            <div className="text-xs text-gray-500 sm:hidden">全形式</div>
           </button>
           <button
             onClick={() => setScanMode('jpyc')}
             disabled={isScanning}
-            className={`p-4 rounded-lg border-2 transition-all ${
+            className={`p-2 sm:p-4 rounded-lg border-2 transition-all ${
               scanMode === 'jpyc'
                 ? 'border-blue-600 bg-blue-50'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Zap className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'jpyc' ? 'text-blue-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-sm ${scanMode === 'jpyc' ? 'text-blue-700' : 'text-gray-600'}`}>
+            <Zap className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'jpyc' ? 'text-blue-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'jpyc' ? 'text-blue-700' : 'text-gray-600'}`}>
               JPYCモード
             </div>
-            <div className="text-xs mt-1 text-gray-500">カスタムQR形式</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block">カスタムQR形式</div>
+            <div className="text-xs text-gray-500 sm:hidden">カスタム</div>
           </button>
           <button
             onClick={() => setScanMode('wallet-connect')}
             disabled={isScanning}
-            className={`p-4 rounded-lg border-2 transition-all ${
+            className={`p-2 sm:p-4 rounded-lg border-2 transition-all ${
               scanMode === 'wallet-connect'
                 ? 'border-purple-600 bg-purple-50'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Wallet className={`w-6 h-6 mx-auto mb-2 ${scanMode === 'wallet-connect' ? 'text-purple-600' : 'text-gray-400'}`} />
-            <div className={`font-medium text-sm ${scanMode === 'wallet-connect' ? 'text-purple-700' : 'text-gray-600'}`}>
-              WalletConnect
+            <Wallet className={`w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 ${scanMode === 'wallet-connect' ? 'text-purple-600' : 'text-gray-400'}`} />
+            <div className={`font-medium text-xs sm:text-sm ${scanMode === 'wallet-connect' ? 'text-purple-700' : 'text-gray-600'}`}>
+              <span className="sm:hidden">ウォレット</span>
+              <span className="hidden sm:inline">WalletConnect</span>
             </div>
-            <div className="text-xs mt-1 text-gray-500">MetaMask等の標準形式</div>
+            <div className="text-xs mt-1 text-gray-500 hidden sm:block">MetaMask等の標準形式</div>
+            <div className="text-xs text-gray-500 sm:hidden">標準形式</div>
           </button>
         </div>
       </div>
