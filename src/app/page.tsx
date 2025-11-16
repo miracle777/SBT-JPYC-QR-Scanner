@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { QRScannerComponent } from '../components/QRScannerSimple';
-import QRScannerImproved from '../components/QRScannerImproved';
 import { WalletConnector } from '../components/WalletConnector';
 import { SBTGallery } from '../components/SBTGallery';
 import { JPYCBalance } from '../components/JPYCBalance';
