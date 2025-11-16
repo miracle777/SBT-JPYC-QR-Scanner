@@ -47,34 +47,33 @@ export const JPYC_ABI = [
 export const JPYC_ADDRESSES = {
   // Ethereum Mainnet
   ethereum: getAddress('0x2370f9d504c7a6e775bf6e14b3f12846b594cd53'),
-  // Ethereum Sepolia Testnet - Official Faucet (100 JPYC)
-  sepolia: getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
-  // Ethereum Sepolia Testnet - Community Faucet (882 JPYC)
-  'sepolia-community': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
-  // Ethereum Sepolia Testnet - Additional Faucet (0 JPYC)
+  // Ethereum Sepolia Testnet - Official JPYC (推奨)
+  sepolia: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  // Ethereum Sepolia Testnet - Alternative addresses
+  'sepolia-community': getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
   'sepolia-additional': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // Polygon Mainnet
   polygon: getAddress('0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c'),
-  // Polygon Amoy Testnet (use the testnet faucet address if available)
-  'polygon-amoy': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'), // Update with actual address when available
+  // Polygon Amoy Testnet 
+  'polygon-amoy': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
   
   // Avalanche C-Chain Mainnet
-  avalanche: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'), // Update with actual address
+  avalanche: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
   // Avalanche Fuji Testnet
-  'avalanche-fuji': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'), // Update with actual address
+  'avalanche-fuji': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
 } as const;
 
 // JPYC Contract Configuration (backward compatibility)
 export const JPYC_CONFIG = {
-  // 公式JPYC Faucet (Sepolia testnet)
+  // 推奨JPYC Address (Sepolia testnet)
   address: JPYC_ADDRESSES.sepolia,
   abi: JPYC_ABI,
 } as const;
 
 // コミュニティJPYC Configuration
 export const JPYC_COMMUNITY_CONFIG = {
-  address: getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
+  address: JPYC_ADDRESSES['sepolia-community'],
   abi: JPYC_ABI,
 } as const;
 

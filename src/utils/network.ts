@@ -160,8 +160,77 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
           };
         }
         
-        // 従来の店舗QRコード形式
-        if (data.type === 'payment' && data.shopWallet && data.contractAddress) {
+        // 従来の店舗QRコード形式（スクリーンショットのデータに対応）
+        if (data.type === 'payment' && (data.shopWallet || data.shopId)) {
+          const amountInJPYC = data.amount ? 
+            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
+            undefined;
+          
+          return {
+            type: 'payment',
+            address: (data.shopWallet || data.to) as `0x${string}`,
+            amount: amountInJPYC,
+            chainId: data.chainId || 11155111, // Default to Sepolia
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.shopName,
+            shopId: data.shopId,
+            paymentId: data.paymentId,
+            expiresAt: data.expiresAt,
+            memo: data.description || data.shopName,
+            network: 'sepolia' as NetworkType,
+          };
+        }
+        
+        // スクリーンショットのような新しいJPYC Pay形式
+        if (data.shopId && data.shopName && data.amount && data.contractAddress) {
+          const amountInJPYC = data.amount ? 
+            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
+            undefined;
+          
+          return {
+            type: 'payment',
+            address: data.shopWallet as `0x${string}`,
+            amount: amountInJPYC,
+            chainId: data.chainId || 11155111,
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.shopName,
+            shopId: data.shopId,
+            paymentId: data.paymentId,
+            expiresAt: data.expiresAt,
+            memo: data.description,
+            network: 'sepolia' as NetworkType,
+          };
+        }
+        
+        // 新しい店舗QRコード形式 (shopWalletの代わりに他フィールド)
+        if (data.type === 'payment' && !data.shopWallet) {
+          // スクリーンショットのような形式に対応
+          const shopWallet = data.shopWallet || data.address || data.to;
+          if (!shopWallet) {
+            console.log('No wallet address found in payment QR');
+            return null;
+          }
+          
+          const amountInJPYC = data.amount ? 
+            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
+            undefined;
+          
+          return {
+            type: 'payment',
+            address: shopWallet as `0x${string}`,
+            amount: amountInJPYC,
+            chainId: data.chainId,
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.shopName || 'Unknown Shop',
+            shopId: data.shopId,
+            paymentId: data.paymentId,
+            expiresAt: data.expiresAt,
+            memo: data.description || data.shopName || 'Payment',
+          };
+        }
+        
+        // スクリーンショットの形式 (version, shopId, shopName, shopWallet, amount, currency, chainId, paymentId, expiresAt, contractAddress, description)
+        if (data.version && data.shopId && data.shopName && data.shopWallet) {
           const amountInJPYC = data.amount ? 
             (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
             undefined;

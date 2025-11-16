@@ -91,17 +91,20 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
         expires: new Date(Date.now() + 3600000).toISOString(), // 1時間後
       },
       walletconnect: `ethereum:0x742d35Cc6634C0532925a3b8D2d9cE7d5C15C84D@11155111?value=100000000000000000000`,
+      // スクリーンショットと同じ形式のサンプルデータ
       payment: {
-        type: 'payment',
-        shopWallet: '0x742d35Cc6634C0532925a3b8D2d9cE7d5C15C84D',
-        contractAddress: '0x8c9Dd1B0c6bB0Fea6C0aD0b8B2cA1B2B83C4B5B6',
-        amount: '100000000000000000000', // 100 JPYC in Wei
-        chainId: 11155111,
-        shopName: 'Demo Store',
-        shopId: 'demo_001',
-        paymentId: `pay_${Date.now()}`,
-        expiresAt: new Date(Date.now() + 3600000).getTime(),
-        description: 'テスト決済',
+        "version": "1.0",
+        "type": "payment",
+        "shopId": "shop-001",
+        "shopName": "SBT JPYC Pay Demo Store",
+        "shopWallet": "0x5888578ad9a33ce8a9fa3a0ca4081665bfad8fd",
+        "amount": "1000000000000000000",
+        "currency": "JPYC",
+        "chainId": 137,
+        "paymentId": `PAY${Date.now()}`,
+        "expiresAt": Date.now() + 3600000,
+        "contractAddress": "0xE7C3D8C9a439feDe00D260032D5dB0Be71C3c29",
+        "description": "Payment from SBT JPYC Pay Demo Store"
       }
     };
 
@@ -117,7 +120,7 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
         sampleData = JSON.stringify(samples.payment);
     }
 
-    console.log('Generated sample data:', sampleData);
+    console.log('Generated sample data for mode', scanMode, ':', sampleData);
     onScan(sampleData);
   }, [scanMode, onScan]);
 
@@ -137,10 +140,10 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
 
   return (
     <div className="space-y-4">
-      {/* モード選択 */}
+      {/* モード選択 - 常に表示 */}
       <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          QRコードスキャンモード
+          🔧 QRコード形式選択
         </h3>
         <div className="flex flex-wrap gap-2 mb-4">
           <button

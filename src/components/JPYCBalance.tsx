@@ -120,12 +120,20 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
     abi: JPYC_ABI,
     functionName: 'balanceOf',
     args: [userAddress],
+    query: {
+      retry: 2,
+      retryDelay: 1000,
+    }
   });
 
   const { data: decimals } = useReadContract({
     address: contractAddress,
     abi: JPYC_ABI,
     functionName: 'decimals',
+    query: {
+      retry: 2,
+      retryDelay: 1000,
+    }
   });
 
   // デバッグ用ログ
@@ -142,12 +150,41 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refetch();
+    try {
+      await refetch();
+    } catch (err) {
+      console.error('Balance refresh error:', err);
+    }
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
   const actualDecimals = decimals ? Number(decimals) : 18;
   const formattedBalance = balance ? formatJPYCDisplay(balance as bigint, actualDecimals) : '0.00';
+
+  // エラーハンドリングの改善
+  if (error) {
+    return (
+      <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <div>
+            <p className="font-medium text-red-800">{displayName}</p>
+            <p className="text-xs text-red-600">コントラクトエラー: 残高取得に失敗</p>
+          </div>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="p-1 text-red-600 hover:text-red-800 transition-colors"
+          title="再試行"
+        >
+          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
+    );
+  }
   const displayValue = isVisible ? formattedBalance : '***.**';
 
   return (

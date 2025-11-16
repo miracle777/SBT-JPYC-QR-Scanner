@@ -130,14 +130,19 @@ export default function Home() {
                   </div>
                 )}
 
-                <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                    📸 QRコードをスキャン（改良版）
-                  </h2>
+                <div className="mb-6">
                   <QRScannerImproved 
                     onScan={handleScanResult}
                     onError={handleScanError}
                   />
+                </div>
+                
+                {/* 従来版も選択可能にする */}
+                <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                    📸 QRコードをスキャン（シンプル版）
+                  </h2>
+                  <QRScannerComponent onScanResult={handleScanResult} />
                 </div>
 
                 <div className="mb-6">
