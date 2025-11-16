@@ -221,28 +221,65 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
           const shopId = 2; // デフォルトでCafe JPYCとする
           const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
           
+          // Polygon Amoy用の画像URL生成
+          const amoyBadgeName = encodeURIComponent('来店記念');
+          const amoyShopName = encodeURIComponent(shopInfo?.name || 'Cafe JPYC');
+          const amoyImageUrl = `https://img.shields.io/badge/${amoyBadgeName}-${amoyShopName}-8B5CF6?style=for-the-badge&logo=polygon&logoColor=white`;
+          
+          const amoyMetadata = {
+            name: `来店記念 - ${shopInfo?.name || 'Cafe JPYC'}`,
+            description: `${shopInfo?.name || 'Cafe JPYC'}でのスタンプカード (Polygon Amoy)`,
+            image: amoyImageUrl,
+            external_url: 'https://jpyc.jp',
+            background_color: '8B5CF6',
+            attributes: [
+              {
+                trait_type: 'Shop Name',
+                value: shopInfo?.name || 'Cafe JPYC'
+              },
+              {
+                trait_type: 'Shop Category',
+                value: shopInfo?.category || 'カフェ・飲食'
+              },
+              {
+                trait_type: 'Rank',
+                value: shopInfo?.sbtTemplate?.rank || 'silver'
+              },
+              {
+                trait_type: 'Network',
+                value: 'Polygon Amoy Testnet'
+              },
+              {
+                trait_type: 'Token Standard',
+                value: 'ERC721'
+              }
+            ]
+          };
+          
           const amoyToken: SBT = {
             id: `sbt-polygon-amoy-${contractAddress}`,
-            name: 'Polygon Amoy SBT',
-            symbol: 'AMOY-SBT',
+            name: amoyMetadata.name,
+            symbol: shopInfo?.name?.substring(0, 4).toUpperCase() || 'CAFE',
             address: contractAddress,
             issuer: shopInfo?.name || 'Polygon Amoy Network',
             issuerAddress: contractAddress,
-            description: 'Polygon Amoy テストネットで発行されたSBT',
+            description: amoyMetadata.description,
             network: 'polygon-amoy',
             chainId: 80002,
             tokenId: 1n,
-            metadata: {},
-            imageUrl: `https://via.placeholder.com/150/8B5CF6/FFFFFF?text=AMOY+SBT`,
-            rank: shopInfo?.sbtTemplate?.rank || 'bronze',
+            metadata: amoyMetadata,
+            imageUrl: amoyImageUrl,
+            rank: shopInfo?.sbtTemplate?.rank || 'silver',
             issuedDate: new Date(),
             // 拡張情報
             shopId: shopId,
             shopName: shopInfo?.name,
             shopCategory: shopInfo?.category,
             benefits: shopInfo?.sbtTemplate?.benefits ? [...shopInfo.sbtTemplate.benefits] : [],
-            thumbnailUrl: `https://via.placeholder.com/150/8B5CF6/FFFFFF?text=AMOY+SBT`,
+            thumbnailUrl: amoyImageUrl,
             bannerUrl: shopInfo?.bannerUrl,
+            external_url: amoyMetadata.external_url,
+            background_color: amoyMetadata.background_color,
           };
           sbts.push(amoyToken);
         }
@@ -331,11 +368,57 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
         }
         
         // 画像URLが取得できない場合はデフォルト画像を使用
-        if (!imageUrl) {
-          imageUrl = `https://via.placeholder.com/150/4F46E5/FFFFFF?text=SBT+${tokenId}`;
+        if (!imageUrl || imageUrl.includes('placeholder')) {
+          // MetaMask表示用により適切なデフォルト画像（金色のバッジデザイン）
+          const badgeName = encodeURIComponent(metadata.name || actualShopInfo?.name || `来店記念`);
+          const shopName = encodeURIComponent(actualShopInfo?.name || 'DEMOショップ');
+          imageUrl = `https://img.shields.io/badge/${badgeName}-${shopName}-FFD700?style=for-the-badge&logo=star&logoColor=white`;
+          
+          // さらに詳細な画像が必要な場合の代替案
+          if (!imageUrl) {
+            imageUrl = `https://via.placeholder.com/400x400/FFD700/000000.png?text=${badgeName}+%0A${shopName}`;
+          }
         }
         
-        console.log('SBT Image URL:', imageUrl);
+        // IPFSリンクをHTTPSリンクに変換
+        if (imageUrl.startsWith('ipfs://')) {
+          imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+        }
+        
+        // メタデータにMetaMask表示用の詳細情報を追加
+        const enhancedMetadata = {
+          ...metadata,
+          name: metadata.name || `来店記念 - ${actualShopInfo?.name || 'DEMOショップ'}`,
+          description: metadata.description || `${actualShopInfo?.name || 'DEMOショップ'}でのスタンプカード`,
+          image: imageUrl,
+          external_url: metadata.external_url || 'https://jpyc.jp',
+          background_color: metadata.background_color || 'FFD700',
+          attributes: [
+            {
+              trait_type: 'Shop Name',
+              value: actualShopInfo?.name || 'DEMOショップ'
+            },
+            {
+              trait_type: 'Shop Category',
+              value: actualShopInfo?.category || 'デモ・実験店舗'
+            },
+            {
+              trait_type: 'Rank',
+              value: metadata.rank || actualShopInfo?.sbtTemplate?.rank || 'bronze'
+            },
+            {
+              trait_type: 'Network',
+              value: 'Sepolia Testnet'
+            },
+            {
+              trait_type: 'Token Standard',
+              value: 'ERC721'
+            }
+          ]
+        };
+        
+        console.log('Enhanced SBT Image URL:', imageUrl);
+        console.log('Enhanced SBT Metadata:', enhancedMetadata);
         
         // shopIdを特定（tokenIdから推測、またはメタデータから）
         const shopId = 1; // Shop ID: 1 (SBT JPYC Pay Demo Store)
@@ -347,16 +430,16 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
         
         const sbt: SBT = {
           id: `sbt-${contractAddress}-${tokenId}`,
-          name: metadata.name || actualShopInfo?.sbtTemplate?.name || actualShopInfo?.name || `SBT #${tokenId}`,
-          symbol: metadata.symbol || 'SBT',
+          name: enhancedMetadata.name,
+          symbol: metadata.symbol || actualShopInfo?.name?.substring(0, 4).toUpperCase() || 'SBT',
           address: contractAddress,
           issuer: actualShopInfo?.name || 'Unknown Shop',
           issuerAddress: actualShopInfo?.wallet || contractAddress,
-          description: metadata.description || actualShopInfo?.sbtTemplate?.description || `Shop loyalty SBT for ${actualShopInfo?.name || 'shop'}`,
+          description: enhancedMetadata.description,
           network: 'sepolia',
           chainId: 11155111,
           tokenId: tokenId,
-          metadata: metadata,
+          metadata: enhancedMetadata,
           imageUrl: imageUrl,
           rank: metadata.rank || actualShopInfo?.sbtTemplate?.rank || 'bronze',
           issuedDate: new Date(),
@@ -367,8 +450,8 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
           benefits: metadata.benefits || (actualShopInfo?.sbtTemplate?.benefits ? [...actualShopInfo.sbtTemplate.benefits] : []),
           thumbnailUrl: imageUrl,
           bannerUrl: actualShopInfo?.bannerUrl,
-          external_url: metadata.external_url,
-          background_color: metadata.background_color,
+          external_url: enhancedMetadata.external_url,
+          background_color: enhancedMetadata.background_color,
           youtube_url: metadata.youtube_url,
           animationUrl: metadata.animation_url,
         };

@@ -8,7 +8,9 @@ import React, { useState, useEffect } from 'react';
 import { SBT, SBTBalance } from '../types';
 import { fetchUserSBTs, getSBTBadgeColor, getRankDescription, getUserVisitCount } from '../utils/sbt';
 import { getNetworkDisplayName, getNetworkColor } from '../utils/network';
-import { Award, Shield, Badge, RefreshCw } from 'lucide-react';
+import { Award, Shield, Badge, RefreshCw, ExternalLink, Smartphone } from 'lucide-react';
+import { SBTMetaMaskGuide } from './SBTMetaMaskGuide';
+import { SBTSyncChecker } from './SBTSyncChecker';
 import { REGISTERED_SHOPS } from '../contracts/sbt';
 
 interface SBTDisplayProps {
@@ -22,6 +24,7 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
   const [loading, setLoading] = useState(false);
   const [selectedSBT, setSelectedSBT] = useState<string | null>(null);
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
+  const [showMetaMaskGuide, setShowMetaMaskGuide] = useState(true);
 
   useEffect(() => {
     if (userAddress) {
@@ -55,6 +58,38 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
     }
     setVisitCounts(counts);
     console.log('Visit counts:', counts);
+  };
+
+  const handleAddToMetaMask = async (sbt: SBT) => {
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        // MetaMaskにSBTを追加
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC721',
+            options: {
+              address: sbt.address,
+              tokenId: sbt.tokenId?.toString() || '0',
+            },
+          },
+        });
+        
+        console.log('SBT added to MetaMask successfully');
+        alert(`✅ SBT「${sbt.name}」をMetaMaskに追加しました！\n\nMetaMaskのNFTタブで確認してください。`);
+        
+        // 追加のヒントを表示
+        setTimeout(() => {
+          alert(`💡 ヒント：\n• PC・スマホで同じMetaMaskアカウントを使用していれば自動同期されます\n• 画像が表示されない場合は、ネットワーク接続を確認してください\n• ${sbt.network === 'sepolia' ? 'Sepolia' : 'Polygon Amoy'} テストネットに接続していることを確認してください`);
+        }, 2000);
+      } else {
+        console.error('MetaMask not detected');
+        alert('MetaMask が見つかりません。MetaMask をインストールしてください。');
+      }
+    } catch (error) {
+      console.error('Failed to add SBT to MetaMask:', error);
+      alert('MetaMask への追加に失敗しました。既に追加されている可能性があります。');
+    }
   };
 
   const handleSBTClick = (sbt: SBT) => {
@@ -191,11 +226,41 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
                 </div>
 
                 {sbt.imageUrl && (
-                  <img
-                    src={sbt.imageUrl}
-                    alt={sbt.name}
-                    className="w-full h-32 object-cover rounded mt-2"
-                  />
+                  <div className="mt-2">
+                    <img
+                      src={sbt.imageUrl}
+                      alt={sbt.name}
+                      className="w-full h-32 object-cover rounded"
+                      onError={(e) => {
+                        console.error('Failed to load SBT image:', sbt.imageUrl);
+                        // フォールバック画像を表示
+                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/150/4F46E5/FFFFFF?text=${encodeURIComponent(sbt.symbol || 'SBT')}`;
+                      }}
+                    />
+                    <div className="mt-2 text-xs text-gray-500">
+                      📱 MetaMask で同期: この SBT は自動的に MetaMask に表示されます
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToMetaMask(sbt);
+                      }}
+                      className="mt-2 w-full px-3 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600 transition flex items-center gap-1 justify-center"
+                    >
+                      <Smartphone className="w-3 h-3" />
+                      MetaMask に手動追加
+                    </button>
+                    
+                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                      <div className="font-semibold text-gray-700 mb-1">🔍 同期確認情報</div>
+                      <div className="space-y-1 text-gray-600">
+                        <div>• ネットワーク: <span className="font-mono">{sbt.network}</span></div>
+                        <div>• コントラクト: <span className="font-mono text-xs">{sbt.address}</span></div>
+                        <div>• トークンID: <span className="font-mono">{sbt.tokenId?.toString()}</span></div>
+                        <div>• シンボル: <span className="font-mono">{sbt.symbol}</span></div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -217,10 +282,19 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
       </div>
 
       {sbts.length > 0 && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-          <p>
-            💡 ヒント: 発行済みSBTを選択すると、このSBTに関連する特典や制限を確認できます。
-          </p>
+        <div className="space-y-3">
+          <SBTSyncChecker userAddress={userAddress} />
+          
+          {showMetaMaskGuide && (
+            <SBTMetaMaskGuide onClose={() => setShowMetaMaskGuide(false)} />
+          )}
+          
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            <p className="font-semibold mb-1">💡 ヒント: SBT特典の利用</p>
+            <p>
+              発行済みSBTを選択すると、このSBTに関連する特典や制限を確認できます。
+            </p>
+          </div>
         </div>
       )}
     </div>
