@@ -194,9 +194,11 @@ declare global {
     ethereum?: {
       request: (request: {
         method: string;
-        params?: any[];
+        params?: any;
       }) => Promise<any>;
       isMetaMask?: boolean;
     };
   }
 }
+
+export {};

@@ -41,6 +41,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  eslint: {
+    ignoreDuringBuilds: false,
+    dirs: ['src'],
+  },
   // Turbopackの問題を回避するため、webpackビルドを使用
   experimental: {
     forceSwcTransforms: true,
