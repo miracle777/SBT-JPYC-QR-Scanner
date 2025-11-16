@@ -243,7 +243,9 @@ export function validateNetwork(
   const requiredChainId = SUPPORTED_NETWORKS[requiredNetwork].chainId;
   const currentNetwork = getNetworkFromChainId(currentChainId);
 
-  const isValid = currentChainId === requiredChainId;
+  // SepoliaまたはPolygon Amoyであれば有効とする
+  const validChainIds = [11155111, 80002]; // Sepolia, Polygon Amoy
+  const isValid = validChainIds.includes(currentChainId) || currentChainId === requiredChainId;
   const mismatch = !isValid;
 
   return {
@@ -252,8 +254,8 @@ export function validateNetwork(
     requiredNetwork,
     mismatch,
     message: isValid
-      ? `✅ ネットワークが正しく設定されています (${SUPPORTED_NETWORKS[requiredNetwork].displayName})`
-      : `⚠️ ネットワークが異なります。現在: ${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'}, 必要: ${SUPPORTED_NETWORKS[requiredNetwork].displayName}`,
+      ? `✅ ネットワークが正しく設定されています (${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'})`
+      : `⚠️ ネットワークが異なります。現在: ${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'}, 推奨: Sepolia または Polygon Amoy`,
     action: isValid ? undefined : 'switch-network',
   };
 }

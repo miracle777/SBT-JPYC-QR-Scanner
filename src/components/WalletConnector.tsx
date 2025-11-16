@@ -154,7 +154,24 @@ export function WalletConnector() {
 
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5 mt-3">
             <p>• Sepolia テストネット対応</p>
+            <p>• Polygon Amoy (Chain ID: 80002) 対応</p>
             <p>• MetaMask推奨</p>
+            <button
+              onClick={async () => {
+                try {
+                  if (typeof window !== 'undefined' && window.ethereum) {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  } else {
+                    window.open('https://metamask.io/download/', '_blank');
+                  }
+                } catch (error) {
+                  console.error('Failed to connect MetaMask:', error);
+                }
+              }}
+              className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
+            >
+              📦 MetaMask直接接続
+            </button>
           </div>
         </div>
       </motion.div>

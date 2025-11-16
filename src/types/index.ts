@@ -18,6 +18,24 @@ export interface SBT {
   rank?: 'bronze' | 'silver' | 'gold' | 'platinum';
   issuedDate?: Date;
   expiryDate?: Date;
+  // 店舗情報
+  shopId?: number;
+  shopName?: string;
+  shopCategory?: string;
+  // 追加詳細情報
+  badges?: string[];
+  achievements?: string[];
+  benefits?: string[];
+  visitCount?: number;
+  requiredVisits?: number;
+  // 画像・メディア
+  thumbnailUrl?: string;
+  bannerUrl?: string;
+  animationUrl?: string;
+  // メタデータ
+  external_url?: string;
+  background_color?: string;
+  youtube_url?: string;
 }
 
 export interface SBTBalance {
@@ -103,6 +121,48 @@ export interface SBTPaymentRule {
   monthlyLimit?: bigint;
   allowedNetworks: NetworkType[];
   rank?: 'bronze' | 'silver' | 'gold' | 'platinum';
+}
+
+/**
+ * 店舗情報
+ */
+export interface ShopInfo {
+  id: number;
+  name: string;
+  category: string;
+  description?: string;
+  address?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  website?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  wallet: `0x${string}`;
+  requiredVisits: number;
+  sbtTemplate?: {
+    name: string;
+    description: string;
+    imageUrl: string;
+    rank: 'bronze' | 'silver' | 'gold' | 'platinum';
+    benefits: string[];
+  };
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+/**
+ * SBT統計情報
+ */
+export interface SBTStats {
+  totalSBTs: number;
+  sbtsByRank: Record<'bronze' | 'silver' | 'gold' | 'platinum', number>;
+  sbtsByShop: Record<number, number>;
+  recentAchievements: SBT[];
+  totalVisits: number;
+  activeShops: number;
 }
 
 /**

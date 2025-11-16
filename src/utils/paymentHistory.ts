@@ -15,11 +15,13 @@ export function savePaymentHistory(
     sbtUsed?: string[];
     discount?: number;
   }
-): void {
+): string {
   const storageKey = `payment_history_${address}`;
   
+  const paymentId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
   const newEntry: PaymentHistory = {
-    id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: paymentId,
     amount: payment.amount,
     recipient: payment.recipient,
     network: payment.network,
@@ -29,7 +31,7 @@ export function savePaymentHistory(
     memo: payment.memo,
     sbtUsed: payment.sbtUsed,
     discount: payment.discount,
-    status: payment.txHash ? 'success' : 'pending',
+    status: 'pending', // 常にpendingで開始
   };
 
   console.log('Saving payment history:', { storageKey, newEntry, address });
@@ -47,8 +49,11 @@ export function savePaymentHistory(
     
     localStorage.setItem(storageKey, JSON.stringify(trimmed));
     console.log('Payment history saved successfully. New count:', trimmed.length);
+    
+    return paymentId;
   } catch (error) {
     console.error('Failed to save payment history:', error);
+    return paymentId;
   }
 }
 

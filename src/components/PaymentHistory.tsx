@@ -18,16 +18,57 @@ export function PaymentHistoryComponent() {
     }
   }, [address]);
 
-  // 定期的に履歴を更新（新しい決済を検出）
+  // 定期的に履歴を更新（新しい決済を検出）および未完了トランザクションの確認
   useEffect(() => {
     if (!address) return;
     
     const interval = setInterval(() => {
       loadHistory();
-    }, 2000); // 2秒ごとに更新
+      // 未完了の決済をチェック
+      checkPendingTransactions();
+    }, 3000); // 3秒ごとに更新
 
     return () => clearInterval(interval);
   }, [address]);
+
+  const checkPendingTransactions = async () => {
+    if (!address) return;
+    
+    const storageKey = `payment_history_${address}`;
+    const stored = localStorage.getItem(storageKey);
+    if (!stored) return;
+    
+    try {
+      const history = JSON.parse(stored);
+      let hasUpdates = false;
+      
+      const updatedHistory = history.map((item: any) => {
+        // pending状態でtxHashがある場合、一定時間経過後にsuccessに変更
+        if (item.status === 'pending' && item.txHash) {
+          const timeDiff = new Date().getTime() - new Date(item.timestamp).getTime();
+          // 1分経過後に成功扱いにする
+          if (timeDiff > 60000) {
+            hasUpdates = true;
+            return { ...item, status: 'success' };
+          }
+        }
+        return item;
+      });
+      
+      if (hasUpdates) {
+        localStorage.setItem(storageKey, JSON.stringify(updatedHistory));
+        setHistory(updatedHistory.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        })).sort((a: PaymentHistory, b: PaymentHistory) => 
+          b.timestamp.getTime() - a.timestamp.getTime()
+        ));
+        console.log('Updated pending transactions to success');
+      }
+    } catch (error) {
+      console.error('Failed to check pending transactions:', error);
+    }
+  };
 
   const loadHistory = () => {
     if (!address) return;

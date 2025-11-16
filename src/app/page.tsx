@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { QRScannerComponent } from '../components/QRScannerSimple';
 import { WalletConnector } from '../components/WalletConnector';
-import { SBTDisplay } from '../components/SBTDisplay';
+import { SBTGallery } from '../components/SBTGallery';
 import { JPYCBalance } from '../components/JPYCBalance';
 import { PaymentHistoryComponent } from '../components/PaymentHistory';
 import { PaymentProcessor } from '../components/PaymentProcessor';
@@ -77,11 +77,13 @@ export default function Home() {
           <>
             <JPYCBalance />
             
-            <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-                🎖️ 保有SBT
-              </h2>
-              <SBTDisplay userAddress={address} compact={true} />
+            <div className="mb-6">
+              <SBTGallery 
+                userAddress={address} 
+                viewMode="grid" 
+                showStats={true}
+                groupByShop={false}
+              />
             </div>
           </>
         )}

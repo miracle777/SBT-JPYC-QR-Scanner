@@ -95,10 +95,12 @@ export const SBT_ADDRESSES = {
   // Ethereum Sepolia Testnet
   sepolia: getAddress('0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4'),
   
+  // Polygon Amoy Testnet (Chain ID 80002)
+  'polygon-amoy': getAddress('0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4'),
+  
   // 他のネットワークは未デプロイ
   ethereum: undefined,
   polygon: undefined,
-  'polygon-amoy': undefined,
   arbitrum: undefined,
   'arbitrum-sepolia': undefined,
   avalanche: undefined,
@@ -113,7 +115,56 @@ export const REGISTERED_SHOPS = {
   1: {
     id: 1,
     name: 'SBT JPYC Pay Demo Store',
+    category: 'デモ・実験店舗',
+    description: 'SBT JPYCペイのデモンストレーション店舗です',
     wallet: DEPLOYER_ADDRESS,
+    requiredVisits: 3,
+    sbtTemplate: {
+      name: 'Demo Store Loyalty Badge',
+      description: 'デモ店舗の常連客証明SBT',
+      imageUrl: 'https://via.placeholder.com/150/4F46E5/FFFFFF?text=DEMO+SBT',
+      rank: 'bronze' as const,
+      benefits: ['5%割引', '限定商品アクセス', '優先予約']
+    },
+    logoUrl: 'https://via.placeholder.com/100/4F46E5/FFFFFF?text=DEMO',
+    bannerUrl: 'https://via.placeholder.com/400x150/4F46E5/FFFFFF?text=DEMO+STORE',
+    isActive: true,
+  },
+  2: {
+    id: 2,
+    name: 'Cafe JPYC',
+    category: 'カフェ・飲食',
+    description: 'JPYCが使えるおしゃれなカフェ',
+    wallet: DEPLOYER_ADDRESS,
+    requiredVisits: 5,
+    sbtTemplate: {
+      name: 'Cafe Regular Customer',
+      description: 'カフェの常連客証明SBT',
+      imageUrl: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=CAFE+SBT',
+      rank: 'silver' as const,
+      benefits: ['10%割引', '無料ドリンクアップグレード', 'Wi-Fi優先接続']
+    },
+    logoUrl: 'https://via.placeholder.com/100/8B4513/FFFFFF?text=CAFE',
+    bannerUrl: 'https://via.placeholder.com/400x150/8B4513/FFFFFF?text=CAFE+JPYC',
+    isActive: true,
+  },
+  3: {
+    id: 3,
+    name: 'Tech Store JPYC',
+    category: 'エレクトロニクス',
+    description: 'デジタル機器とガジェットの専門店',
+    wallet: DEPLOYER_ADDRESS,
+    requiredVisits: 10,
+    sbtTemplate: {
+      name: 'Tech Enthusiast Badge',
+      description: 'テック愛好家証明SBT',
+      imageUrl: 'https://via.placeholder.com/150/00CED1/FFFFFF?text=TECH+SBT',
+      rank: 'gold' as const,
+      benefits: ['15%割引', '新商品先行販売', 'テクニカルサポート優先']
+    },
+    logoUrl: 'https://via.placeholder.com/100/00CED1/FFFFFF?text=TECH',
+    bannerUrl: 'https://via.placeholder.com/400x150/00CED1/FFFFFF?text=TECH+STORE',
+    isActive: true,
   },
 } as const;
 

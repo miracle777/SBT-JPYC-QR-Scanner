@@ -160,13 +160,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       }
     }
 
-    // 履歴に保存（決済実行前に保存）
-    const newPaymentId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    setPaymentId(newPaymentId);
-    
-    // 位置情報を取得（バックグラウンドで）
-    const locationPromise = getLocationWithAddress();
-    
     // 実際のウォレットのchainIdとnetworkを使用
     const currentChainId = chain.id;
     const chainIdToNetwork: Record<number, NetworkType> = {
@@ -182,8 +175,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     const currentNetwork = chainIdToNetwork[currentChainId] || 'ethereum';
     
     console.log('Saving payment with network:', currentNetwork, 'chainId:', currentChainId);
-    
-    savePaymentHistory(address, {
+
+    // 履歴に保存（決済実行前に保存）
+    const newPaymentId = savePaymentHistory(address, {
       amount,
       recipient: parsedData.address,
       network: currentNetwork,
@@ -191,9 +185,13 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       memo: parsedData.memo,
       sbtUsed: parsedData.sbtRequired,
     });
+    setPaymentId(newPaymentId);
+
+    // 位置情報を取得（バックグラウンドで）
+    const locationPromise = getLocationWithAddress();
 
     // 位置情報が取得できたら履歴を更新
-    locationPromise.then(location => {
+    locationPromise.then((location: any) => {
       console.log('Location acquired:', location);
       if (location) {
         const storageKey = `payment_history_${address}`;
@@ -213,7 +211,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       } else {
         console.log('Location not available');
       }
-    }).catch(error => {
+    }).catch((error: any) => {
       console.error('Failed to get location:', error);
     });
 
