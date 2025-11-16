@@ -116,7 +116,7 @@ export function SBTSyncChecker({ userAddress, onClose }: SBTSyncCheckerProps) {
     }
 
     if (status.currentNetwork && !['Sepolia Testnet', 'Polygon Amoy Testnet'].includes(status.currentNetwork)) {
-      recommendations.push('SepoliaまたはPolygon Amoyテストネットに切り替えてください');
+      recommendations.push('SepoliaまたはPolygon Amoyテストネットに切り替えてください（Polygon Mainnetは未対応）');
     }
 
     if (status.deviceType === 'mobile') {

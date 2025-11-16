@@ -182,112 +182,21 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
       }
     }
 
-    // Polygon Amoyネットワークからも取得
-    if (SBT_ADDRESSES['polygon-amoy']) {
+    // Polygon Mainnetネットワークから取得
+    if (SBT_ADDRESSES.polygon) {
       try {
-        const amoyCreateClient = createPublicClient({
-          chain: {
-            id: 80002,
-            name: 'Polygon Amoy',
-            network: 'polygon-amoy',
-            nativeCurrency: {
-              decimals: 18,
-              name: 'MATIC',
-              symbol: 'MATIC',
-            },
-            rpcUrls: {
-              default: { http: ['https://rpc-amoy.polygon.technology'] },
-              public: { http: ['https://rpc-amoy.polygon.technology'] },
-            },
-          },
-          transport: http(),
-        });
-
-        const contractAddress = SBT_ADDRESSES['polygon-amoy'];
-        console.log('Checking SBT contract on Polygon Amoy:', contractAddress);
-        
-        // ユーザーが保有するSBTの数を取得
-        const balance = await amoyCreateClient.readContract({
-          address: contractAddress,
-          abi: SBT_ABI,
-          functionName: 'balanceOf',
-          args: [userAddress],
-        }) as bigint;
-        
-        console.log('Polygon Amoy SBT balance:', balance.toString());
-        
-        if (balance > 0n) {
-          // Polygon AmoyでSBTを発見
-          const shopId = 2; // デフォルトでCafe JPYCとする
-          const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
-          
-          // Polygon Amoy用の画像URL生成
-          const amoyBadgeName = encodeURIComponent('来店記念');
-          const amoyShopName = encodeURIComponent(shopInfo?.name || 'Cafe JPYC');
-          const amoyImageUrl = `https://img.shields.io/badge/${amoyBadgeName}-${amoyShopName}-8B5CF6?style=for-the-badge&logo=polygon&logoColor=white`;
-          
-          const amoyMetadata = {
-            name: `来店記念 - ${shopInfo?.name || 'Cafe JPYC'}`,
-            description: `${shopInfo?.name || 'Cafe JPYC'}でのスタンプカード (Polygon Amoy)`,
-            image: amoyImageUrl,
-            external_url: 'https://jpyc.jp',
-            background_color: '8B5CF6',
-            attributes: [
-              {
-                trait_type: 'Shop Name',
-                value: shopInfo?.name || 'Cafe JPYC'
-              },
-              {
-                trait_type: 'Shop Category',
-                value: shopInfo?.category || 'カフェ・飲食'
-              },
-              {
-                trait_type: 'Rank',
-                value: shopInfo?.sbtTemplate?.rank || 'silver'
-              },
-              {
-                trait_type: 'Network',
-                value: 'Polygon Amoy Testnet'
-              },
-              {
-                trait_type: 'Token Standard',
-                value: 'ERC721'
-              }
-            ]
-          };
-          
-          const amoyToken: SBT = {
-            id: `sbt-polygon-amoy-${contractAddress}`,
-            name: amoyMetadata.name,
-            symbol: shopInfo?.name?.substring(0, 4).toUpperCase() || 'CAFE',
-            address: contractAddress,
-            issuer: shopInfo?.name || 'Polygon Amoy Network',
-            issuerAddress: contractAddress,
-            description: amoyMetadata.description,
-            network: 'polygon-amoy',
-            chainId: 80002,
-            tokenId: 1n,
-            metadata: amoyMetadata,
-            imageUrl: amoyImageUrl,
-            rank: shopInfo?.sbtTemplate?.rank || 'silver',
-            issuedDate: new Date(),
-            // 拡張情報
-            shopId: shopId,
-            shopName: shopInfo?.name,
-            shopCategory: shopInfo?.category,
-            benefits: shopInfo?.sbtTemplate?.benefits ? [...shopInfo.sbtTemplate.benefits] : [],
-            thumbnailUrl: amoyImageUrl,
-            bannerUrl: shopInfo?.bannerUrl,
-            external_url: amoyMetadata.external_url,
-            background_color: amoyMetadata.background_color,
-          };
-          sbts.push(amoyToken);
-        }
+        const polygonSBTs = await fetchSBTsFromPolygonMainnet(userAddress);
+        sbts.push(...polygonSBTs);
       } catch (error) {
-        console.error('Failed to fetch SBTs from Polygon Amoy:', error);
+        console.error('Failed to fetch SBTs from Polygon Mainnet:', error);
       }
     }
 
+    // Polygon Amoyネットワークからも取得
+    if (SBT_ADDRESSES['polygon-amoy']) {
+      try {
+        const amoySBTs = await fetchSBTsFromPolygonAmoy(userAddress);
+        sbts.push(...amoySBTs);
     if (sbts.length > 0) {
       console.log(`✅ Found ${sbts.length} SBTs across networks`);
       return sbts;
@@ -300,6 +209,115 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
     console.error('Failed to fetch SBTs:', error);
     return [];
   }
+}
+
+// Polygon Amoy Testnetからのみ呼ばれる関数
+async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT[]> {
+  const sbts: SBT[] = [];
+  
+    const amoyCreateClient = createPublicClient({
+      chain: {
+        id: 80002,
+        name: 'Polygon Amoy',
+        network: 'polygon-amoy',
+        nativeCurrency: {
+          decimals: 18,
+          name: 'MATIC',
+          symbol: 'MATIC',
+        },
+        rpcUrls: {
+          default: { http: ['https://rpc-amoy.polygon.technology'] },
+          public: { http: ['https://rpc-amoy.polygon.technology'] },
+        },
+      },
+      transport: http(),
+    });
+
+    const contractAddress = SBT_ADDRESSES['polygon-amoy']!;
+    console.log('Checking SBT contract on Polygon Amoy:', contractAddress);
+    
+    // ユーザーが保有するSBTの数を取得
+    const balance = await amoyCreateClient.readContract({
+      address: contractAddress,
+      abi: SBT_ABI,
+      functionName: 'balanceOf',
+      args: [userAddress],
+    }) as bigint;
+    
+    console.log('Polygon Amoy SBT balance:', balance.toString());
+    
+    if (balance > 0n) {
+      // Polygon AmoyでSBTを発見
+      const shopId = 2; // デフォルトでCafe JPYCとする
+      const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
+      
+      // Polygon Amoy用の画像URL生成
+      const amoyBadgeName = encodeURIComponent('来店記念');
+      const amoyShopName = encodeURIComponent(shopInfo?.name || 'Cafe JPYC');
+      const amoyImageUrl = `https://img.shields.io/badge/${amoyBadgeName}-${amoyShopName}-8B5CF6?style=for-the-badge&logo=polygon&logoColor=white`;
+      
+      const amoyMetadata = {
+        name: `来店記念 - ${shopInfo?.name || 'Cafe JPYC'}`,
+        description: `${shopInfo?.name || 'Cafe JPYC'}でのスタンプカード (Polygon Amoy)`,
+        image: amoyImageUrl,
+        external_url: 'https://jpyc.jp',
+        background_color: '8B5CF6',
+        attributes: [
+          {
+            trait_type: 'Shop Name',
+            value: shopInfo?.name || 'Cafe JPYC'
+          },
+          {
+            trait_type: 'Shop Category',
+            value: shopInfo?.category || 'カフェ・飲食'
+          },
+          {
+            trait_type: 'Rank',
+            value: shopInfo?.sbtTemplate?.rank || 'silver'
+          },
+          {
+            trait_type: 'Network',
+            value: 'Polygon Amoy Testnet'
+          },
+          {
+            trait_type: 'Token Standard',
+            value: 'ERC721'
+          }
+        ]
+      };
+      
+      const amoyToken: SBT = {
+        id: `sbt-polygon-amoy-${contractAddress}`,
+        name: amoyMetadata.name,
+        symbol: shopInfo?.name?.substring(0, 4).toUpperCase() || 'CAFE',
+        address: contractAddress,
+        issuer: shopInfo?.name || 'Polygon Amoy Network',
+        issuerAddress: contractAddress,
+        description: amoyMetadata.description,
+        network: 'polygon-amoy',
+        chainId: 80002,
+        tokenId: 1n,
+        metadata: amoyMetadata,
+        imageUrl: amoyImageUrl,
+        rank: shopInfo?.sbtTemplate?.rank || 'silver',
+        issuedDate: new Date(),
+        // 拡張情報
+        shopId: shopId,
+        shopName: shopInfo?.name,
+        shopCategory: shopInfo?.category,
+        benefits: shopInfo?.sbtTemplate?.benefits ? [...shopInfo.sbtTemplate.benefits] : [],
+        thumbnailUrl: amoyImageUrl,
+        bannerUrl: shopInfo?.bannerUrl,
+        external_url: amoyMetadata.external_url,
+        background_color: amoyMetadata.background_color,
+      };
+      sbts.push(amoyToken);
+    }
+  } catch (error) {
+    console.error('Failed to fetch SBTs from Polygon Amoy:', error);
+  }
+  
+  return sbts;
 }
 
 async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepolia'): Promise<SBT[]> {

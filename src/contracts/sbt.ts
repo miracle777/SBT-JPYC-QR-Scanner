@@ -92,15 +92,15 @@ export const SBT_ABI = [
 
 // SBT Contract Addresses per Network
 export const SBT_ADDRESSES = {
-  // Ethereum Sepolia Testnet
+  // ✅ 対応済み: Ethereum Sepolia Testnet
   sepolia: getAddress('0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4'),
   
-  // Polygon Amoy Testnet (Chain ID 80002)
-  'polygon-amoy': getAddress('0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4'),
+  // ✅ 対応済み: Polygon Amoy Testnet (Chain ID 80002)
+  'polygon-amoy': getAddress('0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E'),
   
-  // 他のネットワークは未デプロイ
+  // ❌ 未デプロイ: 他のネットワーク
   ethereum: undefined,
-  polygon: undefined,
+  polygon: undefined, // 🚧 未デプロイ（将来対応予定）
   avalanche: undefined,
   'avalanche-fuji': undefined,
 } as const;
