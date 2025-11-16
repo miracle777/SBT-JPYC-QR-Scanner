@@ -123,110 +123,214 @@ export function getNetworkInfo(network: NetworkType): PaymentNetwork {
 }
 
 /**
- * QRコード文字列をパース
+ * QRコード文字列をパース（改善版）
  */
 export function parseQRCodeData(qrString: string): PaymentQRData | null {
   try {
-    // JSON形式（店舗QRコード）
-    if (qrString.trim().startsWith('{')) {
-      const data = JSON.parse(qrString);
-      
-      if (data.type === 'payment' && data.shopWallet && data.contractAddress) {
-        // Wei単位からJPYC単位に変換（18桁）
-        const amountInJPYC = data.amount ? 
-          (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
-          undefined;
+    console.log('Parsing QR code:', qrString);
+    
+    // 空文字チェック
+    if (!qrString || qrString.trim() === '') {
+      console.log('Empty QR code string');
+      return null;
+    }
+    
+    const trimmed = qrString.trim();
+    
+    // 1. JSON形式（カスタムJPYC形式、店舗QRコードなど）
+    if (trimmed.startsWith('{')) {
+      try {
+        const data = JSON.parse(trimmed);
+        console.log('Parsed JSON data:', data);
         
-        return {
-          type: 'payment',
-          address: data.shopWallet as `0x${string}`,
-          amount: amountInJPYC,
-          chainId: data.chainId,
-          contractAddress: data.contractAddress as `0x${string}`,
-          shopName: data.shopName,
-          shopId: data.shopId,
-          paymentId: data.paymentId,
-          expiresAt: data.expiresAt,
-          memo: data.description || data.shopName,
-        };
+        // 新しいJPYC決済形式
+        if (data.type === 'JPYC_PAYMENT') {
+          return {
+            type: 'jpyc',
+            address: data.to as `0x${string}`,
+            amount: data.amount,
+            network: (data.network as NetworkType) || 'sepolia',
+            chainId: data.chainId || SUPPORTED_NETWORKS[data.network as NetworkType]?.chainId,
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.merchant?.name,
+            shopId: data.merchant?.id,
+            memo: data.merchant?.description,
+            timestamp: data.timestamp,
+            expiresAt: data.expires,
+          };
+        }
+        
+        // 従来の店舗QRコード形式
+        if (data.type === 'payment' && data.shopWallet && data.contractAddress) {
+          const amountInJPYC = data.amount ? 
+            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
+            undefined;
+          
+          return {
+            type: 'payment',
+            address: data.shopWallet as `0x${string}`,
+            amount: amountInJPYC,
+            chainId: data.chainId,
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.shopName,
+            shopId: data.shopId,
+            paymentId: data.paymentId,
+            expiresAt: data.expiresAt,
+            memo: data.description || data.shopName,
+          };
+        }
+        
+        // その他のJSON形式も柔軟に対応
+        if (data.address || data.to) {
+          return {
+            type: 'payment',
+            address: (data.address || data.to) as `0x${string}`,
+            amount: data.amount,
+            network: (data.network as NetworkType) || 'ethereum',
+            chainId: data.chainId,
+            contractAddress: data.contractAddress as `0x${string}`,
+            memo: data.memo || data.description || data.note,
+          };
+        }
+        
+      } catch (jsonError) {
+        console.error('JSON parsing failed:', jsonError);
       }
     }
 
-    // ethereum: 形式: ethereum:0xaddress?amount=100&network=sepolia
-    if (qrString.startsWith('ethereum:')) {
-      const url = new URL(qrString.replace('ethereum:', 'https://dummy/'));
-      const address = url.pathname as `0x${string}`;
-      const amount = url.searchParams.get('amount') || undefined;
-      const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-      const chainId = SUPPORTED_NETWORKS[network]?.chainId;
+    // 2. EIP-681形式: ethereum:0xaddress[@chainId][?parameters]
+    if (trimmed.startsWith('ethereum:')) {
+      try {
+        // ethereum:0xaddress@chainId?value=amount形式の解析
+        const ethMatch = trimmed.match(/^ethereum:([^@?]+)(?:@(\d+))?(?:\?(.+))?$/);
+        if (ethMatch) {
+          const [, address, chainIdStr, paramStr] = ethMatch;
+          const params = new URLSearchParams(paramStr || '');
+          
+          const chainId = chainIdStr ? parseInt(chainIdStr) : undefined;
+          const network = chainId ? getNetworkFromChainId(chainId) || 'ethereum' : 'ethereum';
+          
+          // value はETH単位（Wei）、functionName があればコントラクト呼び出し
+          const value = params.get('value');
+          const amount = value ? (BigInt(value) / BigInt(10 ** 18)).toString() : undefined;
+          
+          return {
+            type: 'ethereum',
+            address: address as `0x${string}`,
+            amount,
+            network,
+            chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
+          };
+        }
+        
+        // フォールバック: URLパース
+        const url = new URL(trimmed.replace('ethereum:', 'https://dummy/'));
+        const address = url.pathname as `0x${string}`;
+        const amount = url.searchParams.get('amount') || url.searchParams.get('value') || undefined;
+        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
+        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
 
+        return {
+          type: 'ethereum',
+          address,
+          amount,
+          network,
+          chainId,
+        };
+      } catch (eipError) {
+        console.error('EIP-681 parsing failed:', eipError);
+      }
+    }
+
+    // 3. 単純なアドレス形式: 0x...
+    if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) {
       return {
         type: 'ethereum',
-        address,
-        amount,
-        network,
-        chainId,
+        address: trimmed as `0x${string}`,
+        network: 'ethereum',
+        chainId: SUPPORTED_NETWORKS.ethereum.chainId,
       };
     }
 
-    // jpyc: 形式: jpyc:0xaddress?amount=100&network=sepolia
-    if (qrString.startsWith('jpyc:')) {
-      const url = new URL(qrString.replace('jpyc:', 'https://dummy/'));
-      const address = url.pathname as `0x${string}`;
-      const amount = url.searchParams.get('amount') || undefined;
-      const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-      const chainId = SUPPORTED_NETWORKS[network]?.chainId;
+    // 4. jpyc: 形式: jpyc:address?amount=100&network=sepolia
+    if (trimmed.startsWith('jpyc:')) {
+      try {
+        const url = new URL(trimmed.replace('jpyc:', 'https://dummy/'));
+        const address = url.pathname as `0x${string}`;
+        const amount = url.searchParams.get('amount') || undefined;
+        const network = (url.searchParams.get('network') as NetworkType) || 'sepolia';
+        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
 
-      return {
-        type: 'jpyc',
-        address,
-        amount,
-        network,
-        chainId,
-      };
+        return {
+          type: 'jpyc',
+          address,
+          amount,
+          network,
+          chainId,
+          contractAddress: url.searchParams.get('contract') as `0x${string}` || undefined,
+        };
+      } catch (jpycError) {
+        console.error('JPYC parsing failed:', jpycError);
+      }
     }
 
-    // payment: 形式: payment:0xaddress?amount=100&network=sepolia&memo=xxx
-    if (qrString.startsWith('payment:')) {
-      const url = new URL(qrString.replace('payment:', 'https://dummy/'));
-      const address = url.pathname as `0x${string}`;
-      const amount = url.searchParams.get('amount') || undefined;
-      const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-      const memo = url.searchParams.get('memo') || undefined;
-      const chainId = SUPPORTED_NETWORKS[network]?.chainId;
+    // 5. payment: 形式
+    if (trimmed.startsWith('payment:')) {
+      try {
+        const url = new URL(trimmed.replace('payment:', 'https://dummy/'));
+        const address = url.pathname as `0x${string}`;
+        const amount = url.searchParams.get('amount') || undefined;
+        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
+        const memo = url.searchParams.get('memo') || undefined;
+        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
 
-      return {
-        type: 'payment',
-        address,
-        amount,
-        network,
-        memo,
-        chainId,
-      };
+        return {
+          type: 'payment',
+          address,
+          amount,
+          network,
+          memo,
+          chainId,
+        };
+      } catch (paymentError) {
+        console.error('Payment parsing failed:', paymentError);
+      }
     }
 
-    // sbt-payment: 形式
-    if (qrString.startsWith('sbt-payment:')) {
-      const url = new URL(qrString.replace('sbt-payment:', 'https://dummy/'));
-      const address = url.pathname as `0x${string}`;
-      const amount = url.searchParams.get('amount') || undefined;
-      const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-      const sbtRequired = url.searchParams.get('sbt')?.split(',') || [];
-      const minimumSBTRank = (url.searchParams.get('sbt-rank') as any) || undefined;
-      const chainId = SUPPORTED_NETWORKS[network]?.chainId;
+    // 6. sbt-payment: 形式
+    if (trimmed.startsWith('sbt-payment:')) {
+      try {
+        const url = new URL(trimmed.replace('sbt-payment:', 'https://dummy/'));
+        const address = url.pathname as `0x${string}`;
+        const amount = url.searchParams.get('amount') || undefined;
+        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
+        const sbtRequired = url.searchParams.get('sbt')?.split(',') || [];
+        const minimumSBTRank = (url.searchParams.get('sbt-rank') as any) || undefined;
+        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
 
-      return {
-        type: 'sbt-payment',
-        address,
-        amount,
-        network,
-        chainId,
-        sbtRequired,
-        minimumSBTRank,
-      };
+        return {
+          type: 'sbt-payment',
+          address,
+          amount,
+          network,
+          chainId,
+          sbtRequired,
+          minimumSBTRank,
+        };
+      } catch (sbtError) {
+        console.error('SBT payment parsing failed:', sbtError);
+      }
     }
 
+    // 7. WalletConnect URI（一般的）
+    if (trimmed.startsWith('wc:')) {
+      console.log('WalletConnect URI detected but not supported for payments');
+      return null;
+    }
+
+    console.log('Unknown QR code format:', trimmed);
     return null;
+    
   } catch (error) {
     console.error('QR code parsing error:', error);
     return null;
@@ -331,4 +435,63 @@ export function getNetworkColor(network: NetworkType): string {
  */
 export function getNetworkDisplayName(network: NetworkType): string {
   return SUPPORTED_NETWORKS[network].displayName;
+}
+
+/**
+ * QRコードデータを自動判別（拡張版）
+ */
+export function detectQRCodeFormat(qrString: string): string {
+  if (!qrString) return 'unknown';
+  
+  const trimmed = qrString.trim();
+  
+  if (trimmed.startsWith('{')) {
+    try {
+      const data = JSON.parse(trimmed);
+      if (data.type === 'JPYC_PAYMENT') return 'JPYC Payment v2';
+      if (data.type === 'payment') return 'Shop Payment';
+      if (data.shopWallet) return 'Shop QR Code';
+      return 'JSON Format';
+    } catch {
+      return 'Invalid JSON';
+    }
+  }
+  
+  if (trimmed.startsWith('ethereum:')) return 'EIP-681 (Ethereum)';
+  if (trimmed.startsWith('jpyc:')) return 'JPYC Custom';
+  if (trimmed.startsWith('payment:')) return 'Payment URL';
+  if (trimmed.startsWith('sbt-payment:')) return 'SBT Payment';
+  if (trimmed.startsWith('wc:')) return 'WalletConnect';
+  if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) return 'Ethereum Address';
+  
+  return 'Unknown Format';
+}
+
+/**
+ * QRコードの形式詳細を表示
+ */
+export function describeQRCodeFormat(qrString: string): string {
+  const format = detectQRCodeFormat(qrString);
+  
+  switch (format) {
+    case 'JPYC Payment v2':
+      return 'JPYC決済（新版）- 店舗情報付きの高機能決済QRコード';
+    case 'Shop Payment':
+    case 'Shop QR Code':
+      return 'JPYC店舗QRコード - 店舗固有の決済用QRコード';
+    case 'EIP-681 (Ethereum)':
+      return 'Ethereum標準（EIP-681）- MetaMask等で対応';
+    case 'JPYC Custom':
+      return 'JPYC独自形式 - JPYCアプリ専用QRコード';
+    case 'Payment URL':
+      return '汎用決済URL - 複数の決済方法に対応';
+    case 'SBT Payment':
+      return 'SBT決済 - SBT保有者限定の特別決済';
+    case 'WalletConnect':
+      return 'WalletConnect - ウォレット接続（決済不可）';
+    case 'Ethereum Address':
+      return 'Ethereumアドレス - シンプルな送金用アドレス';
+    default:
+      return '未対応形式 - この形式は現在サポートされていません';
+  }
 }

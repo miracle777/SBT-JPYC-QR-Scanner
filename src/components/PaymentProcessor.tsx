@@ -5,7 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchCh
 import { parseEther, parseUnits } from 'viem';
 import { AlertCircle, CheckCircle2, Loader2, Send, Award } from 'lucide-react';
 import { PaymentQRData, NetworkType } from '../types';
-import { parseQRCodeData, validateNetwork, getNetworkInfo } from '../utils/network';
+import { parseQRCodeData, validateNetwork, getNetworkInfo, detectQRCodeFormat, describeQRCodeFormat } from '../utils/network';
 import { canPayWithNetwork, getUserVisitCount, checkUserHasSBT } from '../utils/sbt';
 import { NetworkValidation } from './NetworkValidation';
 import { savePaymentHistory, updatePaymentStatus } from '../utils/paymentHistory';
@@ -21,6 +21,8 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { switchChain } = useSwitchChain();
   const [parsedData, setParsedData] = useState<PaymentQRData | null>(null);
+  const [qrFormat, setQrFormat] = useState<string>('');
+  const [qrDescription, setQrDescription] = useState<string>('');
   const [validationResult, setValidationResult] = useState<any>(null);
   const [step, setStep] = useState<'parse' | 'validate' | 'confirm' | 'sending' | 'success' | 'error'>('parse');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -34,9 +36,19 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   useEffect(() => {
     if (!qrData || !address) return;
 
+    console.log('Processing QR data:', qrData);
+    
+    // QR形式の検出
+    const format = detectQRCodeFormat(qrData);
+    const description = describeQRCodeFormat(qrData);
+    setQrFormat(format);
+    setQrDescription(description);
+
     const parsed = parseQRCodeData(qrData);
+    console.log('Parsed payment data:', parsed);
+    
     if (!parsed) {
-      setErrorMessage('QRコードの形式が無効です');
+      setErrorMessage(`QRコード解析に失敗しました。\n形式: ${format}\n説明: ${description}`);
       setStep('error');
       return;
     }
@@ -288,6 +300,19 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           決済内容の確認
         </h2>
+        
+        {/* QR形式情報表示 */}
+        {qrFormat && (
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="text-sm text-gray-600 mb-1">QRコード形式</div>
+            <div className="text-sm font-medium text-gray-800">
+              {qrFormat}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {qrDescription}
+            </div>
+          </div>
+        )}
         
         <div className="space-y-4 mb-6">
           {parsedData.shopName && (
