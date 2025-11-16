@@ -64,17 +64,16 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
     try {
       if (typeof window.ethereum !== 'undefined' && (window.ethereum as any).request) {
         // MetaMaskにSBTを追加 - TypeScript型チェックを完全に回避
-        try {
-          await (window.ethereum as any).request({
-            method: 'wallet_watchAsset',
-            params: {
-              type: 'ERC721',
-              options: {
-                address: sbt.address,
-                tokenId: sbt.tokenId?.toString() || '0',
-              },
+        await (window.ethereum as any).request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC721',
+            options: {
+              address: sbt.address,
+              tokenId: sbt.tokenId?.toString() || '0',
             },
-          });
+          },
+        });
         
         console.log('SBT added to MetaMask successfully');
         alert(`✅ SBT「${sbt.name}」をMetaMaskに追加しました！\n\nMetaMaskのNFTタブで確認してください。`);

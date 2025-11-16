@@ -185,7 +185,7 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
     // Polygon Mainnetネットワークから取得
     if (SBT_ADDRESSES.polygon) {
       try {
-        const polygonSBTs = await fetchSBTsFromPolygonAmoy(userAddress);
+        const polygonSBTs = await fetchSBTsFromPolygonMainnet(userAddress);
         sbts.push(...polygonSBTs);
       } catch (error) {
         console.error('Failed to fetch SBTs from Polygon Mainnet:', error);
@@ -197,11 +197,6 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
       try {
         const amoySBTs = await fetchSBTsFromPolygonAmoy(userAddress);
         sbts.push(...amoySBTs);
-      } catch (error) {
-        console.error('Failed to fetch SBTs from Polygon Amoy:', error);
-      }
-    }
-    
     if (sbts.length > 0) {
       console.log(`✅ Found ${sbts.length} SBTs across networks`);
       return sbts;
@@ -351,10 +346,6 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
     // 各SBTのトークンIDを取得
     for (let i = 0; i < Number(balance); i++) {
       try {
-        // 固定値の宣言を早期に移動
-        const shopId = 1; // Shop ID: 1 (SBT JPYC Pay Demo Store)
-        const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
-        
         const tokenId = await client.readContract({
           address: contractAddress,
           abi: SBT_ABI,
@@ -377,7 +368,6 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
         // メタデータを取得（JSONの場合）
         let metadata: any = {};
         let imageUrl = '';
-        let actualShopInfo = shopInfo; // 初期値としてshopInfoを設定
         
         if (tokenURI.startsWith('data:application/json;base64,')) {
           // Base64エンコードされたJSON
@@ -394,12 +384,6 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
           } catch (e) {
             console.error('Failed to fetch metadata from URL:', e);
           }
-        }
-        
-        // メタデータが取得できた後、ショップ情報を更新
-        const extractedShopId = metadata.shopId || metadata.shop_id || shopId;
-        if (extractedShopId) {
-          actualShopInfo = REGISTERED_SHOPS[extractedShopId as keyof typeof REGISTERED_SHOPS] || actualShopInfo;
         }
         
         // 画像URLが取得できない場合はデフォルト画像を使用
@@ -455,7 +439,13 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
         console.log('Enhanced SBT Image URL:', imageUrl);
         console.log('Enhanced SBT Metadata:', enhancedMetadata);
         
+        // shopIdを特定（tokenIdから推測、またはメタデータから）
+        const shopId = 1; // Shop ID: 1 (SBT JPYC Pay Demo Store)
+        const shopInfo = REGISTERED_SHOPS[shopId as keyof typeof REGISTERED_SHOPS];
+        
         // メタデータからより詳細な情報を抽出
+        const extractedShopId = metadata.shopId || metadata.shop_id || shopId;
+        const actualShopInfo = REGISTERED_SHOPS[extractedShopId as keyof typeof REGISTERED_SHOPS] || shopInfo;
         
         const sbt: SBT = {
           id: `sbt-${contractAddress}-${tokenId}`,
