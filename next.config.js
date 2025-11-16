@@ -58,15 +58,22 @@ const nextConfig = {
         net: false,
         tls: false,
         crypto: false,
+        path: false,
+        stream: false,
+        util: false,
+        url: false,
       };
       
-      // React Native専用パッケージの警告を抑制
+      // React Native専用パッケージのfallback設定
       config.resolve.alias = {
         ...config.resolve.alias,
+        // AsyncStorageのWeb互換性を保つためのポリフィル
         '@react-native-async-storage/async-storage': require.resolve('./src/utils/asyncStoragePolyfill.ts'),
+        // その他のReact Native専用パッケージを無効化
         '@react-native-cookies/cookies': false,
         'react-native': false,
         'react-native-randombytes': false,
+        'react-native-get-random-values': false,
       };
 
       // MetaMask SDK関連の問題を解決
