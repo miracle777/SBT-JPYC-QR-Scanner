@@ -20,13 +20,15 @@ interface SBTGalleryProps {
   viewMode?: 'grid' | 'list';
   showStats?: boolean;
   groupByShop?: boolean;
+  enableTagFilter?: boolean;
 }
 
 export function SBTGallery({ 
   userAddress, 
   viewMode: initialViewMode = 'grid',
   showStats = true,
-  groupByShop = false 
+  groupByShop = false,
+  enableTagFilter = false
 }: SBTGalleryProps) {
   const [sbts, setSBTs] = useState<SBT[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,6 +36,7 @@ export function SBTGallery({
   const [selectedSBT, setSelectedSBT] = useState<SBT | null>(null);
   const [filterRank, setFilterRank] = useState<string>('all');
   const [filterShop, setFilterShop] = useState<string>('all');
+  const [filterTag, setFilterTag] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
   const [stats, setStats] = useState<SBTStats | null>(null);
@@ -133,6 +136,9 @@ export function SBTGallery({
     
     // ショップフィルター
     if (filterShop !== 'all' && sbt.shopId?.toString() !== filterShop) return false;
+    
+    // タグフィルター（店舗カテゴリ）
+    if (enableTagFilter && filterTag !== 'all' && sbt.shopCategory !== filterTag) return false;
     
     // 検索クエリフィルター
     if (searchQuery && !sbt.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -430,6 +436,20 @@ export function SBTGallery({
               </option>
             ))}
           </select>
+
+          {/* タグフィルター（カテゴリ） */}
+          {enableTagFilter && (
+            <select
+              value={filterTag}
+              onChange={(e) => setFilterTag(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">全カテゴリ</option>
+              <option value="デモ・実験店舗">🧪 デモ・実験店舗</option>
+              <option value="カフェ・飲食">☕ カフェ・飲食</option>
+              <option value="エレクトロニクス">⚡ エレクトロニクス</option>
+            </select>
+          )}
           
           {/* 表示モード切り替え */}
           <div className="flex items-center bg-gray-100 rounded-lg">

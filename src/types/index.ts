@@ -25,7 +25,7 @@ export interface SBT {
   // 追加詳細情報
   badges?: string[];
   achievements?: string[];
-  benefits?: string[];
+  benefits?: readonly string[];
   visitCount?: number;
   requiredVisits?: number;
   // 画像・メディア
@@ -146,7 +146,7 @@ export interface ShopInfo {
     description: string;
     imageUrl: string;
     rank: 'bronze' | 'silver' | 'gold' | 'platinum';
-    benefits: string[];
+    benefits: readonly string[];
   };
   isActive: boolean;
   createdAt?: Date;

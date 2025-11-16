@@ -17,6 +17,7 @@ export default function Home() {
   const { isConnected, address } = useAccount();
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [showPaymentProcessor, setShowPaymentProcessor] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
 
   const handleScanResult = (data: string) => {
@@ -55,9 +56,21 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       <div className="max-w-2xl mx-auto px-4 py-6">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            SBT-JPYC-QR-Scanner
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <div></div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              SBT-JPYC-QR-Scanner
+            </h1>
+            <button
+              onClick={() => setShowHelp(true)}
+              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="ヘルプとSBTの説明"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
           <p className="text-sm text-gray-600">
             SBT表示とネットワーク検証機能付きJPYC決済アプリ
           </p>
@@ -121,8 +134,9 @@ export default function Home() {
                 userAddress={address} 
                 viewMode="grid" 
                 showStats={true}
-                groupByShop={false}
-              />
+                groupByShop={true}
+                enableTagFilter={true}
+              />  
             </div>
           </>
         )}
@@ -301,6 +315,210 @@ export default function Home() {
         <footer className="mt-8 text-center text-sm text-gray-500 pb-6">
           <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
         </footer>
+
+        {/* ヘルプモーダル */}
+        {showHelp && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  🎫 SBT（ソウルバウンドトークン）について
+                </h2>
+                <button
+                  onClick={() => setShowHelp(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* SBTとは */}
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center">
+                    <span className="mr-2">💎</span>
+                    SBTとは？
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    SBT（Soulbound Token / ソウルバウンドトークン）は、<strong>譲渡不可能なデジタル証明書</strong>です。
+                    通常のNFTとは異なり、取得したウォレットに永続的に結び付いており、売買や譲渡ができません。
+                    これにより、<strong>個人の実績や体験を確実に証明</strong>することができます。
+                  </p>
+                </div>
+
+                {/* このアプリでのSBT */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-green-800 mb-3 flex items-center">
+                    <span className="mr-2">🏪</span>
+                    このアプリでのSBTコレクション
+                  </h3>
+                  <div className="space-y-4">
+                    <p className="text-gray-700">
+                      <strong>対応しているお店でJPYC決済を行うと、SBTを発行してもらえます！</strong>
+                      お店ごとに異なるデザインのSBTをコレクションできます。
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-4 mt-4">
+                      <div className="bg-white border border-gray-200 rounded p-4">
+                        <div className="font-semibold text-blue-600 mb-2">🧪 デモ・実験店舗</div>
+                        <div className="text-sm text-gray-600">
+                          技術デモや実証実験に参加した証明
+                        </div>
+                      </div>
+                      <div className="bg-white border border-gray-200 rounded p-4">
+                        <div className="font-semibold text-orange-600 mb-2">☕ カフェ・飲食</div>
+                        <div className="text-sm text-gray-600">
+                          カフェやレストランでの利用証明
+                        </div>
+                      </div>
+                      <div className="bg-white border border-gray-200 rounded p-4">
+                        <div className="font-semibold text-purple-600 mb-2">💻 エレクトロニクス</div>
+                        <div className="text-sm text-gray-600">
+                          電子機器店舗での購入証明
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SBTの特徴 */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-blue-800 mb-3 flex items-center">
+                    <span className="mr-2">✨</span>
+                    SBTの特徴とメリット
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
+                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-800">譲渡不可能</div>
+                          <div className="text-sm text-gray-600">売買や譲渡ができないため、本人の実績として確実に証明</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
+                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-800">永続保存</div>
+                          <div className="text-sm text-gray-600">ブロックチェーン上に永続的に記録される</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
+                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-800">透明性</div>
+                          <div className="text-sm text-gray-600">取得日時や条件を公開的に検証可能</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
+                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-800">コレクション性</div>
+                          <div className="text-sm text-gray-600">様々な店舗のSBTを集めてコレクションを作成</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 使い方 */}
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-yellow-800 mb-3 flex items-center">
+                    <span className="mr-2">📋</span>
+                    SBT取得の手順
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">1</div>
+                      <div>
+                        <div className="font-semibold">対応店舗で決済</div>
+                        <div className="text-sm text-gray-600">JPYC対応店舗でQRコード決済を実行</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">2</div>
+                      <div>
+                        <div className="font-semibold">SBT自動発行</div>
+                        <div className="text-sm text-gray-600">決済完了後、店舗固有のSBTが自動的に発行</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">3</div>
+                      <div>
+                        <div className="font-semibold">コレクション表示</div>
+                        <div className="text-sm text-gray-600">このアプリのギャラリーで取得したSBTを確認</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 技術情報 */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center">
+                    <span className="mr-2">⚙️</span>
+                    技術的詳細
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="font-semibold text-gray-700 mb-2">対応ネットワーク</div>
+                      <ul className="space-y-1 text-gray-600">
+                        <li>• Ethereum Mainnet</li>
+                        <li>• Polygon</li>
+                        <li>• Arbitrum One</li>
+                        <li>• Avalanche</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-700 mb-2">標準仕様</div>
+                      <ul className="space-y-1 text-gray-600">
+                        <li>• ERC-721準拠</li>
+                        <li>• 譲渡機能無効化</li>
+                        <li>• メタデータ標準</li>
+                        <li>• オンチェーン検証</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 参加店舗募集 */}
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-pink-800 mb-3 flex items-center">
+                    <span className="mr-2">🤝</span>
+                    参加店舗を募集中
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    あなたのお店もSBT発行に参加しませんか？お客様に特別な体験と証明を提供できます。
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-pink-100 text-pink-800 text-xs font-semibold px-2 py-1 rounded">顧客体験向上</span>
+                    <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded">ブランド差別化</span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">リピーター獲得</span>
+                    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">デジタル証明</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
