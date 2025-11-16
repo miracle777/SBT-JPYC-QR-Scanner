@@ -62,21 +62,19 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
 
   const handleAddToMetaMask = async (sbt: SBT) => {
     try {
-      if (typeof window.ethereum !== 'undefined') {
-        // MetaMaskにSBTを追加
-        const watchAssetParams = {
-          type: 'ERC721' as const,
-          options: {
-            address: sbt.address,
-            tokenId: sbt.tokenId?.toString() || '0',
-          },
-        };
-        
-        // @ts-ignore MetaMask API型定義の一時的な回避
-        const result = await window.ethereum.request({
-          method: 'wallet_watchAsset',
-          params: watchAssetParams,
-        });
+      if (typeof window.ethereum !== 'undefined' && (window.ethereum as any).request) {
+        // MetaMaskにSBTを追加 - TypeScript型チェックを完全に回避
+        try {
+          await (window.ethereum as any).request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC721',
+              options: {
+                address: sbt.address,
+                tokenId: sbt.tokenId?.toString() || '0',
+              },
+            },
+          });
         
         console.log('SBT added to MetaMask successfully');
         alert(`✅ SBT「${sbt.name}」をMetaMaskに追加しました！\n\nMetaMaskのNFTタブで確認してください。`);

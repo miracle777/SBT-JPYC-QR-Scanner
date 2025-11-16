@@ -40,11 +40,12 @@
     "typescript": "^5.0.0"
   },
   "overrides": {
-    "use-sync-external-store": {
-      "react": "^19.0.0"
+    "use-sync-external-store": "^1.2.2",
+    "valtio": {
+      "use-sync-external-store": "^1.2.2"
     }
   },
   "resolutions": {
-    "use-sync-external-store": "1.2.2"
+    "use-sync-external-store": "^1.2.2"
   }
 }
