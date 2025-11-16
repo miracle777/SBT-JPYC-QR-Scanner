@@ -456,6 +456,34 @@ async function fetchSBTsFromPolygonAmoy(userAddress: `0x${string}`): Promise<SBT
           } catch (e) {
             console.error('❌ Failed to fetch Polygon Amoy metadata from URL:', e);
           }
+        } else if (tokenURI.startsWith('ipfs://')) {
+          // IPFSのメタデータURL
+          try {
+            console.log('🌐 Fetching IPFS metadata for Polygon Amoy...');
+            const ipfsUrl = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            console.log('🔗 IPFS URL:', ipfsUrl);
+            
+            const response = await axios.get(ipfsUrl, {
+              timeout: 10000, // 10秒タイムアウト
+              headers: {
+                'Accept': 'application/json',
+              }
+            });
+            metadata = response.data;
+            console.log('📄 Polygon Amoy IPFS metadata:', metadata);
+            
+            imageUrl = metadata.image || '';
+            // IPFSの画像URLをHTTPSに変換
+            if (imageUrl && imageUrl.startsWith('ipfs://')) {
+              imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+              console.log('🖼️ Converted image URL:', imageUrl);
+            }
+            
+            actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+          } catch (e) {
+            console.error('❌ Failed to fetch Polygon Amoy IPFS metadata:', e);
+            console.log('🔄 Using fallback for IPFS metadata...');
+          }
         }
         
         // ショップ情報を取得
@@ -710,6 +738,34 @@ async function fetchSBTsFromNetwork(userAddress: `0x${string}`, network: 'sepoli
             actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
           } catch (e) {
             console.error('❌ Failed to fetch Sepolia metadata from URL:', e);
+          }
+        } else if (tokenURI.startsWith('ipfs://')) {
+          // IPFSのメタデータURL
+          try {
+            console.log('🌐 Fetching IPFS metadata for Sepolia...');
+            const ipfsUrl = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            console.log('🔗 IPFS URL:', ipfsUrl);
+            
+            const response = await axios.get(ipfsUrl, {
+              timeout: 10000, // 10秒タイムアウト
+              headers: {
+                'Accept': 'application/json',
+              }
+            });
+            metadata = response.data;
+            console.log('📄 Sepolia IPFS metadata:', metadata);
+            
+            imageUrl = metadata.image || '';
+            // IPFSの画像URLをHTTPSに変換
+            if (imageUrl && imageUrl.startsWith('ipfs://')) {
+              imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+              console.log('🖼️ Converted Sepolia image URL:', imageUrl);
+            }
+            
+            actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+          } catch (e) {
+            console.error('❌ Failed to fetch Sepolia IPFS metadata:', e);
+            console.log('🔄 Using fallback for Sepolia IPFS metadata...');
           }
         }
         
