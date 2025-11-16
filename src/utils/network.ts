@@ -189,16 +189,16 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
           
           return {
             type: 'payment',
-            address: data.shopWallet as `0x${string}`,
+            address: (data.shopWallet || data.to || '0x0000000000000000000000000000000000000000') as `0x${string}`,
             amount: amountInJPYC,
-            chainId: data.chainId || 11155111,
+            chainId: data.chainId || (data.chainId === 137 ? 137 : 11155111),
             contractAddress: data.contractAddress as `0x${string}`,
             shopName: data.shopName,
             shopId: data.shopId,
-            paymentId: data.paymentId,
+            paymentId: data.paymentId || `pay_${Date.now()}`,
             expiresAt: data.expiresAt,
-            memo: data.description,
-            network: 'sepolia' as NetworkType,
+            memo: data.description || `Payment from ${data.shopName}`,
+            network: (data.chainId === 137 ? 'polygon' : 'sepolia') as NetworkType,
           };
         }
         

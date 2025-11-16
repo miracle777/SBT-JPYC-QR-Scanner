@@ -78,33 +78,46 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
     const samples = {
       jpyc: {
         type: 'JPYC_PAYMENT',
-        to: '0x742d35Cc6634C0532925a3b8D2d9cE7d5C15C84D',
+        to: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
         amount: '100',
         network: 'sepolia',
-        contractAddress: '0x8c9Dd1B0c6bB0Fea6C0aD0b8B2cA1B2B83C4B5B6',
+        contractAddress: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
         merchant: {
-          id: 'shop_001',
-          name: 'Demo Store JPYC',
+          id: 'shop-001',
+          name: 'SBT JPYC Pay Demo Store',
           description: 'JPYCテスト決済',
         },
         timestamp: new Date().toISOString(),
-        expires: new Date(Date.now() + 3600000).toISOString(), // 1時間後
+        expires: new Date(Date.now() + 3600000).toISOString(),
       },
-      walletconnect: `ethereum:0x742d35Cc6634C0532925a3b8D2d9cE7d5C15C84D@11155111?value=100000000000000000000`,
+      walletconnect: `ethereum:0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd@137?value=100000000000000000000`,
       // スクリーンショットと同じ形式のサンプルデータ
       payment: {
+        version: '1.0',
+        type: 'payment',
+        shopId: 'shop-001',
+        shopName: 'SBT JPYC Pay Demo Store',
+        shopWallet: '0x5888578ad9a33c68a9fa3a0ca40816665bfad8fd',
+        amount: '100000000000000000000', // 100 JPYC in Wei
+        currency: 'JPYC',
+        chainId: 137,
+        paymentId: `PAY${Date.now().toString().slice(-8)}`,
+        expiresAt: Math.floor(Date.now() / 1000) + 3600,
+        contractAddress: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
+        description: 'Payment from SBT JPYC Pay Demo Store'
+      }
         "version": "1.0",
         "type": "payment",
         "shopId": "shop-001",
         "shopName": "SBT JPYC Pay Demo Store",
         "shopWallet": "0x5888578ad9a33ce8a9fa3a0ca4081665bfad8fd",
         "amount": "1000000000000000000",
-        "currency": "JPYC",
-        "chainId": 137,
-        "paymentId": `PAY${Date.now()}`,
-        "expiresAt": Date.now() + 3600000,
-        "contractAddress": "0xE7C3D8C9a439feDe00D260032D5dB0Be71C3c29",
-        "description": "Payment from SBT JPYC Pay Demo Store"
+        currency: 'JPYC',
+        chainId: 137,
+        paymentId: `PAY${Date.now().toString().slice(-8)}`,
+        expiresAt: Math.floor(Date.now() / 1000) + 3600,
+        contractAddress: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
+        description: 'Payment from SBT JPYC Pay Demo Store'
       }
     };
 
@@ -119,6 +132,9 @@ export default function QRScannerImproved({ onScan, onError }: QRScannerImproved
       default: // auto
         sampleData = JSON.stringify(samples.payment);
     }
+
+    console.log('Generated sample data:', sampleData);
+    onScan(sampleData);
 
     console.log('Generated sample data for mode', scanMode, ':', sampleData);
     onScan(sampleData);
