@@ -88,7 +88,7 @@ export interface PaymentNetwork {
  */
 
 export interface PaymentQRData {
-  type: 'ethereum' | 'jpyc' | 'payment' | 'sbt-payment';
+  type: 'ethereum' | 'jpyc' | 'tjpyc' | 'payment' | 'sbt-payment';
   address: `0x${string}`;
   amount?: string;
   network?: NetworkType;
@@ -102,6 +102,7 @@ export interface PaymentQRData {
   minimumSBTRank?: 'bronze' | 'silver' | 'gold' | 'platinum';
   memo?: string;
   timestamp?: number;
+  tokenSymbol?: string; // 'JPYC' | 'tJPYC'
 }
 
 /**

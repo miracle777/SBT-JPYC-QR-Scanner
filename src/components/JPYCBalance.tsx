@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAccount, useReadContract, useChainId } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, RefreshCw, Wallet, AlertCircle } from 'lucide-react';
-import { JPYC_ADDRESSES, JPYC_ABI, formatJPYCDisplay, JPYCNetworkType } from '../contracts/jpyc';
+import { JPYC_ADDRESSES, JPYC_ABI, formatJPYCDisplay, JPYCNetworkType, getTokenInfo } from '../contracts/jpyc';
 
 interface NetworkBalance {
   network: JPYCNetworkType;
@@ -21,8 +21,10 @@ const NETWORK_CONFIGS: { network: JPYCNetworkType; displayName: string; isMainne
   { network: 'sepolia-additional', displayName: 'Sepolia - Additional (0 JPYC)', isMainnet: false, color: '#FFD700', chainId: 11155111 },
   { network: 'polygon', displayName: 'Polygon', isMainnet: true, color: '#8247E5', chainId: 137 },
   { network: 'polygon-amoy', displayName: 'Polygon Amoy (Test)', isMainnet: false, color: '#A29EE3', chainId: 80002 },
+  { network: 'polygon-amoy-custom', displayName: 'Polygon Amoy (Custom tJPYC)', isMainnet: false, color: '#B19EE3', chainId: 80002 },
   { network: 'avalanche', displayName: 'Avalanche', isMainnet: true, color: '#E84142', chainId: 43114 },
   { network: 'avalanche-fuji', displayName: 'Avalanche Fuji (Test)', isMainnet: false, color: '#FF6B6B', chainId: 43113 },
+  { network: 'avalanche-fuji-custom', displayName: 'Avalanche Fuji (Custom tJPYC)', isMainnet: false, color: '#FF8B8B', chainId: 43113 },
 ];
 
 export function JPYCBalance() {
@@ -114,6 +116,7 @@ interface JPYCBalanceRowProps {
 
 function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }: JPYCBalanceRowProps) {
   const contractAddress = JPYC_ADDRESSES[network];
+  const tokenInfo = getTokenInfo(network);
   
   const { data: balance, isLoading, refetch, error } = useReadContract({
     address: contractAddress,
@@ -144,6 +147,7 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
     decimals: decimals ? Number(decimals) : 'loading',
     isLoading,
     error: error ? error.message : 'no error',
+    tokenInfo,
   });
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -158,7 +162,7 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const actualDecimals = decimals ? Number(decimals) : 18;
+  const actualDecimals = decimals ? Number(decimals) : tokenInfo.decimals;
   const formattedBalance = balance ? formatJPYCDisplay(balance as bigint, actualDecimals) : '0.00';
 
   // エラーハンドリングの改善
@@ -220,7 +224,7 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
               </motion.span>
             </AnimatePresence>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              JPYC
+              {tokenInfo.symbol}
             </span>
             <button
               onClick={handleRefresh}

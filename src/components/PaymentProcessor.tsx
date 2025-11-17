@@ -328,7 +328,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           <div className="border border-gray-200 rounded-lg p-4">
             <div className="text-sm text-gray-600 mb-1">支払い金額</div>
             <div className="text-2xl font-bold text-gray-800">
-              ¥{parsedData.amount || '0'} JPYC
+              ¥{parsedData.amount || '0'} {parsedData.tokenSymbol || 'JPYC'}
             </div>
           </div>
           
@@ -341,7 +341,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           
           {parsedData.contractAddress && (
             <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">JPYCコントラクト</div>
+              <div className="text-sm text-gray-600 mb-1">{parsedData.tokenSymbol || 'JPYC'}コントラクト</div>
               <div className="text-xs font-mono text-gray-700 break-all">
                 {parsedData.contractAddress}
               </div>

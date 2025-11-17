@@ -138,6 +138,24 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
           };
         }
         
+        // カスタムtJPYC決済対応
+        if (data.type === 'tJPYC_PAYMENT') {
+          return {
+            type: 'tjpyc',
+            address: data.to as `0x${string}`,
+            amount: data.amount,
+            network: (data.network as NetworkType) || 'avalanche-fuji',
+            chainId: data.chainId || SUPPORTED_NETWORKS[data.network as NetworkType]?.chainId,
+            contractAddress: data.contractAddress as `0x${string}`,
+            shopName: data.merchant?.name,
+            shopId: data.merchant?.id,
+            memo: data.merchant?.description,
+            timestamp: data.timestamp,
+            expiresAt: data.expires,
+            tokenSymbol: 'tJPYC',
+          };
+        }
+        
         // 従来の店舗QRコード形式（スクリーンショットのデータに対応）
         if (data.type === 'payment' && (data.shopWallet || data.shopId)) {
           const amountInJPYC = data.amount ? 
@@ -344,7 +362,30 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
       }
     }
 
-    // 6. sbt-payment: 形式
+    // 7. tjpyc: 形式: tjpyc:address?amount=100&network=avalanche-fuji
+    if (trimmed.startsWith('tjpyc:')) {
+      try {
+        const url = new URL(trimmed.replace('tjpyc:', 'https://dummy/'));
+        const address = url.pathname as `0x${string}`;
+        const amount = url.searchParams.get('amount') || undefined;
+        const network = (url.searchParams.get('network') as NetworkType) || 'avalanche-fuji';
+        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
+
+        return {
+          type: 'tjpyc',
+          address,
+          amount,
+          network,
+          chainId,
+          contractAddress: url.searchParams.get('contract') as `0x${string}` || undefined,
+          tokenSymbol: 'tJPYC',
+        };
+      } catch (tjpycError) {
+        console.error('tJPYC parsing failed:', tjpycError);
+      }
+    }
+
+    // 8. sbt-payment: 形式
     if (trimmed.startsWith('sbt-payment:')) {
       try {
         const url = new URL(trimmed.replace('sbt-payment:', 'https://dummy/'));
@@ -369,7 +410,7 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
       }
     }
 
-    // 7. WalletConnect URI（一般的）
+    // 8. WalletConnect URI（一般的）
     if (trimmed.startsWith('wc:')) {
       console.log('WalletConnect URI detected but not supported for payments');
       return null;
@@ -430,6 +471,26 @@ export function validatePaymentNetwork(
   }
 
   return validateNetwork(currentChainId, qrData.network);
+}
+
+/**
+ * QRコード生成用URL作成（tJPYC支払い用）
+ */
+export function createTJPYCPaymentQRCode(
+  address: `0x${string}`,
+  amount?: string,
+  network: NetworkType = 'avalanche-fuji',
+  contractAddress?: `0x${string}`,
+  memo?: string
+): string {
+  const params = new URLSearchParams();
+  if (amount) params.append('amount', amount);
+  params.append('network', network);
+  if (contractAddress) params.append('contract', contractAddress);
+  if (memo) params.append('memo', memo);
+
+  const queryString = params.toString();
+  return `tjpyc:${address}${queryString ? '?' + queryString : ''}`;
 }
 
 /**
@@ -506,6 +567,7 @@ export function detectQRCodeFormat(qrString: string): string {
   
   if (trimmed.startsWith('ethereum:')) return 'EIP-681 (Ethereum)';
   if (trimmed.startsWith('jpyc:')) return 'JPYC Custom';
+  if (trimmed.startsWith('tjpyc:')) return 'tJPYC Custom';
   if (trimmed.startsWith('payment:')) return 'Payment URL';
   if (trimmed.startsWith('sbt-payment:')) return 'SBT Payment';
   if (trimmed.startsWith('wc:')) return 'WalletConnect';
@@ -530,6 +592,8 @@ export function describeQRCodeFormat(qrString: string): string {
       return 'Ethereum標準（EIP-681）- MetaMask等で対応';
     case 'JPYC Custom':
       return 'JPYC独自形式 - JPYCアプリ専用QRコード';
+    case 'tJPYC Custom':
+      return 'tJPYCカスタム形式 - テスト用JPYC専用QRコード';
     case 'Payment URL':
       return '汎用決済URL - 複数の決済方法に対応';
     case 'SBT Payment':
