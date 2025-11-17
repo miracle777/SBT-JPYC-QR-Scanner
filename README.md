@@ -24,11 +24,10 @@
 
 #### 2. **決済ネットワーク情報のQRコード埋め込み**
 - ✅ QRコード内にネットワーク情報を含める
-- ✅ 複数ネットワーク対応（本番 + テストネット）
+- ✅ マルチネットワーク対応（本番 + テストネット）
   - Ethereum / Sepolia
-  - **Polygon Mainnet / Mumbai Testnet**（新）
-  - **Arbitrum One / Sepolia Testnet**（新）
-  - Optimism Mainnet
+  - **Polygon Mainnet / Amoy Testnet**（新）
+  - **Avalanche C-Chain / Fuji Testnet**（新）
 - ✅ QRコードフォーマット拡張:
   - `payment:address?network=sepolia&amount=100`
 
@@ -91,8 +90,8 @@ SUPPORTED_NETWORKS: {
   ethereum: { chainId: 1, ... },
   sepolia: { chainId: 11155111, ... },
   polygon: { chainId: 137, ... },
-  arbitrum: { chainId: 42161, ... },
-  optimism: { chainId: 10, ... }
+  avalanche: { chainId: 43114, ... },
+  'avalanche-fuji': { chainId: 43113, ... }
 }
 ```
 
@@ -168,12 +167,12 @@ NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 # ネットワーク設定
 NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_DEFAULT_NETWORK=sepolia
-# 利用可能な値: ethereum | sepolia | polygon | polygon-mumbai | arbitrum | arbitrum-sepolia | optimism
+# 利用可能な値: ethereum | sepolia | polygon | polygon-amoy | avalanche | avalanche-fuji
 
 # JPYC コントラクトアドレス
 NEXT_PUBLIC_JPYC_CONTRACT_SEPOLIA=0xd3eF95d29A198868241FE374A999fc25F6152253  # 必須
 NEXT_PUBLIC_JPYC_CONTRACT_POLYGON=0x...  # オプション（Polygon Mainnet）
-NEXT_PUBLIC_JPYC_CONTRACT_ARBITRUM=0x...  # オプション（Arbitrum One）
+NEXT_PUBLIC_JPYC_CONTRACT_AVALANCHE=0x...  # オプション（Avalanche C-Chain）
 
 # アプリ設定
 NEXT_PUBLIC_APP_NAME=SBT-JPYC-QR-Scanner
@@ -277,12 +276,12 @@ npm run build && npm run start
 | Polygon Mainnet | 137 | **本番** | `https://polygon-rpc.com` | 🟣 #8247E5 |
 | Amoy Testnet | 80002 | テスト | `https://rpc-amoy.polygon.technology` | 🟤 #A29EE3 |
 
-### Arbitrum 系
+### Avalanche 系
 
 | ネットワーク | ChainID | 環境 | RPC URL | 色コード |
 |------------|---------|------|---------|---------|
-| Arbitrum One | 42161 | **本番** | `https://arb1.arbitrum.io/rpc` | 🔵 #28A0F0 |
-| Arbitrum Sepolia | 421614 | テスト | `https://sepolia-rollup.arbitrum.io/rpc` | 🟦 #12D9FF |
+| Avalanche C-Chain | 43114 | **本番** | `https://api.avax.network/ext/bc/C/rpc` | 🔴 #E84142 |
+| Avalanche Fuji Testnet | 43113 | テスト | `https://api.avax-test.network/ext/bc/C/rpc` | 🟠 #FF6B6B |
 
 ## 🎓 主要な実装ポイント
 

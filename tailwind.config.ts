@@ -12,7 +12,7 @@ const config: Config = {
         ethereum: '#627EEA',
         sepolia: '#FF8C00',
         polygon: '#8247E5',
-        arbitrum: '#28A0F0',
+        avalanche: '#E84142',
         optimism: '#FF0420',
       },
       animation: {
