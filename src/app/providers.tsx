@@ -1,7 +1,7 @@
 'use client';
 
 import { WagmiProvider } from 'wagmi';
-import { sepolia, polygon, polygonAmoy } from 'wagmi/chains';
+import { sepolia, polygon, polygonAmoy, mainnet, avalanche, avalancheFuji } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -37,7 +37,14 @@ const queryClient = new QueryClient({
 const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME || 'JPYC Payment Scanner',
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d', // 本番用実際のプロジェクトID
-  chains: [sepolia, polygon, polygonAmoy], // 複数のネットワークをサポート
+  chains: [
+    mainnet,        // Ethereum Mainnet (ChainID: 1)
+    sepolia,        // Sepolia Testnet (ChainID: 11155111)  
+    polygon,        // Polygon Mainnet (ChainID: 137)
+    polygonAmoy,    // Polygon Amoy Testnet (ChainID: 80002)
+    avalanche,      // Avalanche C-Chain (ChainID: 43114)
+    avalancheFuji   // Avalanche Fuji Testnet (ChainID: 43113)
+  ],
   ssr: true,
 });
 
