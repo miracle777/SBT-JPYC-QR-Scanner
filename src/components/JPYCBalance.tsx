@@ -15,7 +15,7 @@ interface NetworkBalance {
 }
 
 const NETWORK_CONFIGS: { network: JPYCNetworkType; displayName: string; isMainnet: boolean; color: string; chainId: number }[] = [
-  { network: 'ethereum', displayName: 'Ethereum', isMainnet: true, color: '#627EEA', chainId: 1 },
+  { network: 'ethereum', displayName: 'Ethereum Mainnet (JPYC)', isMainnet: true, color: '#627EEA', chainId: 1 },
   { network: 'sepolia', displayName: 'Sepolia - Official (100 JPYC)', isMainnet: false, color: '#FF8C00', chainId: 11155111 },
   { network: 'sepolia-community', displayName: 'Sepolia - Community (882 JPYC)', isMainnet: false, color: '#FFA500', chainId: 11155111 },
   { network: 'sepolia-additional', displayName: 'Sepolia - Additional (0 JPYC)', isMainnet: false, color: '#FFD700', chainId: 11155111 },

@@ -272,10 +272,12 @@ export default function Home() {
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <h3 className="font-semibold text-blue-800 mb-2">💡 JPYC対応状況</h3>
             <div className="text-sm text-blue-700 space-y-1">
+              <div>✅ <strong>Ethereum Mainnet</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
               <div>✅ <strong>Polygon Mainnet・Amoy</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
               <div>✅ <strong>Avalanche C-Chain・Fuji</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
               <div>✅ <strong>Sepolia</strong>: 複数のJPYCアドレスに対応</div>
               <div>🔧 <strong>カスタムtJPYCテスト</strong>: Fuji・Amoyで利用可能</div>
+              <div>💰 <strong>表示形式</strong>: JPYCは整数で表示（小数点なし）</div>
             </div>
           </div>
         </div>

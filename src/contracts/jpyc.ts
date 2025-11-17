@@ -46,7 +46,7 @@ export const JPYC_ABI = [
 // JPYC Contract Addresses per Network
 export const JPYC_ADDRESSES = {
   // Ethereum Mainnet
-  ethereum: getAddress('0x2370f9d504c7a6e775bf6e14b3f12846b594cd53'),
+  ethereum: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   // Ethereum Sepolia Testnet - Official JPYC (推奨)
   sepolia: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
   // Ethereum Sepolia Testnet - Alternative addresses
@@ -81,16 +81,13 @@ export const JPYC_COMMUNITY_CONFIG = {
   abi: JPYC_ABI,
 } as const;
 
-// JPYCの表示フォーマット関数
+// JPYCの表示フォーマット関数（整数表示）
 export function formatJPYCDisplay(balance: bigint, decimals: number = 18): string {
   const divisor = BigInt(10 ** decimals);
   const whole = balance / divisor;
-  const fraction = balance % divisor;
   
-  // 小数点以下2桁まで表示
-  const fractionStr = fraction.toString().padStart(decimals, '0').slice(0, 2);
-  
-  return `${whole.toLocaleString('ja-JP')}.${fractionStr}`;
+  // JPYCは整数で表示（小数点以下なし）
+  return whole.toLocaleString('ja-JP');
 }
 
 // カスタムtJPYCトークンの設定
