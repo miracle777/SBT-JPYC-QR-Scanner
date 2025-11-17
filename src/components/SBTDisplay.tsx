@@ -155,22 +155,7 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
           </div>
         )}
         
-        {/* 訪問回数表示 */}
-        {Object.keys(visitCounts).length > 0 && (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm text-gray-600 font-semibold">📍 訪問回数</p>
-            {Object.entries(REGISTERED_SHOPS).map(([shopId, shop]) => (
-              <div key={shopId} className="text-xs text-gray-600 bg-gray-50 rounded p-2">
-                {shop.name}: {visitCounts[Number(shopId)] || 0}回
-                {visitCounts[Number(shopId)] > 0 && (
-                  <span className="ml-2 text-blue-600">
-                    (あと{Math.max(0, 3 - (visitCounts[Number(shopId)] || 0))}回でSBT獲得!)
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+
       </div>
     );
   }

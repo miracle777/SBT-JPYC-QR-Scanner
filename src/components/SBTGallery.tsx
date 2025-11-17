@@ -31,7 +31,7 @@ export function SBTGallery({
   showStats = true,
   groupByShop = false,
   enableTagFilter = false,
-  showVisitCardsInitial = true
+  showVisitCardsInitial = false
 }: SBTGalleryProps) {
   const [sbts, setSBTs] = useState<SBT[]>([]);
   const [loading, setLoading] = useState(false);
@@ -404,13 +404,13 @@ export function SBTGallery({
 
   return (
     <div className="space-y-6">
-      {/* 統計情報 */}
+      {/* 統計情報 - SBTに焦点を当てた表示 */}
       {showStats && stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm">総SBT数</p>
+                <p className="text-blue-100 text-sm">保有SBT数</p>
                 <p className="text-2xl font-bold">{stats.totalSBTs}</p>
               </div>
               <Trophy className="w-8 h-8 text-blue-200" />
@@ -420,20 +420,10 @@ export function SBTGallery({
           <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">アクティブ店舗</p>
+                <p className="text-green-100 text-sm">参画店舗数</p>
                 <p className="text-2xl font-bold">{stats.activeShops}</p>
               </div>
               <Store className="w-8 h-8 text-green-200" />
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm">総訪問回数</p>
-                <p className="text-2xl font-bold">{stats.totalVisits}</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-purple-200" />
             </div>
           </div>
           
@@ -453,20 +443,24 @@ export function SBTGallery({
         </div>
       )}
 
-      {/* 来店回数カード表示 - フィルター選択時のみ */}
+      {/* 店舗別来店回数カード表示 - 特定店舗選択時のみ */}
       {showVisitCards && Object.keys(visitCounts).length > 0 && selectedShopForVisits !== 'all' && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-purple-600" />
-              {selectedShopForVisits} のスタンプカード状況
+              <div className="flex items-center gap-2 bg-purple-100 px-3 py-2 rounded-lg">
+                <MapPin className="w-5 h-5 text-purple-600" />
+                <span className="text-purple-800">{selectedShopForVisits}</span>
+              </div>
+              <span className="text-gray-600">のスタンプカード</span>
             </h3>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSelectedShopForVisits('all')}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
+                className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors flex items-center gap-1"
               >
-                全店舗表示に戻る
+                <Store className="w-3 h-3" />
+                全店舗表示
               </button>
               <button
                 onClick={() => setShowVisitCards(false)}
@@ -616,7 +610,7 @@ export function SBTGallery({
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <Shield className="w-5 h-5" />
-            SBT Collection ({filteredSBTs.length})
+            SBT コレクション ({filteredSBTs.length})
             {chain && (
               <span className="text-sm font-normal text-gray-600">
                 - {chain.name}
@@ -662,14 +656,15 @@ export function SBTGallery({
           </select>
           
           {/* ショップフィルター */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">店舗フィルター:</label>
+          <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border">
+            <Store className="w-4 h-4 text-gray-600" />
+            <label className="text-sm text-gray-700 font-medium">店舗:</label>
             <select
               value={filterShop}
               onChange={(e) => setFilterShop(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
             >
-              <option value="all">全店舗</option>
+              <option value="all">全店舗表示</option>
               {Array.from(availableShops).sort().map(shopName => (
                 <option key={shopName} value={shopName}>
                   {shopName}
@@ -684,11 +679,11 @@ export function SBTGallery({
                 }
               }}
               disabled={filterShop === 'all'}
-              className="px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
-              title="選択した店舗のスタンプカードを表示"
+              className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-sm"
+              title="選択した店舗の詳細なスタンプカード情報を表示"
             >
-              <MapPin className="w-3 h-3" />
-              カード表示
+              <MapPin className="w-4 h-4" />
+              <span className="font-medium">スタンプカード</span>
             </button>
           </div>
 
