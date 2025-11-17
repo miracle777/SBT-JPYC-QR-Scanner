@@ -375,8 +375,87 @@ export default function Home() {
           </div>
         </div>
 
-        <footer className="mt-8 text-center text-sm text-gray-500 pb-6">
-          <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
+        <footer className="mt-8 space-y-6 pb-6">
+          {/* 店舗向け情報 */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4 text-green-800 flex items-center">
+              <span className="mr-2">🏪</span>
+              店舗オーナー様へ
+            </h2>
+            <p className="text-gray-700 mb-4">
+              JPYC決済とSBT発行で、お客様との新しいつながりを創造しませんか？
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <div className="bg-white p-4 rounded-lg border border-green-200">
+                <h3 className="font-semibold text-green-700 mb-2 flex items-center">
+                  <span className="mr-2">💳</span>
+                  QRコード決済システム
+                </h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• 簡単なQRコード生成で即座に決済開始</li>
+                  <li>• 店舗情報付きの決済QRコード作成</li>
+                  <li>• 複数ネットワーク対応（Ethereum, Polygon, Avalanche）</li>
+                  <li>• 決済履歴とレポート機能</li>
+                </ul>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <h3 className="font-semibold text-blue-700 mb-2 flex items-center">
+                  <span className="mr-2">🎫</span>
+                  SBT発行・ポイント機能
+                </h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• 来店回数に応じた自動SBT発行</li>
+                  <li>• ブロンズ・シルバー・ゴールド・プラチナランク</li>
+                  <li>• 顧客ロイヤルティ向上</li>
+                  <li>• カスタマイズ可能なSBTデザイン</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
+              <h3 className="font-semibold text-green-800 mb-2">🚀 店舗管理システム</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                決済QRコード生成・SBT発行設定・顧客管理を一元化した店舗専用管理システム
+              </p>
+              <a
+                href="https://shop.jpyc-pay.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                <span>📱</span>
+                店舗管理システムを開く
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
+
+            <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h4 className="font-semibold text-yellow-800 mb-2">💡 導入メリット</h4>
+              <div className="grid md:grid-cols-3 gap-3 text-xs text-yellow-700">
+                <div>
+                  <div className="font-medium">🔄 リピート促進</div>
+                  <p>SBT収集がリピート来店の動機に</p>
+                </div>
+                <div>
+                  <div className="font-medium">📊 顧客データ</div>
+                  <p>来店頻度・決済額の詳細分析</p>
+                </div>
+                <div>
+                  <div className="font-medium">💰 手数料削減</div>
+                  <p>ブロックチェーン直接決済で中間手数料なし</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 従来のフッター */}
+          <div className="text-center text-sm text-gray-500">
+            <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
+          </div>
         </footer>
 
         {/* ヘルプモーダル */}

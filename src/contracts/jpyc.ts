@@ -59,15 +59,9 @@ export const JPYC_ADDRESSES = {
   'polygon-amoy': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
   
   // Avalanche C-Chain Mainnet
-  avalanche: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  avalanche: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   // Avalanche Fuji Testnet
-    // Avalanche Fuji Testnet
-  'avalanche-fuji': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
-  
-  // カスタムテストトークン (tJPYC)
-  'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),
-  'polygon-amoy-custom': getAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'),
-} as const;
+  'avalanche-fuji': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // カスタムテストトークン (tJPYC)
   'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),
@@ -97,43 +91,6 @@ export function formatJPYCDisplay(balance: bigint, decimals: number = 18): strin
   const fractionStr = fraction.toString().padStart(decimals, '0').slice(0, 2);
   
   return `${whole.toLocaleString('ja-JP')}.${fractionStr}`;
-}
-
-// カスタムtJPYCトークンの設定
-export const TJPYC_CONFIG = {
-  symbol: 'tJPYC',
-  decimals: 18,
-  name: 'Test JPYC',
-  networks: {
-    'avalanche-fuji-custom': {
-      address: JPYC_ADDRESSES['avalanche-fuji-custom'],
-      chainId: 43113,
-      displayName: 'Avalanche Fuji (Custom tJPYC)',
-    },
-    'polygon-amoy-custom': {
-      address: JPYC_ADDRESSES['polygon-amoy-custom'],
-      chainId: 80002,
-      displayName: 'Polygon Amoy (Custom tJPYC)',
-    },
-  },
-} as const;
-
-// トークン情報取得ヘルパー
-export function getTokenInfo(network: JPYCNetworkType) {
-  if (network === 'avalanche-fuji-custom' || network === 'polygon-amoy-custom') {
-    return {
-      symbol: TJPYC_CONFIG.symbol,
-      decimals: TJPYC_CONFIG.decimals,
-      name: TJPYC_CONFIG.name,
-      isCustomToken: true,
-    };
-  }
-  return {
-    symbol: 'JPYC',
-    decimals: 18,
-    name: 'JPY Coin',
-    isCustomToken: false,
-  };
 }
 
 // カスタムtJPYCトークンの設定

@@ -22,8 +22,8 @@ const NETWORK_CONFIGS: { network: JPYCNetworkType; displayName: string; isMainne
   { network: 'polygon', displayName: 'Polygon', isMainnet: true, color: '#8247E5', chainId: 137 },
   { network: 'polygon-amoy', displayName: 'Polygon Amoy (Test)', isMainnet: false, color: '#A29EE3', chainId: 80002 },
   { network: 'polygon-amoy-custom', displayName: 'Polygon Amoy (Custom tJPYC)', isMainnet: false, color: '#B19EE3', chainId: 80002 },
-  { network: 'avalanche', displayName: 'Avalanche', isMainnet: true, color: '#E84142', chainId: 43114 },
-  { network: 'avalanche-fuji', displayName: 'Avalanche Fuji (Test)', isMainnet: false, color: '#FF6B6B', chainId: 43113 },
+  { network: 'avalanche', displayName: 'Avalanche C-Chain (JPYC)', isMainnet: true, color: '#E84142', chainId: 43114 },
+  { network: 'avalanche-fuji', displayName: 'Avalanche Fuji (JPYC)', isMainnet: false, color: '#FF6B6B', chainId: 43113 },
   { network: 'avalanche-fuji-custom', displayName: 'Avalanche Fuji (Custom tJPYC)', isMainnet: false, color: '#FF8B8B', chainId: 43113 },
 ];
 
