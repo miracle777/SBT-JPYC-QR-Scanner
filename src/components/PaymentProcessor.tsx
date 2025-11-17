@@ -28,6 +28,10 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [paymentId, setPaymentId] = useState<string>('');
   const [sbtProgress, setSbtProgress] = useState<{ shopId: number; visits: number; hasSBT: boolean } | null>(null);
+  // 手動入力可能な金額の状態を追加
+  const [editableAmount, setEditableAmount] = useState<string>('');
+  const [isEditingAmount, setIsEditingAmount] = useState<boolean>(false);
+  const [canEditAmount, setCanEditAmount] = useState<boolean>(false);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -54,6 +58,16 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     }
 
     setParsedData(parsed);
+    
+    // QRコード形式に応じて金額編集可能かを判定
+    // MetaMask等の標準形式（ethereum:）の場合は編集可能、JPYC形式は編集不可
+    const isStandardEthereumFormat = qrData.startsWith('ethereum:');
+    const isJSONFormat = format.includes('JPYC') || format.includes('JSON');
+    const allowEdit = isStandardEthereumFormat || (!isJSONFormat && (!parsed.amount || parsed.amount === '0'));
+    setCanEditAmount(allowEdit);
+    
+    // 手動編集可能な金額を初期化
+    setEditableAmount(parsed.amount || '0');
     
     if (parsed.network) {
       const validation = validateNetwork(chain?.id || 1, parsed.network as NetworkType);
@@ -156,7 +170,23 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   const handleConfirmPayment = async () => {
     if (!parsedData || !address || !chain) return;
 
-    const amount = parsedData.amount || '0';
+    // editableAmountを使用（手動入力された金額）
+    const amount = editableAmount || '0';
+    const numericAmount = parseFloat(amount);
+    
+    // 金額の検証
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setErrorMessage('有効な金額を入力してください（0より大きい値）');
+      setStep('error');
+      return;
+    }
+    
+    if (numericAmount > 1000000) {
+      setErrorMessage('金額が大きすぎます（1,000,000以下で入力してください）');
+      setStep('error');
+      return;
+    }
+    
     const network = parsedData.network as NetworkType;
     
     // SBT検証
@@ -307,6 +337,16 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             <div className="text-xs text-gray-500 mt-1">
               {qrDescription}
             </div>
+            {!canEditAmount && (
+              <div className="mt-2 px-2 py-1 bg-blue-100 border border-blue-200 rounded text-xs text-blue-700">
+                💰 この形式では金額は決済QR作成時に固定されています
+              </div>
+            )}
+            {canEditAmount && (
+              <div className="mt-2 px-2 py-1 bg-green-100 border border-green-200 rounded text-xs text-green-700">
+                ✏️ この形式では金額を手動で設定できます
+              </div>
+            )}
           </div>
         )}
         
@@ -326,10 +366,91 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           )}
           
           <div className="border border-gray-200 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">支払い金額</div>
-            <div className="text-2xl font-bold text-gray-800">
-              ¥{parsedData.amount || '0'} {parsedData.tokenSymbol || 'JPYC'}
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-sm text-gray-600">支払い金額</div>
+              {canEditAmount ? (
+                <button
+                  onClick={() => setIsEditingAmount(!isEditingAmount)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {isEditingAmount ? 'キャンセル' : '金額を編集'}
+                </button>
+              ) : (
+                <div className="text-xs text-gray-400 italic">
+                  金額固定
+                </div>
+              )}
             </div>
+            
+            {canEditAmount && isEditingAmount ? (
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm text-gray-600">¥</div>
+                  <input
+                    type="number"
+                    value={editableAmount}
+                    onChange={(e) => setEditableAmount(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="金額を入力"
+                    min="0"
+                    step="1"
+                  />
+                  <div className="text-sm text-gray-600">{parsedData.tokenSymbol || 'JPYC'}</div>
+                </div>
+                
+                {/* 便利な金額ボタン */}
+                <div className="grid grid-cols-4 gap-2">
+                  {[100, 500, 1000, 5000].map((presetAmount) => (
+                    <button
+                      key={presetAmount}
+                      onClick={() => setEditableAmount(presetAmount.toString())}
+                      className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                    >
+                      ¥{presetAmount}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      setIsEditingAmount(false);
+                    }}
+                    className="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
+                  >
+                    確定
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditableAmount(parsedData.amount || '0');
+                      setIsEditingAmount(false);
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
+                  >
+                    リセット
+                  </button>
+                </div>
+                {parsedData.amount && editableAmount !== parsedData.amount && (
+                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                    💡 元の金額: ¥{parsedData.amount} {parsedData.tokenSymbol || 'JPYC'}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-2xl font-bold text-gray-800">
+                ¥{editableAmount || '0'} {parsedData.tokenSymbol || 'JPYC'}
+                {canEditAmount && parsedData.amount && editableAmount !== parsedData.amount && (
+                  <div className="text-sm font-normal text-amber-600 mt-1">
+                    元の金額から変更されています（元: ¥{parsedData.amount}）
+                  </div>
+                )}
+                {!canEditAmount && (
+                  <div className="text-sm font-normal text-gray-500 mt-1">
+                    💡 JPYC決済QRコードのため金額は固定です
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="border border-gray-200 rounded-lg p-4">
@@ -376,7 +497,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           </button>
           <button
             onClick={handleConfirmPayment}
-            disabled={isPending}
+            disabled={isPending || !editableAmount || parseFloat(editableAmount || '0') <= 0}
             className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
           >
             <Send className="w-4 h-4" />
@@ -412,7 +533,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             決済完了!
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            ¥{parsedData.amount} JPYC の送金が完了しました
+            ¥{editableAmount} JPYC の送金が完了しました
           </p>
           {hash && (
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
