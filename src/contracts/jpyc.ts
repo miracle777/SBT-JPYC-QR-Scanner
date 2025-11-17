@@ -54,9 +54,9 @@ export const JPYC_ADDRESSES = {
   'sepolia-additional': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // Polygon Mainnet
-  polygon: getAddress('0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c'),
+  polygon: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   // Polygon Amoy Testnet 
-  'polygon-amoy': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  'polygon-amoy': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // Avalanche C-Chain Mainnet
   avalanche: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),

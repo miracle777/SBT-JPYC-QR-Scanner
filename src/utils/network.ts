@@ -435,8 +435,8 @@ export function validateNetwork(
   const requiredChainId = SUPPORTED_NETWORKS[requiredNetwork].chainId;
   const currentNetwork = getNetworkFromChainId(currentChainId);
 
-  // SepoliaまたはPolygon Amoyであれば有効とする
-  const validChainIds = [11155111, 80002]; // Sepolia, Polygon Amoy
+  // JPYC対応ネットワークを拡張
+  const validChainIds = [11155111, 80002, 137, 43113, 43114]; // Sepolia, Polygon Amoy, Polygon, Avalanche Fuji, Avalanche C-Chain
   const isValid = validChainIds.includes(currentChainId) || currentChainId === requiredChainId;
   const mismatch = !isValid;
 
@@ -447,7 +447,7 @@ export function validateNetwork(
     mismatch,
     message: isValid
       ? `✅ ネットワークが正しく設定されています (${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'})`
-      : `⚠️ ネットワークが異なります。現在: ${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'}, 推奨: Sepolia または Polygon Amoy`,
+      : `⚠️ ネットワークが異なります。現在: ${currentNetwork ? SUPPORTED_NETWORKS[currentNetwork].displayName : '不明'}, 推奨: JPYC対応ネットワーク`,
     action: isValid ? undefined : 'switch-network',
   };
 }

@@ -244,28 +244,38 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="border border-purple-200 rounded-lg p-3">
-              <div className="font-semibold text-purple-600 text-sm">Ethereum</div>
+              <div className="font-semibold text-purple-600 text-sm">Ethereum Mainnet</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 1</div>
             </div>
             <div className="border border-orange-200 rounded-lg p-3">
-              <div className="font-semibold text-orange-600 text-sm">Sepolia</div>
+              <div className="font-semibold text-orange-600 text-sm">Sepolia Testnet</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 11155111</div>
             </div>
             <div className="border border-purple-200 rounded-lg p-3">
-              <div className="font-semibold text-purple-600 text-sm">Polygon</div>
+              <div className="font-semibold text-purple-600 text-sm">Polygon Mainnet</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 137</div>
             </div>
             <div className="border border-purple-200 rounded-lg p-3">
-              <div className="font-semibold text-purple-400 text-sm">Polygon Amoy</div>
+              <div className="font-semibold text-purple-400 text-sm">Polygon Amoy Testnet</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 80002</div>
             </div>
             <div className="border border-red-200 rounded-lg p-3">
-              <div className="font-semibold text-red-600 text-sm">Avalanche</div>
+              <div className="font-semibold text-red-600 text-sm">Avalanche C-Chain</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 43114</div>
             </div>
             <div className="border border-red-200 rounded-lg p-3">
-              <div className="font-semibold text-red-400 text-sm">Avalanche Fuji</div>
+              <div className="font-semibold text-red-400 text-sm">Avalanche Fuji Testnet</div>
               <div className="text-xs text-gray-600 break-words">ChainID: 43113</div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="font-semibold text-blue-800 mb-2">💡 JPYC対応状況</h3>
+            <div className="text-sm text-blue-700 space-y-1">
+              <div>✅ <strong>Polygon Mainnet・Amoy</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
+              <div>✅ <strong>Avalanche C-Chain・Fuji</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
+              <div>✅ <strong>Sepolia</strong>: 複数のJPYCアドレスに対応</div>
+              <div>🔧 <strong>カスタムtJPYCテスト</strong>: Fuji・Amoyで利用可能</div>
             </div>
           </div>
         </div>
