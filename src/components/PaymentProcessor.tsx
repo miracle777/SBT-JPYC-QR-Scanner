@@ -38,6 +38,8 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
+    confirmations: 1, // 1ブロック確認で完了とする
+    pollingInterval: 1000, // 1秒ごとにポーリング（スマホ対応）
   });
 
   useEffect(() => {
