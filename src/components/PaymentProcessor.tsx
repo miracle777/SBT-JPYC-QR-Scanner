@@ -32,6 +32,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   const [editableAmount, setEditableAmount] = useState<string>('');
   const [isEditingAmount, setIsEditingAmount] = useState<boolean>(false);
   const [canEditAmount, setCanEditAmount] = useState<boolean>(false);
+  const [editableContractAddress, setEditableContractAddress] = useState<string>('');
+  const [isEditingContract, setIsEditingContract] = useState<boolean>(false);
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType | null>(null);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -68,6 +71,10 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     
     // 手動編集可能な金額を初期化
     setEditableAmount(parsed.amount || '0');
+    
+    // コントラクトアドレスとネットワークを初期化
+    setEditableContractAddress(parsed.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB');
+    setSelectedNetwork((parsed.network as NetworkType) || 'sepolia');
     
     if (parsed.network) {
       const validation = validateNetwork(chain?.id || 1, parsed.network as NetworkType);
@@ -187,7 +194,14 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       return;
     }
     
-    const network = parsedData.network as NetworkType;
+    // コントラクトアドレスの検証
+    if (!editableContractAddress || !editableContractAddress.startsWith('0x') || editableContractAddress.length !== 42) {
+      setErrorMessage('有効なコントラクトアドレスを入力してください（0xで始まる42文字）');
+      setStep('error');
+      return;
+    }
+    
+    const network = selectedNetwork || 'sepolia';
     
     // SBT検証
     if (parsedData.sbtRequired && parsedData.sbtRequired.length > 0) {
@@ -257,12 +271,15 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
     try {
       // JPYC ERC20トークン転送
-      // QRコードからcontractAddressを取得、なければデフォルト（Sepolia Official）
-      const jpycAddress = parsedData.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
+      // 編集されたcontractAddressを使用
+      const jpycAddress = editableContractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
       const amountInWei = parseUnits(amount, 18);
 
       console.log('Payment details:', {
         contractAddress: jpycAddress,
+        originalContractAddress: parsedData.contractAddress,
+        selectedNetwork: selectedNetwork,
+        originalNetwork: parsedData.network,
         recipient: parsedData.address,
         amount: amount,
         amountInWei: amountInWei.toString(),
@@ -319,7 +336,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
   }
 
   if (step === 'confirm') {
-    const networkInfo = parsedData.network ? getNetworkInfo(parsedData.network as NetworkType) : null;
+    const networkInfo = selectedNetwork ? getNetworkInfo(selectedNetwork) : null;
     
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -460,23 +477,117 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             </div>
           </div>
           
-          {parsedData.contractAddress && (
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">{parsedData.tokenSymbol || 'JPYC'}コントラクト</div>
-              <div className="text-xs font-mono text-gray-700 break-all">
-                {parsedData.contractAddress}
-              </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-sm text-gray-600">{parsedData.tokenSymbol || 'JPYC'}コントラクト</div>
+              {canEditAmount ? (
+                <button
+                  onClick={() => setIsEditingContract(!isEditingContract)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {isEditingContract ? 'キャンセル' : 'アドレスを編集'}
+                </button>
+              ) : (
+                <div className="text-xs text-gray-400 italic">
+                  アドレス固定
+                </div>
+              )}
             </div>
-          )}
+            
+            {canEditAmount && isEditingContract ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">コントラクトアドレス</label>
+                  <input
+                    type="text"
+                    value={editableContractAddress}
+                    onChange={(e) => setEditableContractAddress(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs font-mono"
+                    placeholder="0x..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">ネットワーク</label>
+                  <select
+                    value={selectedNetwork || 'sepolia'}
+                    onChange={(e) => setSelectedNetwork(e.target.value as NetworkType)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
+                  >
+                    <option value="ethereum">Ethereum Mainnet</option>
+                    <option value="sepolia">Sepolia Testnet</option>
+                    <option value="polygon">Polygon Mainnet</option>
+                    <option value="polygon-amoy">Polygon Amoy Testnet</option>
+                    <option value="avalanche">Avalanche C-Chain</option>
+                    <option value="avalanche-fuji">Avalanche Fuji Testnet</option>
+                  </select>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setIsEditingContract(false)}
+                    className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
+                  >
+                    確定
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditableContractAddress(parsedData.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB');
+                      setSelectedNetwork((parsedData.network as NetworkType) || 'sepolia');
+                      setIsEditingContract(false);
+                    }}
+                    className="px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
+                  >
+                    リセット
+                  </button>
+                </div>
+                
+                {/* よく使うコントラクトアドレスのプリセット */}
+                <div>
+                  <div className="text-xs text-gray-600 mb-2">よく使うアドレス:</div>
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setEditableContractAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB')}
+                      className="w-full text-left text-xs bg-gray-50 border border-gray-200 rounded p-2 hover:bg-gray-100 transition"
+                    >
+                      <div className="font-medium">公式JPYC (Sepolia)</div>
+                      <div className="text-gray-500 font-mono">0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB</div>
+                    </button>
+                    <button
+                      onClick={() => setEditableContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                      className="w-full text-left text-xs bg-gray-50 border border-gray-200 rounded p-2 hover:bg-gray-100 transition"
+                    >
+                      <div className="font-medium">公式JPYC (Mainnet/Polygon/Avalanche)</div>
+                      <div className="text-gray-500 font-mono">0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="text-xs font-mono text-gray-700 break-all mb-2">
+                  {editableContractAddress}
+                </div>
+                {canEditAmount && editableContractAddress !== (parsedData.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB') && (
+                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-1">
+                    ⚠️ 元のアドレスから変更されています
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           
-          {networkInfo && (
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">ネットワーク</div>
-              <div className="font-semibold" style={{ color: networkInfo.color }}>
-                {networkInfo.displayName}
-              </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="text-sm text-gray-600 mb-1">ネットワーク</div>
+            <div className="font-semibold" style={{ color: getNetworkInfo(selectedNetwork || 'sepolia')?.color }}>
+              {getNetworkInfo(selectedNetwork || 'sepolia')?.displayName}
             </div>
-          )}
+            {canEditAmount && selectedNetwork !== (parsedData.network as NetworkType) && (
+              <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-1 mt-2">
+                ⚠️ 元のネットワーク「{getNetworkInfo(parsedData.network as NetworkType)?.displayName}」から変更されています
+              </div>
+            )}
+          </div>
           
           {parsedData.memo && (
             <div className="border border-gray-200 rounded-lg p-4">
@@ -497,7 +608,14 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           </button>
           <button
             onClick={handleConfirmPayment}
-            disabled={isPending || !editableAmount || parseFloat(editableAmount || '0') <= 0}
+            disabled={
+              isPending || 
+              !editableAmount || 
+              parseFloat(editableAmount || '0') <= 0 ||
+              !editableContractAddress ||
+              !editableContractAddress.startsWith('0x') ||
+              editableContractAddress.length !== 42
+            }
             className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
           >
             <Send className="w-4 h-4" />
