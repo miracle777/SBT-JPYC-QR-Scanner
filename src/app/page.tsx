@@ -283,6 +283,133 @@ export default function Home() {
         </div>
 
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
+            <span className="mr-2">📱</span>
+            対応ウォレット・QRコードフォーマット
+          </h2>
+          
+          <div className="space-y-4">
+            {/* 対応ウォレット */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="border border-orange-200 rounded-lg p-3 text-center bg-orange-50">
+                <div className="w-8 h-8 bg-orange-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">M</span>
+                </div>
+                <div className="font-semibold text-orange-700 text-sm">MetaMask</div>
+                <div className="text-xs text-orange-600">✅ 完全対応</div>
+              </div>
+              
+              <div className="border border-blue-200 rounded-lg p-3 text-center bg-blue-50">
+                <div className="w-8 h-8 bg-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">T</span>
+                </div>
+                <div className="font-semibold text-blue-700 text-sm">Trust Wallet</div>
+                <div className="text-xs text-blue-600">✅ 完全対応</div>
+              </div>
+              
+              <div className="border border-indigo-200 rounded-lg p-3 text-center bg-indigo-50">
+                <div className="w-8 h-8 bg-indigo-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">C</span>
+                </div>
+                <div className="font-semibold text-indigo-700 text-sm">Coinbase</div>
+                <div className="text-xs text-indigo-600">✅ 新規対応</div>
+              </div>
+              
+              <div className="border border-purple-200 rounded-lg p-3 text-center bg-purple-50">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">R</span>
+                </div>
+                <div className="font-semibold text-purple-700 text-sm">Rainbow</div>
+                <div className="text-xs text-purple-600">✅ 新規対応</div>
+              </div>
+            </div>
+
+            {/* 対応フォーマット */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                <span className="mr-2">📋</span>
+                対応QRコードフォーマット
+              </h3>
+              
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-3">
+                  <div className="bg-green-50 border border-green-200 rounded p-3">
+                    <div className="font-semibold text-green-800 flex items-center mb-1">
+                      <span className="mr-2">🔥</span>
+                      JPYC統一形式（推奨）
+                    </div>
+                    <code className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded block overflow-x-auto">
+                      {`{"type":"JPYC_PAYMENT",...}`}
+                    </code>
+                    <div className="text-xs text-green-600 mt-1">テスト・本番統一フォーマット</div>
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <div className="font-semibold text-blue-800 flex items-center mb-1">
+                      <span className="mr-2">⚡</span>
+                      EIP-681（Ethereum標準）
+                    </div>
+                    <code className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded block overflow-x-auto">
+                      ethereum:0x...@11155111?value=...
+                    </code>
+                    <div className="text-xs text-blue-600 mt-1">MetaMask・Trust Wallet対応</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="bg-orange-50 border border-orange-200 rounded p-3">
+                    <div className="font-semibold text-orange-800 flex items-center mb-1">
+                      <span className="mr-2">🏪</span>
+                      店舗QRコード（レガシー）
+                    </div>
+                    <code className="text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded block overflow-x-auto">
+                      {`{"type":"payment",...}`}
+                    </code>
+                    <div className="text-xs text-orange-600 mt-1">既存店舗との互換性維持</div>
+                  </div>
+                  
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                    <div className="font-semibold text-purple-800 flex items-center mb-1">
+                      <span className="mr-2">🔗</span>
+                      ウォレット専用形式
+                    </div>
+                    <code className="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded block overflow-x-auto">
+                      rainbow://..., cb-wallet://...
+                    </code>
+                    <div className="text-xs text-purple-600 mt-1">Coinbase・Rainbowディープリンク</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <h4 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                  <span className="mr-2">📊</span>
+                  対応状況サマリー
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  <div className="text-center">
+                    <div className="font-semibold text-green-700">6ネットワーク</div>
+                    <div className="text-green-600">完全対応</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-blue-700">4ウォレット</div>
+                    <div className="text-blue-600">専用対応</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-purple-700">5フォーマット</div>
+                    <div className="text-purple-600">自動検出</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-orange-700">統一規格</div>
+                    <div className="text-orange-600">テスト・本番</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             📮 お仕事問い合わせ先
           </h2>

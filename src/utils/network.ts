@@ -121,7 +121,7 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
         const data = JSON.parse(trimmed);
         console.log('Parsed JSON data:', data);
         
-        // 新しいJPYC決済形式
+        // 統一JPYC決済形式（推奨）
         if (data.type === 'JPYC_PAYMENT') {
           return {
             type: 'jpyc',
@@ -135,11 +135,13 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             memo: data.merchant?.description,
             timestamp: data.timestamp,
             expiresAt: data.expires,
+            tokenSymbol: data.network?.includes('fuji') ? 'tJPYC' : 'JPYC', // ネットワークから自動判別
           };
         }
-        
-        // カスタムtJPYC決済対応
+
+        // 廃止予定: カスタムtJPYC決済対応（JPYC_PAYMENTに統合予定）
         if (data.type === 'tJPYC_PAYMENT') {
+          console.warn('tJPYC_PAYMENT format is deprecated. Please use JPYC_PAYMENT with network specified.');
           return {
             type: 'tjpyc',
             address: data.to as `0x${string}`,
@@ -416,6 +418,32 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
       return null;
     }
 
+    // 9. Coinbase Wallet URI
+    if (trimmed.startsWith('https://go.cb-w.com/dapp')) {
+      try {
+        const url = new URL(trimmed);
+        const cbUrl = decodeURIComponent(url.searchParams.get('cb_url') || '');
+        if (cbUrl.startsWith('ethereum:')) {
+          // Coinbase WrappedのEthereum URIを再帰的にパース
+          return parseQRCodeData(cbUrl);
+        }
+      } catch (coinbaseError) {
+        console.error('Coinbase Wallet parsing failed:', coinbaseError);
+      }
+    }
+
+    // 10. Rainbow Wallet URI
+    if (trimmed.startsWith('rainbow://')) {
+      try {
+        const ethereumUri = trimmed.replace('rainbow://', '');
+        if (ethereumUri.startsWith('ethereum:')) {
+          return parseQRCodeData(ethereumUri);
+        }
+      } catch (rainbowError) {
+        console.error('Rainbow Wallet parsing failed:', rainbowError);
+      }
+    }
+
     console.log('Unknown QR code format:', trimmed);
     return null;
     
@@ -512,6 +540,64 @@ export function createPaymentQRCode(
 }
 
 /**
+ * MetaMask/Trust Wallet対応のEIP-681形式QRコード生成
+ */
+export function createEIP681QRCode(
+  address: `0x${string}`,
+  amount?: string,
+  network: NetworkType = 'ethereum',
+  data?: string
+): string {
+  const networkInfo = getNetworkInfo(network);
+  const chainId = networkInfo?.chainId;
+  
+  let url = `ethereum:${address}`;
+  if (chainId) {
+    url += `@${chainId}`;
+  }
+  
+  const params = new URLSearchParams();
+  if (amount) {
+    // ETH単位からWei単位に変換
+    const weiAmount = (BigInt(amount) * BigInt(10 ** 18)).toString();
+    params.append('value', weiAmount);
+  }
+  if (data) params.append('data', data);
+  
+  const queryString = params.toString();
+  if (queryString) {
+    url += `?${queryString}`;
+  }
+  
+  return url;
+}
+
+/**
+ * Coinbase Wallet対応のディープリンク生成
+ */
+export function createCoinbaseWalletQRCode(
+  address: `0x${string}`,
+  amount?: string,
+  network: NetworkType = 'ethereum'
+): string {
+  const eip681Uri = createEIP681QRCode(address, amount, network);
+  const encodedUri = encodeURIComponent(eip681Uri);
+  return `https://go.cb-w.com/dapp?cb_url=${encodedUri}`;
+}
+
+/**
+ * Rainbow Wallet対応のディープリンク生成
+ */
+export function createRainbowWalletQRCode(
+  address: `0x${string}`,
+  amount?: string,
+  network: NetworkType = 'ethereum'
+): string {
+  const eip681Uri = createEIP681QRCode(address, amount, network);
+  return `rainbow://${eip681Uri}`;
+}
+
+/**
  * QRコード生成用URL作成（SBT支払い用）
  */
 export function createSBTPaymentQRCode(
@@ -571,6 +657,8 @@ export function detectQRCodeFormat(qrString: string): string {
   if (trimmed.startsWith('payment:')) return 'Payment URL';
   if (trimmed.startsWith('sbt-payment:')) return 'SBT Payment';
   if (trimmed.startsWith('wc:')) return 'WalletConnect';
+  if (trimmed.startsWith('https://go.cb-w.com/dapp')) return 'Coinbase Wallet';
+  if (trimmed.startsWith('rainbow://')) return 'Rainbow Wallet';
   if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) return 'Ethereum Address';
   
   return 'Unknown Format';
@@ -589,7 +677,7 @@ export function describeQRCodeFormat(qrString: string): string {
     case 'Shop QR Code':
       return 'JPYC店舗QRコード - 店舗固有の決済用QRコード';
     case 'EIP-681 (Ethereum)':
-      return 'Ethereum標準（EIP-681）- MetaMask等で対応';
+      return 'Ethereum標準（EIP-681）- MetaMask・Trust Wallet等で対応';
     case 'JPYC Custom':
       return 'JPYC独自形式 - JPYCアプリ専用QRコード';
     case 'tJPYC Custom':
@@ -600,6 +688,10 @@ export function describeQRCodeFormat(qrString: string): string {
       return 'SBT決済 - SBT保有者限定の特別決済';
     case 'WalletConnect':
       return 'WalletConnect - ウォレット接続（決済不可）';
+    case 'Coinbase Wallet':
+      return 'Coinbase Wallet - Coinbase専用ディープリンク';
+    case 'Rainbow Wallet':
+      return 'Rainbow Wallet - Rainbow専用ディープリンク';
     case 'Ethereum Address':
       return 'Ethereumアドレス - シンプルな送金用アドレス';
     default:
