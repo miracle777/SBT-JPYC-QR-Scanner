@@ -116,13 +116,31 @@ export function NetworkValidation({
         )}
       </div>
 
-      <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-700">
-        <strong>QRコード情報:</strong>
-        <div className="mt-1 space-y-1 font-mono">
-          <div>タイプ: {qrData.type}</div>
-          <div>受取人: {qrData.address.substring(0, 10)}...</div>
-          {qrData.amount && <div>金額: {qrData.amount}</div>}
-          {qrData.network && <div>ネットワーク: {qrData.network}</div>}
+      <div className="mt-4 p-3 bg-gray-50 rounded border border-gray-200">
+        <strong className="text-sm text-gray-800">QRコード情報:</strong>
+        <div className="mt-2 space-y-2">
+          <div>
+            <span className="text-xs text-gray-600">タイプ:</span>
+            <div className="font-semibold text-sm text-gray-900">{qrData.type}</div>
+          </div>
+          <div>
+            <span className="text-xs text-gray-600">受取人:</span>
+            <div className="font-mono text-xs text-gray-900 break-all bg-white p-2 rounded border border-gray-200">
+              {qrData.address}
+            </div>
+          </div>
+          {qrData.amount && (
+            <div>
+              <span className="text-xs text-gray-600">金額:</span>
+              <div className="font-semibold text-sm text-gray-900">{qrData.amount}</div>
+            </div>
+          )}
+          {qrData.network && (
+            <div>
+              <span className="text-xs text-gray-600">ネットワーク:</span>
+              <div className="font-semibold text-sm text-gray-900">{qrData.network}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
