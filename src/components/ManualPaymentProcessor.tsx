@@ -314,6 +314,18 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
             <div className="text-sm font-semibold" style={{ color: networkInfo.color }}>
               {networkInfo.displayName} (Chain ID: {paymentData.chainId})
             </div>
+            {chain?.id !== paymentData.chainId && (
+              <div className="text-xs text-orange-600 mt-1">
+                ⚠️ 現在のウォレット: {chain?.name || 'Unknown'} (Chain ID: {chain?.id})
+              </div>
+            )}
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="text-sm text-gray-600 mb-2">ネットワーク</div>
+            <div className="text-sm font-semibold" style={{ color: networkInfo.color }}>
+              {networkInfo.displayName} (Chain ID: {paymentData.chainId})
+            </div>
           </div>
 
           <div className="border border-gray-200 rounded-lg p-4">
@@ -368,6 +380,14 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
             キャンセル
           </button>
         </div>
+
+        {needsNetworkSwitch && (
+          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
+            <p className="text-sm text-yellow-800 font-semibold">
+              ⚠️ 先に上のボタンでネットワークを切り替えてください
+            </p>
+          </div>
+        )}
       </div>
     );
   }
