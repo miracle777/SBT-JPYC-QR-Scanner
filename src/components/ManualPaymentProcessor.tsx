@@ -134,7 +134,9 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         currentChainId: chain?.id,
       });
 
-      writeContract({
+      // wagmi v2では、writeContractはchainIdパラメータをサポートしていません
+      // 事前にネットワークを切り替える必要があります
+      await writeContract({
         address: paymentData.contractAddress as `0x${string}`,
         abi: [
           {
@@ -150,7 +152,6 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         ],
         functionName: 'transfer',
         args: [paymentData.address as `0x${string}`, amountInWei],
-        chainId: paymentData.chainId,
       });
     } catch (error: any) {
       console.error('Payment error:', error);
