@@ -37,5 +37,13 @@ export interface MetaMaskEthereumProvider {
 declare global {
   interface Window {
     ethereum?: MetaMaskEthereumProvider;
+    gtag?: (
+      command: 'config' | 'event' | 'js',
+      targetId: string | Date,
+      config?: {
+        page_path?: string;
+        [key: string]: any;
+      }
+    ) => void;
   }
 }
