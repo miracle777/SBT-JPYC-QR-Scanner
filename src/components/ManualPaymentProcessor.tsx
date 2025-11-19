@@ -134,9 +134,8 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         currentChainId: chain?.id,
       });
 
-      // wagmi v2では、writeContractはchainIdパラメータをサポートしていません
-      // 事前にネットワークを切り替える必要があります
-      await writeContract({
+      // wagmi v2のwriteContractは非同期関数を返さないため、awaitを使わない
+      writeContract({
         address: paymentData.contractAddress as `0x${string}`,
         abi: [
           {
