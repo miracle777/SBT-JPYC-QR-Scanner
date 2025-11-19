@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { Clock, Edit2, Check, X, ExternalLink, Trash2, MapPin, Download, Upload } from 'lucide-react';
+import { Clock, Edit2, Check, X, ExternalLink, Trash2, MapPin, Download, Upload, BookOpen } from 'lucide-react';
 import { PaymentHistory } from '../types';
 import { getNetworkInfo } from '../utils/network';
 
@@ -175,6 +175,62 @@ export function PaymentHistoryComponent() {
     }
   };
 
+  const addToAddressBook = (item: PaymentHistory) => {
+    if (!address) return;
+
+    const name = item.memo || prompt('アドレス帳に登録する名前を入力してください（例: 田中商店）');
+    if (!name) return;
+
+    const storageKey = `address_book_${address}`;
+    const stored = localStorage.getItem(storageKey);
+    
+    try {
+      const addressBook = stored ? JSON.parse(stored) : [];
+      
+      // 重複チェック
+      const isDuplicate = addressBook.some(
+        (entry: any) => entry.address.toLowerCase() === item.recipient.toLowerCase()
+      );
+
+      if (isDuplicate) {
+        if (!confirm('このアドレスは既に登録されています。上書きしますか？')) {
+          return;
+        }
+        // 既存のエントリを更新
+        const updatedBook = addressBook.map((entry: any) =>
+          entry.address.toLowerCase() === item.recipient.toLowerCase()
+            ? {
+                ...entry,
+                name: name.trim(),
+                memo: item.memo,
+                network: item.network,
+                tokenSymbol: 'JPYC',
+              }
+            : entry
+        );
+        localStorage.setItem(storageKey, JSON.stringify(updatedBook));
+        alert('アドレス帳を更新しました');
+      } else {
+        // 新規追加
+        const newEntry = {
+          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          name: name.trim(),
+          address: item.recipient,
+          memo: item.memo,
+          network: item.network,
+          tokenSymbol: 'JPYC',
+          createdAt: new Date(),
+        };
+        addressBook.push(newEntry);
+        localStorage.setItem(storageKey, JSON.stringify(addressBook));
+        alert('アドレス帳に追加しました');
+      }
+    } catch (error) {
+      console.error('Failed to add to address book:', error);
+      alert('アドレス帳への追加に失敗しました');
+    }
+  };
+
   const formatAmount = (amount: string) => {
     try {
       const num = parseFloat(amount);
@@ -333,6 +389,13 @@ export function PaymentHistoryComponent() {
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   )}
+                  <button
+                    onClick={() => addToAddressBook(item)}
+                    className="text-green-600 hover:text-green-800"
+                    title="アドレス帳に追加"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => deleteHistory(item.id)}
                     className="text-red-600 hover:text-red-800"
