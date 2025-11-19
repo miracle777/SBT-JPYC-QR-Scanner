@@ -80,6 +80,26 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
     }
   };
 
+  const handleAddToken = async () => {
+    try {
+      // @ts-ignore
+      await window.ethereum?.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: paymentData.contractAddress,
+            symbol: 'JPYC',
+            decimals: 18,
+            image: 'https://jpyc.jp/img/logo.png',
+          },
+        },
+      });
+    } catch (error: any) {
+      console.error('Failed to add token:', error);
+    }
+  };
+
   const handleConfirm = async () => {
     if (!userAddress) return;
 
@@ -195,6 +215,25 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
             </div>
           </div>
         )}
+
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <div className="flex-1">
+              <div className="font-semibold text-blue-800 mb-2">
+                💡 トークンがウォレットに表示されない場合
+              </div>
+              <p className="text-sm text-blue-700 mb-3">
+                MetaMaskにJPYCトークンを追加すると、残高や送金内容が正しく表示されます
+              </p>
+              <button
+                onClick={handleAddToken}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                JPYCトークンをウォレットに追加
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-4 mb-6">
           {paymentData.shopName && (
