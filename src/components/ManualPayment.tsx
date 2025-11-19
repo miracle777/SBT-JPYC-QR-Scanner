@@ -10,12 +10,12 @@ import { AddressBook, AddressBookEntry } from './AddressBook';
 
 interface ManualPaymentProps {
   onSubmit: (data: { 
-    address: string; 
+    address: `0x${string}`; 
     amount: string; 
     memo?: string;
     network: NetworkType;
     chainId: number;
-    contractAddress: string;
+    contractAddress: `0x${string}`;
     shopName?: string;
   }) => void;
 }

@@ -10,12 +10,12 @@ import { savePaymentHistory, updatePaymentStatus } from '../utils/paymentHistory
 import { getLocationWithAddress } from '../utils/location';
 
 interface ManualPaymentData {
-  address: string;
+  address: `0x${string}`;
   amount: string;
   memo?: string;
   network: NetworkType;
   chainId: number;
-  contractAddress: string;
+  contractAddress: `0x${string}`;
   shopName?: string;
 }
 
@@ -114,7 +114,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
     // 決済履歴を保存（位置情報を含む）
     const newPaymentId = savePaymentHistory(userAddress, {
       amount: paymentData.amount,
-      recipient: paymentData.address as `0x${string}`,
+      recipient: paymentData.address,
       network: paymentData.network,
       chainId: paymentData.chainId,
       memo: paymentData.memo,
@@ -156,7 +156,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
 
       // wagmi v2のwriteContractは非同期関数を返さないため、awaitを使わない
       writeContract({
-        address: paymentData.contractAddress as `0x${string}`,
+        address: paymentData.contractAddress,
         abi: [
           {
             name: 'transfer',
@@ -170,7 +170,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           },
         ],
         functionName: 'transfer',
-        args: [paymentData.address as `0x${string}`, amountInWei],
+        args: [paymentData.address, amountInWei],
       });
     } catch (error: any) {
       console.error('Payment error:', error);
