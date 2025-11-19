@@ -3,8 +3,8 @@
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { SBTGallery } from '../../components/SBTGallery';
-import { CheckCircle, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { HamburgerMenu } from '../../components/HamburgerMenu';
+import { CheckCircle, Award } from 'lucide-react';
 
 export default function SBTGalleryPage() {
   const { isConnected, address } = useAccount();
@@ -15,19 +15,14 @@ export default function SBTGalleryPage() {
         {/* ヘッダー */}
         <header className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Link 
-              href="/"
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">ホームに戻る</span>
-            </Link>
-            
-            <h1 className="text-3xl font-bold text-gray-800 text-center flex-1">
-              🎫 SBTコレクション
+            <div className="flex-shrink-0">
+              <HamburgerMenu />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 text-center flex-1 flex items-center justify-center gap-2">
+              <Award className="w-8 h-8 text-purple-600" />
+              SBTコレクション
             </h1>
-            
-            <div className="w-32"></div> {/* スペーサー */}
+            <div className="flex-shrink-0 w-10"></div> {/* スペーサー */}
           </div>
           <p className="text-sm text-gray-600 text-center">
             あなたが取得したSoulbound Tokenのコレクション
