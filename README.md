@@ -178,6 +178,9 @@ cp .env.example .env.local
 # WalletConnect Project ID
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 
+# Google Analytics Measurement ID (optional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
 # ネットワーク設定
 NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_DEFAULT_NETWORK=sepolia
@@ -185,8 +188,8 @@ NEXT_PUBLIC_DEFAULT_NETWORK=sepolia
 
 # JPYC コントラクトアドレス
 NEXT_PUBLIC_JPYC_CONTRACT_SEPOLIA=0xd3eF95d29A198868241FE374A999fc25F6152253  # 必須
-NEXT_PUBLIC_JPYC_CONTRACT_POLYGON=0x...  # オプション（Polygon Mainnet）
-NEXT_PUBLIC_JPYC_CONTRACT_AVALANCHE=0x...  # オプション（Avalanche C-Chain）
+NEXT_PUBLIC_JPYC_CONTRACT_POLYGON=0x...  # オプション(Polygon Mainnet)
+NEXT_PUBLIC_JPYC_CONTRACT_AVALANCHE=0x...  # オプション(Avalanche C-Chain)
 
 # アプリ設定
 NEXT_PUBLIC_APP_NAME=SBT-JPYC-QR-Scanner

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
+import { GoogleAnalytics } from '../components/GoogleAnalytics';
 
 export const metadata: Metadata = {
   title: 'SBT masaru21 QR Scanner（仮）',
@@ -40,6 +41,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
+      <head>
+        <GoogleAnalytics />
+      </head>
       <body className="antialiased">
         <Providers>
           {children}
