@@ -116,7 +116,7 @@ export function HamburgerMenu() {
           {/* フッター */}
           <div className="p-6 border-t border-gray-200 bg-gray-50">
             <div className="text-xs text-gray-500 text-center">
-              <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
+              <p>&copy; 2025 SBT masaru21 QR Scanner</p>
               <p className="mt-1">Version 1.0.0</p>
             </div>
           </div>

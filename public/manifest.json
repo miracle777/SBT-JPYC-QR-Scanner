@@ -1,7 +1,7 @@
 {
-  "name": "SBT JPYC QR Scanner v1.1",
-  "short_name": "SBT Scanner",
-  "description": "SBT表示とネットワーク検証機能付きJPYC決済スキャナーアプリ v1.1",
+  "name": "SBT masaru21 QR Scanner（仮）",
+  "short_name": "masaru21 Scanner",
+  "description": "SBT表示とネットワーク検証機能付きJPYC決済スキャナーアプリ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

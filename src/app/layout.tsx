@@ -4,13 +4,14 @@ import { Providers } from './providers';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 
 export const metadata: Metadata = {
-  title: 'SBT-JPYC-QR-Scanner',
+  title: 'SBT masaru21 QR Scanner（仮）',
   description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ - プライバシーポリシー対応 PWA',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'SBT-JPYC-Scanner',
+    title: 'SBT masaru21 Scanner',
+
   },
   formatDetection: {
     telephone: false,
@@ -18,8 +19,8 @@ export const metadata: Metadata = {
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'application-name': 'SBT-JPYC-Scanner',
-    'apple-mobile-web-app-title': 'SBT-JPYC-Scanner',
+    'application-name': 'SBT masaru21 Scanner',
+    'apple-mobile-web-app-title': 'SBT masaru21 Scanner',
   },
 };
 

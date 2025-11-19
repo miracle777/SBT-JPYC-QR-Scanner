@@ -77,7 +77,7 @@ export default function Home() {
               <HamburgerMenu />
             </div>
             <h1 className="text-3xl font-bold text-gray-800 text-center flex-1">
-              SBT-JPYC-QR-Scanner
+              SBT masaru21 QR Scanner（仮）
             </h1>
             <div className="flex-shrink-0">
               <button
@@ -631,7 +631,7 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-gray-500">
-                <p>&copy; 2025 SBT-JPYC-QR-Scanner</p>
+                <p>&copy; 2025 SBT masaru21 QR Scanner</p>
               </div>
               <div className="flex items-center gap-4">
                 <a

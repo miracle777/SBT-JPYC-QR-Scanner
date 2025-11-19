@@ -48,7 +48,7 @@ export async function getAddressFromCoordinates(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=ja`,
       {
         headers: {
-          'User-Agent': 'SBT-JPYC-QR-Scanner',
+          'User-Agent': 'SBT-masaru21-QR-Scanner',
         },
       }
     );
