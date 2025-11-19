@@ -74,7 +74,75 @@ export default function SBTGalleryPage() {
 
         {/* SBTについての説明 */}
         {isConnected && (
-          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <>
+            {/* SBTコントラクト情報 */}
+            <div className="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4 text-purple-800 flex items-center">
+                <span className="mr-2">📄</span>
+                SBTコントラクト情報
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                  <h3 className="font-semibold text-purple-700 mb-3">Sepolia Testnet</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="text-gray-600 font-medium min-w-[120px]">コントラクト:</span>
+                      <code className="bg-gray-100 px-2 py-1 rounded font-mono text-xs break-all">
+                        0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4
+                      </code>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-600 font-medium min-w-[120px]">チェーンID:</span>
+                      <span className="text-gray-800">11155111</span>
+                    </div>
+                    <div className="flex items-center">
+                      <a
+                        href="https://sepolia.etherscan.io/address/0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline text-xs"
+                      >
+                        📊 Sepolia Etherscanで確認
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                  <h3 className="font-semibold text-purple-700 mb-3">Polygon Amoy Testnet</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="text-gray-600 font-medium min-w-[120px]">コントラクト:</span>
+                      <code className="bg-gray-100 px-2 py-1 rounded font-mono text-xs break-all">
+                        0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E
+                      </code>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-600 font-medium min-w-[120px]">チェーンID:</span>
+                      <span className="text-gray-800">80002</span>
+                    </div>
+                    <div className="flex items-center">
+                      <a
+                        href="https://amoy.polygonscan.com/address/0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline text-xs"
+                      >
+                        📊 Polygon Amoy Explorerで確認
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                  <p className="text-xs text-yellow-800">
+                    <strong>⚠️ 注意:</strong> これらはテストネット用のコントラクトです。本番環境では使用しないでください。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               🎫 SBT（ソウルバウンドトークン）とは
             </h2>
@@ -104,7 +172,7 @@ export default function SBTGalleryPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </main>

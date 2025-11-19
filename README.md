@@ -10,6 +10,20 @@
 
 **ソースコード**: <https://github.com/miracle777/SBT-JPYC-QR-Scanner>
 
+## 📜 SBTコントラクト情報
+
+### Sepolia Testnet
+- **コントラクトアドレス**: `0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4`
+- **チェーンID**: 11155111
+- **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4)
+
+### Polygon Amoy Testnet
+- **コントラクトアドレス**: `0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E`
+- **チェーンID**: 80002
+- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E)
+
+> ⚠️ **注意**: これらはテストネット用のコントラクトです。本番環境では使用しないでください。
+
 ## ✨ プロジェクト概要
 
 このプロジェクトは、`jpyc-payment-scanner` を拡張して、以下の機能を追加します：
@@ -177,6 +191,17 @@ NEXT_PUBLIC_JPYC_CONTRACT_AVALANCHE=0x...  # オプション（Avalanche C-Chain
 # アプリ設定
 NEXT_PUBLIC_APP_NAME=SBT-JPYC-QR-Scanner
 ```
+
+#### WalletConnect Project IDの取得とドメイン登録
+
+1. **WalletConnect Cloud** にアクセス: [https://cloud.walletconnect.com/](https://cloud.walletconnect.com/)
+2. **新規プロジェクトを作成**してProject IDを取得
+3. **重要**: Project IDを取得した後、必ず**ドメイン登録**を行ってください
+   - プロジェクト設定画面で「Allowed Domains」を設定
+   - 例: `jpyc-pay.app`, `localhost:3000`
+   - ドメイン登録を行わないと、本番環境でWalletConnect接続エラーが発生します
+
+> ⚠️ **よくあるエラー**: ドメイン未登録の場合、`Invalid Project ID`や接続失敗のエラーが発生します。必ずドメイン登録を完了させてください。
 
 ### 4. 開発サーバー起動
 
