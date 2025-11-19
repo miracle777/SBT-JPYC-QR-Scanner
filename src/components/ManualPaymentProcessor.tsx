@@ -83,17 +83,26 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
   const handleConfirm = async () => {
     if (!userAddress) return;
 
-    // 決済履歴を保存（位置情報を含む）
-    getLocationWithAddress().then((location) => {
-      const newPaymentId = savePaymentHistory(userAddress, {
-        amount: paymentData.amount,
-        recipient: paymentData.address as `0x${string}`,
-        network: paymentData.network,
-        chainId: paymentData.chainId,
-        memo: paymentData.memo,
-      });
-      setPaymentId(newPaymentId);
+    // ネットワーク確認
+    if (chain?.id !== paymentData.chainId) {
+      setErrorMessage('ネットワークを切り替えてから送金してください');
+      return;
+    }
 
+    setStep('sending');
+
+    // 決済履歴を保存（位置情報を含む）
+    const newPaymentId = savePaymentHistory(userAddress, {
+      amount: paymentData.amount,
+      recipient: paymentData.address as `0x${string}`,
+      network: paymentData.network,
+      chainId: paymentData.chainId,
+      memo: paymentData.memo,
+    });
+    setPaymentId(newPaymentId);
+
+    // 位置情報を非同期で取得・更新
+    getLocationWithAddress().then((location) => {
       if (location) {
         try {
           const storageKey = `payment_history_${userAddress}`;
@@ -113,10 +122,17 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
       console.error('Failed to get location:', error);
     });
 
-    setStep('sending');
-
     try {
       const amountInWei = parseUnits(paymentData.amount, 18);
+
+      console.log('Sending payment:', {
+        contractAddress: paymentData.contractAddress,
+        recipient: paymentData.address,
+        amount: paymentData.amount,
+        amountInWei: amountInWei.toString(),
+        chainId: paymentData.chainId,
+        currentChainId: chain?.id,
+      });
 
       writeContract({
         address: paymentData.contractAddress as `0x${string}`,
@@ -134,8 +150,10 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         ],
         functionName: 'transfer',
         args: [paymentData.address as `0x${string}`, amountInWei],
+        chainId: paymentData.chainId,
       });
     } catch (error: any) {
+      console.error('Payment error:', error);
       setErrorMessage(error.message || '送金の実行に失敗しました');
       setStep('error');
       
