@@ -44,12 +44,12 @@ export default function Home() {
   };
 
   const handleManualPayment = (data: { 
-    address: string; 
+    address: `0x${string}`; 
     amount: string; 
     memo?: string;
     network: string;
     chainId: number;
-    contractAddress: string;
+    contractAddress: `0x${string}`;
     shopName?: string;
   }) => {
     // 手動送付専用プロセッサーを使用

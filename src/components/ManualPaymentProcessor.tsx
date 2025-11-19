@@ -34,6 +34,15 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
   const [paymentId, setPaymentId] = useState<string>('');
   const [needsNetworkSwitch, setNeedsNetworkSwitch] = useState(false);
 
+  // デバッグ: paymentDataの内容をログ出力
+  console.log('ManualPaymentProcessor initialized with:', {
+    address: paymentData.address,
+    amount: paymentData.amount,
+    contractAddress: paymentData.contractAddress,
+    chainId: paymentData.chainId,
+    network: paymentData.network,
+  });
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
     confirmations: 1,
