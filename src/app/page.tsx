@@ -9,6 +9,7 @@ import { JPYCBalance } from '../components/JPYCBalance';
 import { PaymentHistoryComponent } from '../components/PaymentHistory';
 import { PaymentProcessor } from '../components/PaymentProcessor';
 import { ManualPayment } from '../components/ManualPayment';
+import { ManualPaymentProcessor } from '../components/ManualPaymentProcessor';
 import { HamburgerMenu } from '../components/HamburgerMenu';
 import { CheckCircle, Award } from 'lucide-react';
 import Link from 'next/link';
@@ -19,6 +20,8 @@ export default function Home() {
   const [showPaymentProcessor, setShowPaymentProcessor] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
+  const [manualPaymentData, setManualPaymentData] = useState<any>(null);
+  const [showManualProcessor, setShowManualProcessor] = useState(false);
   
   // デバッグ情報をコンソールに出力
   console.log('🔍 Home component state:', {
@@ -49,25 +52,20 @@ export default function Home() {
     contractAddress: string;
     shopName?: string;
   }) => {
-    // 手動入力データをQRコード形式に変換
-    const qrData = JSON.stringify({
-      type: 'payment',
-      address: data.address,
-      amount: data.amount,
-      memo: data.memo,
-      shopName: data.shopName || '手動送付',
-      network: data.network,
-      chainId: data.chainId,
-      contractAddress: data.contractAddress,
-    });
-    setScannedData(qrData);
-    setShowPaymentProcessor(true);
+    // 手動送付専用プロセッサーを使用
+    setManualPaymentData(data);
+    setShowManualProcessor(true);
   };
 
   const handlePaymentComplete = () => {
     setScannedData(null);
     setShowPaymentProcessor(false);
     setScannerError(null);
+  };
+
+  const handleManualPaymentComplete = () => {
+    setManualPaymentData(null);
+    setShowManualProcessor(false);
   };
 
   return (
@@ -181,7 +179,7 @@ export default function Home() {
 
         {isConnected && (
           <>
-            {!showPaymentProcessor && (
+            {!showPaymentProcessor && !showManualProcessor && (
               <>
                 {/* スキャナーエラー表示 */}
                 {scannerError && (
@@ -230,6 +228,16 @@ export default function Home() {
                 <PaymentProcessor 
                   qrData={scannedData} 
                   onComplete={handlePaymentComplete}
+                />
+              </div>
+            )}
+
+            {showManualProcessor && manualPaymentData && (
+              <div className="mb-6">
+                <ManualPaymentProcessor
+                  paymentData={manualPaymentData}
+                  onComplete={handleManualPaymentComplete}
+                  onCancel={handleManualPaymentComplete}
                 />
               </div>
             )}
