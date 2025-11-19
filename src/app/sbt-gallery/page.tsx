@@ -143,32 +143,33 @@ export default function SBTGalleryPage() {
             </div>
 
             <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-              🎫 SBT（ソウルバウンドトークン）とは
-            </h2>
-            <div className="space-y-4 text-gray-700">
-              <p>
-                SBT（Soulbound Token）は、<strong>譲渡不可能なデジタル証明書</strong>です。
-                通常のNFTとは異なり、取得したウォレットに永続的に結び付いており、売買や譲渡ができません。
-              </p>
-              <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <h3 className="font-semibold text-blue-800 mb-2">✨ 主な特徴</h3>
-                  <ul className="space-y-2 text-sm text-blue-700">
-                    <li>• 譲渡不可能（売買できない）</li>
-                    <li>• ブロックチェーン上に永続保存</li>
-                    <li>• 個人の実績や体験を証明</li>
-                    <li>• コレクション性が高い</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <h3 className="font-semibold text-green-800 mb-2">🎁 メリット</h3>
-                  <ul className="space-y-2 text-sm text-green-700">
-                    <li>• 店舗での特典・割引が受けられる</li>
-                    <li>• 来店履歴を証明できる</li>
-                    <li>• ロイヤルカスタマーとして認識</li>
-                    <li>• 限定イベントへの参加権</li>
-                  </ul>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                🎫 SBT（ソウルバウンドトークン）とは
+              </h2>
+              <div className="space-y-4 text-gray-700">
+                <p>
+                  SBT（Soulbound Token）は、<strong>譲渡不可能なデジタル証明書</strong>です。
+                  通常のNFTとは異なり、取得したウォレットに永続的に結び付いており、売買や譲渡ができません。
+                </p>
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 className="font-semibold text-blue-800 mb-2">✨ 主な特徴</h3>
+                    <ul className="space-y-2 text-sm text-blue-700">
+                      <li>• 譲渡不可能（売買できない）</li>
+                      <li>• ブロックチェーン上に永続保存</li>
+                      <li>• 個人の実績や体験を証明</li>
+                      <li>• コレクション性が高い</li>
+                    </ul>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h3 className="font-semibold text-green-800 mb-2">🎁 メリット</h3>
+                    <ul className="space-y-2 text-sm text-green-700">
+                      <li>• 店舗での特典・割引が受けられる</li>
+                      <li>• 来店履歴を証明できる</li>
+                      <li>• ロイヤルカスタマーとして認識</li>
+                      <li>• 限定イベントへの参加権</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
