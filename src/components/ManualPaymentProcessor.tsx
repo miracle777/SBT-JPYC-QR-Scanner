@@ -53,6 +53,10 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
 
   // トークンが追加されているかどうか（残高がundefinedでない場合は追加済みとみなす）
   const isTokenAdded = tokenBalance !== undefined;
+  
+  // 残高チェック
+  const paymentAmountInWei = parseUnits(paymentData.amount, 18);
+  const hasEnoughBalance = tokenBalance ? tokenBalance >= paymentAmountInWei : false;
 
   // デバッグ: paymentDataの内容をログ出力
   console.log('ManualPaymentProcessor initialized with:', {
@@ -62,6 +66,9 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
     chainId: paymentData.chainId,
     network: paymentData.network,
     tokenBalance: tokenBalance?.toString(),
+    tokenBalanceInJPYC: tokenBalance ? (Number(tokenBalance) / 1e18).toString() : 'undefined',
+    paymentAmountInWei: paymentAmountInWei.toString(),
+    hasEnoughBalance,
     isTokenAdded,
   });
 
@@ -285,6 +292,27 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           </div>
         )}
 
+        {tokenBalance !== undefined && !hasEnoughBalance && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-red-800 mb-2">
+                  ⚠️ 残高不足
+                </div>
+                <p className="text-sm text-red-700 mb-2">
+                  現在の残高: {(Number(tokenBalance) / 1e18).toLocaleString('ja-JP')} {paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase() ? 'tJPYC' : 'JPYC'}
+                  <br />
+                  送金額: {parseFloat(paymentData.amount).toLocaleString('ja-JP')} {paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase() ? 'tJPYC' : 'JPYC'}
+                </p>
+                <p className="text-xs text-red-600">
+                  送金に必要なトークンが不足しています
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4 mb-6">
           {paymentData.shopName && (
             <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
@@ -367,8 +395,9 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         <div className="flex gap-3">
           <button
             onClick={handleConfirm}
-            disabled={needsNetworkSwitch || isPending}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            disabled={needsNetworkSwitch || isPending || !hasEnoughBalance}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            title={!hasEnoughBalance ? '残高が不足しています' : ''}
           >
             <Send className="w-5 h-5" />
             送金する
@@ -385,6 +414,14 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
             <p className="text-sm text-yellow-800 font-semibold">
               ⚠️ 先に上のボタンでネットワークを切り替えてください
+            </p>
+          </div>
+        )}
+        
+        {!needsNetworkSwitch && !hasEnoughBalance && tokenBalance !== undefined && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-300 rounded-lg text-center">
+            <p className="text-sm text-red-800 font-semibold">
+              ⚠️ トークン残高が不足しているため送金できません
             </p>
           </div>
         )}
