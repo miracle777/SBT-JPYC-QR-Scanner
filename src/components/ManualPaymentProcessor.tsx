@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, useReadContract } from 'wagmi';
 import { parseUnits } from 'viem';
 import { AlertCircle, CheckCircle2, Loader2, Send } from 'lucide-react';
 import { NetworkType } from '../types';
@@ -34,6 +34,26 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
   const [paymentId, setPaymentId] = useState<string>('');
   const [needsNetworkSwitch, setNeedsNetworkSwitch] = useState(false);
 
+  // トークンの残高をチェック（トークンが追加されているかの判定に使用）
+  const { data: tokenBalance } = useReadContract({
+    address: paymentData.contractAddress,
+    abi: [
+      {
+        inputs: [{ name: 'account', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [{ name: '', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+    functionName: 'balanceOf',
+    args: userAddress ? [userAddress] : undefined,
+    chainId: paymentData.chainId,
+  });
+
+  // トークンが追加されているかどうか（残高がundefinedでない場合は追加済みとみなす）
+  const isTokenAdded = tokenBalance !== undefined;
+
   // デバッグ: paymentDataの内容をログ出力
   console.log('ManualPaymentProcessor initialized with:', {
     address: paymentData.address,
@@ -41,6 +61,8 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
     contractAddress: paymentData.contractAddress,
     chainId: paymentData.chainId,
     network: paymentData.network,
+    tokenBalance: tokenBalance?.toString(),
+    isTokenAdded,
   });
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
@@ -242,24 +264,26 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           </div>
         )}
 
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start gap-2">
-            <div className="flex-1">
-              <div className="font-semibold text-blue-800 mb-2">
-                💡 トークンがウォレットに表示されない場合
+        {!isTokenAdded && !needsNetworkSwitch && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <div className="font-semibold text-blue-800 mb-2">
+                  💡 トークンがウォレットに表示されない場合
+                </div>
+                <p className="text-sm text-blue-700 mb-3">
+                  MetaMaskにトークンを追加すると、残高や送金内容が正しく表示されます
+                </p>
+                <button
+                  onClick={handleAddToken}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  トークンをウォレットに追加
+                </button>
               </div>
-              <p className="text-sm text-blue-700 mb-3">
-                MetaMaskにJPYCトークンを追加すると、残高や送金内容が正しく表示されます
-              </p>
-              <button
-                onClick={handleAddToken}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                JPYCトークンをウォレットに追加
-              </button>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="space-y-4 mb-6">
           {paymentData.shopName && (
@@ -299,6 +323,16 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
                 {paymentData.contractAddress}
               </div>
               {/* トークン種類の判定 */}
+              {paymentData.contractAddress.toLowerCase() === '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'.toLowerCase() && (
+                <div className="text-xs text-blue-600 font-semibold">
+                  🏛️ Sepolia公式Faucet JPYC
+                </div>
+              )}
+              {paymentData.contractAddress.toLowerCase() === '0xd3eF95d29A198868241FE374A999fc25F6152253'.toLowerCase() && (
+                <div className="text-xs text-purple-600 font-semibold">
+                  🏘️ Sepoliaコミュニティ JPYC
+                </div>
+              )}
               {(paymentData.contractAddress.toLowerCase() === '0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'.toLowerCase() ||
                 paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase()) && (
                 <div className="text-xs text-green-600 font-semibold">

@@ -215,17 +215,22 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                   type="button"
                   onClick={() => setContractAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB')}
                   className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                  title="公式Faucetで取得できるJPYC"
                 >
-                  📄 公式JPYC
+                  🏛️ 公式Faucet JPYC
                 </button>
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xd3eF95d29A198868241FE374A999fc25F6152253')}
                   className="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
+                  title="コミュニティが作成したJPYC"
                 >
-                  🏘️ コミュニティJPYC
+                  🏘️ コミュニティ JPYC
                 </button>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                💡 公式Faucet: <a href="https://faucet.sepolia.dev/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">faucet.sepolia.dev</a>
+              </p>
             </div>
           )}
           
