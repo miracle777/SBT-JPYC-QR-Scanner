@@ -1,0 +1,19 @@
+# robots.txt for SBT-JPYC-QR-Scanner
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://jpyc-pay.app/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Crawl-delay
+Crawl-delay: 1

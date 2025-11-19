@@ -3,16 +3,49 @@ import './globals.css';
 import { Providers } from './providers';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 import { GoogleAnalytics } from '../components/GoogleAnalytics';
+import { StructuredData } from '../components/StructuredData';
 
 export const metadata: Metadata = {
-  title: 'SBT masaru21 QR Scanner（仮）',
-  description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ - プライバシーポリシー対応 PWA',
+  metadataBase: new URL('https://jpyc-pay.app'),
+  title: {
+    default: 'SBT masaru21 QR Scanner - JPYC決済アプリ',
+    template: '%s | SBT masaru21 Scanner',
+  },
+  description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ。Ethereum、Polygon、AvalancheでのJPYC支払いに対応したPWAアプリケーション。',
+  keywords: ['JPYC', 'SBT', 'QRスキャナー', 'Web3', 'Ethereum', 'Polygon', 'Avalanche', '決済', 'ブロックチェーン', 'PWA'],
+  authors: [{ name: 'masaru21', url: 'https://x.com/masaru21' }],
+  creator: 'masaru21',
+  publisher: 'masaru21',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ja_JP',
+    url: 'https://jpyc-pay.app',
+    title: 'SBT masaru21 QR Scanner - JPYC決済アプリ',
+    description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ。マルチチェーン対応のWeb3決済ソリューション。',
+    siteName: 'SBT masaru21 Scanner',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SBT masaru21 QR Scanner',
+    description: 'SBT表示とネットワーク検証機能付きJPYC決済アプリ',
+    creator: '@masaru21',
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'SBT masaru21 Scanner',
-
   },
   formatDetection: {
     telephone: false,
@@ -43,6 +76,7 @@ export default function RootLayout({
     <html lang="ja">
       <head>
         <GoogleAnalytics />
+        <StructuredData />
       </head>
       <body className="antialiased">
         <Providers>
