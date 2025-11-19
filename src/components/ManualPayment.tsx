@@ -152,7 +152,7 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
         {/* コントラクトアドレス */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            JPYCコントラクトアドレス <span className="text-red-500">*</span>
+            トークンコントラクトアドレス <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -161,8 +161,76 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
             placeholder="0x..."
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
           />
+          
+          {/* クイック選択ボタン */}
+          {selectedNetwork === 'polygon-amoy' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Polygon Amoy クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                >
+                  📄 標準JPYC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a')}
+                  className="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
+                >
+                  🎯 tJPYC (カスタム)
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {selectedNetwork === 'avalanche-fuji' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Avalanche Fuji クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                >
+                  📄 標準JPYC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345')}
+                  className="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
+                >
+                  🎯 tJPYC (カスタム)
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {selectedNetwork === 'sepolia' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Sepolia クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB')}
+                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                >
+                  📄 公式JPYC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xd3eF95d29A198868241FE374A999fc25F6152253')}
+                  className="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
+                >
+                  🏘️ コミュニティJPYC
+                </button>
+              </div>
+            </div>
+          )}
+          
           <p className="text-xs text-gray-500 mt-1">
-            ネットワーク選択時に自動設定されます（手動変更可能）
+            送金するトークンのコントラクトアドレスを指定（クイック選択またはカスタム入力可能）
           </p>
         </div>
 

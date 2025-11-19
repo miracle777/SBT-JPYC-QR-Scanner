@@ -91,6 +91,23 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
 
   const handleAddToken = async () => {
     try {
+      // トークン情報を決定（JPYC または tJPYC）
+      let tokenSymbol = 'JPYC';
+      let tokenImage = 'https://jpyc.jp/img/logo.png';
+      
+      // カスタムtJPYCトークンの場合
+      const customTokenAddresses = [
+        '0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345', // Avalanche Fuji
+        '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a', // Polygon Amoy
+      ];
+      
+      if (customTokenAddresses.some(addr => 
+        addr.toLowerCase() === paymentData.contractAddress.toLowerCase()
+      )) {
+        tokenSymbol = 'tJPYC';
+        tokenImage = 'https://jpyc.jp/img/logo.png'; // 同じアイコンを使用
+      }
+      
       // @ts-ignore
       await window.ethereum?.request({
         method: 'wallet_watchAsset',
@@ -98,9 +115,9 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           type: 'ERC20',
           options: {
             address: paymentData.contractAddress,
-            symbol: 'JPYC',
+            symbol: tokenSymbol,
             decimals: 18,
-            image: 'https://jpyc.jp/img/logo.png',
+            image: tokenImage,
           },
         },
       });
@@ -276,9 +293,18 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
           </div>
 
           <div className="border border-gray-200 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-2">コントラクトアドレス</div>
-            <div className="text-xs font-mono text-gray-700 break-all">
-              {paymentData.contractAddress}
+            <div className="text-sm text-gray-600 mb-2">トークンコントラクト</div>
+            <div className="space-y-1">
+              <div className="text-xs font-mono text-gray-700 break-all bg-gray-50 p-2 rounded">
+                {paymentData.contractAddress}
+              </div>
+              {/* トークン種類の判定 */}
+              {(paymentData.contractAddress.toLowerCase() === '0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'.toLowerCase() ||
+                paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase()) && (
+                <div className="text-xs text-green-600 font-semibold">
+                  🎯 カスタムトークン: tJPYC
+                </div>
+              )}
             </div>
           </div>
 
