@@ -135,13 +135,16 @@ export function AddressBook({ onSelectAddress, compact = false }: AddressBookPro
       return;
     }
 
-    // 重複チェック
+    // 重複チェック: アドレス、ネットワーク、コントラクトアドレスの組み合わせで判定
     const isDuplicate = entries.some(
-      (entry) => entry.address.toLowerCase() === formData.address.toLowerCase()
+      (entry) => 
+        entry.address.toLowerCase() === formData.address.toLowerCase() &&
+        entry.network === formData.network &&
+        entry.contractAddress?.toLowerCase() === formData.contractAddress.toLowerCase()
     );
 
     if (isDuplicate) {
-      setError('このアドレスは既に登録されています');
+      setError('このアドレスは同じネットワーク・トークンで既に登録されています');
       return;
     }
 
@@ -459,30 +462,30 @@ export function AddressBook({ onSelectAddress, compact = false }: AddressBookPro
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-800 mb-1">
-                    {entry.name}
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="font-semibold text-gray-800">
+                      {entry.name}
+                    </div>
+                    {entry.network && (
+                      <span className="text-xs px-2 py-0.5 rounded font-medium" style={{ 
+                        backgroundColor: SUPPORTED_NETWORKS[entry.network as NetworkType]?.color + '20',
+                        color: SUPPORTED_NETWORKS[entry.network as NetworkType]?.color 
+                      }}>
+                        {SUPPORTED_NETWORKS[entry.network as NetworkType]?.displayName || entry.network}
+                      </span>
+                    )}
+                    {entry.tokenSymbol && (
+                      <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded font-medium">
+                        {entry.tokenSymbol}
+                      </span>
+                    )}
                   </div>
                   <div className="text-sm text-gray-600 font-mono mb-1">
                     {entry.address}
                   </div>
-                  {entry.network && (
-                    <div className="text-xs mb-1">
-                      <span className="inline-block px-2 py-0.5 rounded" style={{ 
-                        backgroundColor: SUPPORTED_NETWORKS[entry.network as NetworkType]?.color + '20',
-                        color: SUPPORTED_NETWORKS[entry.network as NetworkType]?.color 
-                      }}>
-                        🌐 {SUPPORTED_NETWORKS[entry.network as NetworkType]?.displayName || entry.network}
-                      </span>
-                      {entry.tokenSymbol && (
-                        <span className="ml-2 inline-block px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
-                          💰 {entry.tokenSymbol}
-                        </span>
-                      )}
-                    </div>
-                  )}
                   {entry.contractAddress && (
                     <div className="text-xs text-gray-500 font-mono mb-1">
-                      📄 {entry.contractAddress.slice(0, 10)}...{entry.contractAddress.slice(-8)}
+                      📄 コントラクト: {entry.contractAddress.slice(0, 10)}...{entry.contractAddress.slice(-8)}
                     </div>
                   )}
                   {entry.memo && (
