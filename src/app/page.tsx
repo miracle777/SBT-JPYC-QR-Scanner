@@ -63,23 +63,27 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <header className="text-center mb-8">
+        <header className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <HamburgerMenu />
-            <h1 className="text-3xl font-bold text-gray-800">
+            <div className="flex-shrink-0">
+              <HamburgerMenu />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 text-center flex-1">
               SBT-JPYC-QR-Scanner
             </h1>
-            <button
-              onClick={() => setShowHelp(true)}
-              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              title="ヘルプとSBTの説明"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
+            <div className="flex-shrink-0">
+              <button
+                onClick={() => setShowHelp(true)}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="ヘルプとSBTの説明"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 text-center">
             SBT表示とネットワーク検証機能付きJPYC決済アプリ
           </p>
         </header>

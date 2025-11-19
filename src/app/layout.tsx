@@ -39,10 +39,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
-      </head>
       <body className="antialiased">
         <Providers>
           {children}
