@@ -1,11 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Wallet, Send } from 'lucide-react';
+import { Wallet, Send, BookOpen } from 'lucide-react';
 import { useAccount, useChainId } from 'wagmi';
+import { NetworkType } from '../types';
+import { SUPPORTED_NETWORKS } from '../utils/network';
+import { JPYC_ADDRESSES, JPYCNetworkType } from '../contracts/jpyc';
+import { AddressBook, AddressBookEntry } from './AddressBook';
 
 interface ManualPaymentProps {
-  onSubmit: (data: { address: string; amount: string; memo?: string }) => void;
+  onSubmit: (data: { 
+    address: string; 
+    amount: string; 
+    memo?: string;
+    network: NetworkType;
+    chainId: number;
+    contractAddress: string;
+    shopName?: string;
+  }) => void;
 }
 
 export function ManualPayment({ onSubmit }: ManualPaymentProps) {
@@ -15,9 +27,37 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
   const [amount, setAmount] = useState('');
   const [memo, setMemo] = useState('');
   const [error, setError] = useState('');
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>('sepolia');
+  const [contractAddress, setContractAddress] = useState<string>(JPYC_ADDRESSES.sepolia);
+  const [shopName, setShopName] = useState('');
+  const [showAddressBook, setShowAddressBook] = useState(false);
 
   const validateAddress = (addr: string): boolean => {
     return /^0x[a-fA-F0-9]{40}$/.test(addr);
+  };
+
+  const handleNetworkChange = (network: NetworkType) => {
+    setSelectedNetwork(network);
+    // ネットワークに応じたデフォルトのJPYCアドレスを設定
+    const networkKey = network as JPYCNetworkType;
+    if (JPYC_ADDRESSES[networkKey]) {
+      setContractAddress(JPYC_ADDRESSES[networkKey]);
+    }
+  };
+
+  const handleAddressBookSelect = (entry: AddressBookEntry) => {
+    setAddress(entry.address);
+    setShopName(entry.name);
+    if (entry.memo) {
+      setMemo(entry.memo);
+    }
+    if (entry.network) {
+      setSelectedNetwork(entry.network as NetworkType);
+    }
+    if (entry.contractAddress) {
+      setContractAddress(entry.contractAddress);
+    }
+    setShowAddressBook(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,16 +81,22 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
     }
 
     // データを送信
+    const networkInfo = SUPPORTED_NETWORKS[selectedNetwork];
     onSubmit({
       address: address as `0x${string}`,
       amount,
       memo: memo || undefined,
+      network: selectedNetwork,
+      chainId: networkInfo.chainId,
+      contractAddress,
+      shopName: shopName || '手動送付',
     });
 
     // フォームをクリア
     setAddress('');
     setAmount('');
     setMemo('');
+    setShopName('');
   };
 
   if (!isConnected) {
@@ -59,12 +105,84 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Wallet className="w-5 h-5 text-blue-600" />
-        <h2 className="text-xl font-semibold text-gray-800">手動送金</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Wallet className="w-5 h-5 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-800">手動送金</h2>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowAddressBook(!showAddressBook)}
+          className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+        >
+          <BookOpen className="w-4 h-4" />
+          アドレス帳
+        </button>
       </div>
 
+      {/* アドレス帳表示 */}
+      {showAddressBook && (
+        <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <AddressBook onSelectAddress={handleAddressBookSelect} compact={true} />
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* ネットワーク選択 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            ネットワーク <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={selectedNetwork}
+            onChange={(e) => handleNetworkChange(e.target.value as NetworkType)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {Object.entries(SUPPORTED_NETWORKS).map(([key, network]) => (
+              <option key={key} value={key}>
+                {network.displayName} (Chain ID: {network.chainId})
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            送金先のネットワークを選択してください
+          </p>
+        </div>
+
+        {/* コントラクトアドレス */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            JPYCコントラクトアドレス <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={contractAddress}
+            onChange={(e) => setContractAddress(e.target.value)}
+            placeholder="0x..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            ネットワーク選択時に自動設定されます（手動変更可能）
+          </p>
+        </div>
+
+        {/* 送付先名前 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            送付先名前（店舗名など）
+          </label>
+          <input
+            type="text"
+            value={shopName}
+            onChange={(e) => setShopName(e.target.value)}
+            placeholder="例: 田中商店、友人の太郎さん（未入力の場合「手動送付」と表示されます）"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            決済履歴に表示される名前です（任意）
+          </p>
+        </div>
+
         {/* 送信先アドレス */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -145,14 +263,19 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
         </button>
       </form>
 
-      {/* 現在のネットワーク表示 */}
+      {/* 選択中のネットワーク情報 */}
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500">
-          💡 現在のネットワーク: Chain ID {chainId}
+          💡 選択中のネットワーク: {SUPPORTED_NETWORKS[selectedNetwork].displayName}
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          送金はSepoliaネットワークで実行されます
+          Chain ID: {SUPPORTED_NETWORKS[selectedNetwork].chainId}
         </p>
+        {chainId !== SUPPORTED_NETWORKS[selectedNetwork].chainId && (
+          <p className="text-xs text-orange-600 mt-1">
+            ⚠️ ウォレットのネットワークと異なります。送金時に切り替えが必要です。
+          </p>
+        )}
       </div>
     </div>
   );

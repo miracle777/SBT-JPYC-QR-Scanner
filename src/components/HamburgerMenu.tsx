@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Home, Award, HelpCircle, ShoppingBag, Github } from 'lucide-react';
+import { Menu, X, Home, Award, BookOpen, ShoppingBag, Github } from 'lucide-react';
 
 export function HamburgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +74,15 @@ export function HamburgerMenu() {
             >
               <Award className="w-5 h-5" />
               <span className="font-medium">SBTコレクション</span>
+            </Link>
+
+            <Link
+              href="/address-book"
+              onClick={closeMenu}
+              className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span className="font-medium">アドレス帳</span>
             </Link>
 
             <div className="border-t border-gray-200 my-4"></div>

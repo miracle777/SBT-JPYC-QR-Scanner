@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { Clock, Edit2, Check, X, ExternalLink, Trash2, MapPin } from 'lucide-react';
+import { Clock, Edit2, Check, X, ExternalLink, Trash2, MapPin, Download, Upload } from 'lucide-react';
 import { PaymentHistory } from '../types';
 import { getNetworkInfo } from '../utils/network';
 
@@ -101,6 +101,54 @@ export function PaymentHistoryComponent() {
     setHistory(updatedHistory);
   };
 
+  const handleExport = () => {
+    if (history.length === 0) {
+      alert('エクスポートする履歴がありません');
+      return;
+    }
+
+    const dataStr = JSON.stringify(history, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `payment-history_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target?.result as string);
+        if (!Array.isArray(imported)) {
+          alert('無効なファイル形式です');
+          return;
+        }
+
+        const validHistory = imported.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        }));
+
+        if (confirm(`${validHistory.length}件の履歴をインポートしますか？\n既存のデータは上書きされます。`)) {
+          saveHistory(validHistory);
+        }
+      } catch (error) {
+        alert('ファイルの読み込みに失敗しました');
+        console.error('Import error:', error);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   const startEdit = (id: string, currentMemo?: string) => {
     setEditingId(id);
     setEditMemo(currentMemo || '');
@@ -175,10 +223,23 @@ export function PaymentHistoryComponent() {
   if (history.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-          <Clock className="w-5 h-5" />
-          決済履歴
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5" />
+            <h2 className="text-xl font-semibold text-gray-800">決済履歴</h2>
+          </div>
+          <label className="flex items-center gap-1 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm cursor-pointer"
+            title="インポート"
+          >
+            <Upload className="w-4 h-4" />
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
+            />
+          </label>
+        </div>
         <p className="text-gray-500 text-center py-8">
           決済履歴がありません
         </p>
@@ -188,10 +249,32 @@ export function PaymentHistoryComponent() {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-        <Clock className="w-5 h-5" />
-        決済履歴
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Clock className="w-5 h-5" />
+          <h2 className="text-xl font-semibold text-gray-800">決済履歴</h2>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+            title="エクスポート"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+          <label className="flex items-center gap-1 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm cursor-pointer"
+            title="インポート"
+          >
+            <Upload className="w-4 h-4" />
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </div>
       
       <div className="space-y-4">
         {history.map((item) => {

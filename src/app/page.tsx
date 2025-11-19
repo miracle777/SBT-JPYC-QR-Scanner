@@ -40,16 +40,25 @@ export default function Home() {
     setScannerError(error);
   };
 
-  const handleManualPayment = (data: { address: string; amount: string; memo?: string }) => {
+  const handleManualPayment = (data: { 
+    address: string; 
+    amount: string; 
+    memo?: string;
+    network: string;
+    chainId: number;
+    contractAddress: string;
+    shopName?: string;
+  }) => {
     // 手動入力データをQRコード形式に変換
     const qrData = JSON.stringify({
       type: 'payment',
       address: data.address,
       amount: data.amount,
       memo: data.memo,
-      shopName: '手動送付',
-      network: 'sepolia',
-      chainId: 11155111,
+      shopName: data.shopName || '手動送付',
+      network: data.network,
+      chainId: data.chainId,
+      contractAddress: data.contractAddress,
     });
     setScannedData(qrData);
     setShowPaymentProcessor(true);
