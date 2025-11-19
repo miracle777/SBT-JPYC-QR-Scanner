@@ -701,7 +701,8 @@ export default function Home() {
                     <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
                       <h4 className="font-semibold text-yellow-800 mb-2">⚙️ 技術詳細</h4>
                       <div className="text-sm text-yellow-700">
-                        <p>• <strong>コントラクト</strong>: 0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4</p>
+                        <p className="mb-2">• <strong>コントラクト</strong>:</p>
+                        <p className="ml-4 mb-2 break-all font-mono text-xs">0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4</p>
                         <p>• <strong>対応ネットワーク</strong>: Sepolia テストネット・Polygon Amoy</p>
                         <p>• <strong>標準</strong>: ERC-721準拠（譲渡不可能）</p>
                       </div>
