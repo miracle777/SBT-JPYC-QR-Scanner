@@ -5,12 +5,13 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { QRScannerComponent } from '../components/QRScannerSimple';
 import { WalletConnector } from '../components/WalletConnector';
-import { SBTGallery } from '../components/SBTGallery';
 import { JPYCBalance } from '../components/JPYCBalance';
 import { PaymentHistoryComponent } from '../components/PaymentHistory';
 import { PaymentProcessor } from '../components/PaymentProcessor';
 import { ManualPayment } from '../components/ManualPayment';
-import { CheckCircle } from 'lucide-react';
+import { HamburgerMenu } from '../components/HamburgerMenu';
+import { CheckCircle, Award } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   const { isConnected, address, chain } = useAccount();
@@ -64,7 +65,7 @@ export default function Home() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <header className="text-center mb-8">
           <div className="flex items-center justify-between mb-4">
-            <div></div>
+            <HamburgerMenu />
             <h1 className="text-3xl font-bold text-gray-800">
               SBT-JPYC-QR-Scanner
             </h1>
@@ -138,15 +139,28 @@ export default function Home() {
           <>
             <JPYCBalance />
             
+            {/* SBTコレクションへのリンクボタン */}
             <div className="mb-6">
-              <SBTGallery 
-                userAddress={address} 
-                viewMode="grid" 
-                showStats={true}
-                groupByShop={true}
-                enableTagFilter={true}
-                showVisitCardsInitial={true}
-              />  
+              <Link href="/sbt-gallery">
+                <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+                        <Award className="w-8 h-8" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-1">🎫 SBTコレクション</h3>
+                        <p className="text-sm text-purple-100">
+                          取得したSoulbound Tokenを表示・管理
+                        </p>
+                      </div>
+                    </div>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
             </div>
           </>
         )}
