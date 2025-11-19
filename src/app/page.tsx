@@ -47,6 +47,7 @@ export default function Home() {
       address: data.address,
       amount: data.amount,
       memo: data.memo,
+      shopName: '手動送付',
       network: 'sepolia',
       chainId: 11155111,
     });
