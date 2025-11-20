@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, Suspense } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -36,17 +36,17 @@ export const event = ({
   });
 };
 
-// ページ遷移を追跡 (必ずSuspense内で使用)
+// ページ遷移を追跡（useSearchParamsを使わない簡易版）
 function GoogleAnalyticsTracker() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!GA_MEASUREMENT_ID) return;
+    if (!GA_MEASUREMENT_ID || typeof window === 'undefined') return;
 
-    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+    // window.locationから直接URLを取得
+    const url = window.location.pathname + window.location.search;
     pageview(url);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return null;
 }
@@ -77,9 +77,7 @@ export function GoogleAnalytics() {
           `,
         }}
       />
-      <Suspense fallback={null}>
-        <GoogleAnalyticsTracker />
-      </Suspense>
+      <GoogleAnalyticsTracker />
     </>
   );
 }
