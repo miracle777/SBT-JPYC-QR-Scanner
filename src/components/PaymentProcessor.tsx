@@ -753,9 +753,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           
           {/* SBT獲得進捗 */}
           {sbtProgress && (
-            <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Award className="w-5 h-5 text-purple-600" />
+            <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg text-left">
+              <div className="flex items-center gap-2 mb-3">
+                <Award className="w-5 h-5 text-purple-600 flex-shrink-0" />
                 <h4 className="font-semibold text-purple-800">SBT獲得進捗</h4>
               </div>
               {sbtProgress.hasSBT ? (
@@ -764,6 +764,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
                 </p>
               ) : (
                 <div>
+                  <p className="text-sm text-purple-700 mb-2 break-words">
+                    店舗ID: {sbtProgress.shopId}
+                  </p>
                   <p className="text-sm text-purple-700 mb-2">
                     訪問回数: {sbtProgress.visits}/3回
                   </p>
@@ -774,7 +777,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
                     ></div>
                   </div>
                   {sbtProgress.visits >= 3 ? (
-                    <p className="text-sm font-semibold text-purple-800">
+                    <p className="text-sm font-semibold text-purple-800 break-words">
                       🎉 SBT獲得条件達成! MetaMaskでインポートして確認してください
                     </p>
                   ) : (
@@ -786,6 +789,14 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
               )}
             </div>
           )}
+          
+          {/* 閉じるボタン */}
+          <button
+            onClick={onComplete}
+            className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+          >
+            閉じる
+          </button>
         </div>
       </div>
     );
