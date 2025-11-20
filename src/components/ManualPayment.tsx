@@ -324,12 +324,17 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
             金額 (JPYC) <span className="text-red-500">*</span>
           </label>
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              // 数字と小数点のみを許可
+              const value = e.target.value;
+              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                setAmount(value);
+              }
+            }}
             placeholder="100"
-            min="0"
-            step="0.01"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
           />
           <div className="flex gap-2 mt-2">
