@@ -22,7 +22,14 @@
 - **チェーンID**: 80002
 - **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E)
 
-> ⚠️ **注意**: これらはテストネット用のコントラクトです。本番環境では使用しないでください。
+### Polygon Mainnet ✨
+- **コントラクトアドレス**: `0x26C55F745c5BF80475C2D024F9F07ce56E308039`
+- **チェーンID**: 137
+- **デプロイヤー**: `0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd`
+- **ブロックエクスプローラ**: [Polygonscan](https://polygonscan.com/address/0x26C55F745c5BF80475C2D024F9F07ce56E308039)
+- **デプロイトランザクション**: [Polygonscan TX](https://polygonscan.com/tx/0xfddd464e1a51614694872bf85523ff16881d27e6a84a925a37976ab1cd7bf755)
+
+> ⚠️ **注意**: Sepolia と Polygon Amoy はテストネット用のコントラクトです。本番環境では Polygon Mainnet をご利用ください。
 
 ## ✨ プロジェクト概要
 

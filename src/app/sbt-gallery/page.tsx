@@ -134,9 +134,54 @@ export default function SBTGalleryPage() {
                   </div>
                 </div>
 
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg border-2 border-purple-300 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="font-bold text-purple-800">Polygon Mainnet</h3>
+                    <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full font-semibold">
+                      ✨ 本番環境
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="text-gray-700 font-medium min-w-[120px]">コントラクト:</span>
+                      <code className="bg-white px-2 py-1 rounded font-mono text-xs break-all border border-purple-200">
+                        0x26C55F745c5BF80475C2D024F9F07ce56E308039
+                      </code>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-700 font-medium min-w-[120px]">チェーンID:</span>
+                      <span className="text-gray-900 font-semibold">137</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-700 font-medium min-w-[120px]">デプロイヤー:</span>
+                      <code className="bg-white px-2 py-1 rounded font-mono text-xs break-all border border-purple-200">
+                        0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd
+                      </code>
+                    </div>
+                    <div className="flex flex-col gap-1 mt-2">
+                      <a
+                        href="https://polygonscan.com/address/0x26C55F745c5BF80475C2D024F9F07ce56E308039"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-800 underline text-xs font-medium"
+                      >
+                        📊 Polygonscanで確認
+                      </a>
+                      <a
+                        href="https://polygonscan.com/tx/0xfddd464e1a51614694872bf85523ff16881d27e6a84a925a37976ab1cd7bf755"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-800 underline text-xs font-medium"
+                      >
+                        🔍 デプロイトランザクション確認
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
                   <p className="text-xs text-yellow-800">
-                    <strong>⚠️ 注意:</strong> これらはテストネット用のコントラクトです。本番環境では使用しないでください。
+                    <strong>⚠️ 注意:</strong> Sepolia と Polygon Amoy はテストネット用のコントラクトです。本番環境では Polygon Mainnet をご利用ください。
                   </p>
                 </div>
               </div>
