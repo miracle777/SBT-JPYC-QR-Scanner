@@ -226,6 +226,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         ],
         functionName: 'transfer',
         args: [paymentData.address, amountInWei],
+        chainId: paymentData.chainId,
       });
     } catch (error: any) {
       console.error('Payment error:', error);

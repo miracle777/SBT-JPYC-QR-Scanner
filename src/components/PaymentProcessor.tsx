@@ -283,6 +283,11 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       const jpycAddress = editableContractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
       const amountInWei = parseUnits(amount, 18);
 
+      // QRコードまたは手動選択されたネットワーク情報を使用
+      const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
+      const networkInfo = getNetworkInfo(paymentNetwork);
+      const paymentChainId = networkInfo.chainId;
+
       console.log('Payment details:', {
         contractAddress: jpycAddress,
         originalContractAddress: parsedData.contractAddress,
@@ -291,7 +296,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         recipient: parsedData.address,
         amount: amount,
         amountInWei: amountInWei.toString(),
-        chainId: parsedData.chainId,
+        qrCodeChainId: parsedData.chainId,
+        paymentChainId: paymentChainId,
+        currentWalletChainId: chain?.id,
         shopName: parsedData.shopName,
       });
 
@@ -311,6 +318,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         ],
         functionName: 'transfer',
         args: [parsedData.address, amountInWei],
+        chainId: paymentChainId,
       });
     } catch (error: any) {
       setErrorMessage(error.message || '決済の実行に失敗しました');
