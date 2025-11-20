@@ -121,12 +121,12 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
         const data = JSON.parse(trimmed);
         console.log('Parsed JSON data:', data);
         
-        // 統一JPYC決済形式（推奨）- MASARU21_PAYMENT
+        // ★ 独自規格: MASARU21_PAYMENT - amountは既にJPYC単位
         if (data.type === 'JPYC_PAYMENT' || data.type === 'MASARU21_PAYMENT') {
           return {
             type: 'jpyc',
             address: data.to as `0x${string}`,
-            amount: data.amount, // 既にJPYC単位
+            amount: data.amount, // ★ 既にJPYC単位 - 変換不要
             network: (data.network as NetworkType) || 'sepolia',
             chainId: data.chainId || SUPPORTED_NETWORKS[data.network as NetworkType]?.chainId,
             contractAddress: data.contractAddress as `0x${string}`,
@@ -135,138 +135,36 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             memo: data.merchant?.description,
             timestamp: data.timestamp,
             expiresAt: data.expires,
-            tokenSymbol: data.network?.includes('fuji') ? 'tJPYC' : 'JPYC',
+            tokenSymbol: 'JPYC',
           };
         }
 
-        // 廃止予定: カスタムtJPYC決済対応（JPYC_PAYMENTに統合予定）
-        if (data.type === 'tJPYC_PAYMENT') {
-          console.warn('tJPYC_PAYMENT format is deprecated. Please use JPYC_PAYMENT with network specified.');
-          return {
-            type: 'tjpyc',
-            address: data.to as `0x${string}`,
-            amount: data.amount,
-            network: (data.network as NetworkType) || 'avalanche-fuji',
-            chainId: data.chainId || SUPPORTED_NETWORKS[data.network as NetworkType]?.chainId,
-            contractAddress: data.contractAddress as `0x${string}`,
-            shopName: data.merchant?.name,
-            shopId: data.merchant?.id,
-            memo: data.merchant?.description,
-            timestamp: data.timestamp,
-            expiresAt: data.expires,
-            tokenSymbol: 'tJPYC',
-          };
-        }
-        
-        // 従来の店舗QRコード形式（スクリーンショットのデータに対応）
-        if (data.type === 'payment' && (data.shopWallet || data.shopId)) {
-          const amountInJPYC = data.amount ? 
-            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
-            undefined;
+        // その他のJSON形式も同じ処理（シンプル化）
+        // amount が存在する場合、それがJPYC単位かWei単位かを判定
+        if (data.amount && data.contractAddress) {
+          // amountが大きすぎる場合（18桁以上）はWei単位と判定して変換
+          const amountStr = data.amount.toString();
+          const isWeiUnit = amountStr.length > 10; // 10億以上はWei単位と判定
           
-          const chainId = data.chainId || 11155111; // Default to Sepolia
-          const network = getNetworkFromChainId(chainId) || 'sepolia';
-          
-          return {
-            type: 'payment',
-            address: (data.shopWallet || data.to) as `0x${string}`,
-            amount: amountInJPYC,
-            chainId: chainId,
-            contractAddress: data.contractAddress as `0x${string}`,
-            shopName: data.shopName,
-            shopId: data.shopId,
-            paymentId: data.paymentId,
-            expiresAt: data.expiresAt,
-            memo: data.description || data.shopName,
-            network: network,
-          };
-        }
-        
-        // スクリーンショットと同じ形式のサンプル
-        if (data.shopId && data.shopName && data.amount && data.contractAddress) {
-          const amountInJPYC = data.amount ? 
-            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
-            undefined;
-          
-          const chainId = data.chainId || 11155111; // Default to Sepolia
-          const network = getNetworkFromChainId(chainId) || 'sepolia';
-          
-          return {
-            type: 'payment',
-            address: (data.shopWallet || data.to || '0x0000000000000000000000000000000000000000') as `0x${string}`,
-            amount: amountInJPYC,
-            chainId: chainId,
-            contractAddress: data.contractAddress as `0x${string}`,
-            shopName: data.shopName,
-            shopId: data.shopId,
-            paymentId: data.paymentId || `pay_${Date.now().toString().slice(-8)}`,
-            expiresAt: data.expiresAt,
-            memo: data.description || `Payment from ${data.shopName}`,
-            network: network,
-          };
-        }
-        
-        // 新しい店舗QRコード形式 (shopWalletの代わりに他フィールド)
-        if (data.type === 'payment' && !data.shopWallet) {
-          // スクリーンショットのような形式に対応
-          const shopWallet = data.shopWallet || data.address || data.to;
-          if (!shopWallet) {
-            console.log('No wallet address found in payment QR');
-            return null;
-          }
-          
-          const amountInJPYC = data.amount ? 
-            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
-            undefined;
-          
-          return {
-            type: 'payment',
-            address: shopWallet as `0x${string}`,
-            amount: amountInJPYC,
-            chainId: data.chainId,
-            contractAddress: data.contractAddress as `0x${string}`,
-            shopName: data.shopName || 'Unknown Shop',
-            shopId: data.shopId,
-            paymentId: data.paymentId,
-            expiresAt: data.expiresAt,
-            memo: data.description || data.shopName || 'Payment',
-          };
-        }
-        
-        // スクリーンショットの形式 (version, shopId, shopName, shopWallet, amount, currency, chainId, paymentId, expiresAt, contractAddress, description)
-        if (data.version && data.shopId && data.shopName && data.shopWallet) {
-          const amountInJPYC = data.amount ? 
-            (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
-            undefined;
+          const amountInJPYC = isWeiUnit 
+            ? (BigInt(data.amount) / BigInt(10 ** 18)).toString()
+            : data.amount.toString();
           
           const chainId = data.chainId || 11155111;
           const network = getNetworkFromChainId(chainId) || 'sepolia';
           
           return {
             type: 'payment',
-            address: data.shopWallet as `0x${string}`,
+            address: (data.shopWallet || data.to || data.address) as `0x${string}`,
             amount: amountInJPYC,
             chainId: chainId,
             contractAddress: data.contractAddress as `0x${string}`,
-            shopName: data.shopName,
-            shopId: data.shopId,
+            shopName: data.shopName || data.merchant?.name,
+            shopId: data.shopId || data.merchant?.id,
             paymentId: data.paymentId,
-            expiresAt: data.expiresAt,
-            memo: data.description || data.shopName,
+            expiresAt: data.expiresAt || data.expires,
+            memo: data.description || data.memo || data.merchant?.description,
             network: network,
-          };
-        }
-        
-        // その他のJSON形式も柔軟に対応
-        if (data.address || data.to) {
-          return {
-            type: 'payment',
-            address: (data.address || data.to) as `0x${string}`,
-            amount: data.amount,
-            network: (data.network as NetworkType) || 'ethereum',
-            chainId: data.chainId,
-            contractAddress: data.contractAddress as `0x${string}`,
-            memo: data.memo || data.description || data.note,
           };
         }
         
@@ -280,109 +178,29 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
       try {
         console.log('🔍 EIP-681 format detected:', trimmed);
         
-        // ethereum:0xaddress@chainId/transfer?address=recipient&uint256=amount の形式も対応
         const eip681Match = trimmed.match(/^ethereum:([^@?/]+)(?:@(\d+))?(?:\/([^?]+))?(?:\?(.+))?$/);
         if (eip681Match) {
           const [, address, chainIdStr, functionName, paramStr] = eip681Match;
           const params = new URLSearchParams(paramStr || '');
           
-          console.log('📋 Parsed EIP-681:', {
-            address,
-            chainId: chainIdStr,
-            functionName,
-            params: Object.fromEntries(params.entries())
-          });
-          
           const chainId = chainIdStr ? parseInt(chainIdStr) : undefined;
           const network = chainId ? getNetworkFromChainId(chainId) || 'ethereum' : 'ethereum';
           
-          // ERC-20 transfer関数の場合
-          if (functionName === 'transfer') {
-            // アドレスパラメータの取得（複数の形式に対応）
-            const recipient = params.get('address') || params.get('to') || params.get('recipient');
-            
-            // 金額パラメータの取得（複数の形式に対応）
-            const amount = params.get('uint256') || 
-                          params.get('value') || 
-                          params.get('amount') ||
-                          params.get('uint') ||
-                          // パラメータ名なし（最初の値）の場合も対応
-                          Array.from(params.values())[0];
-            
-            console.log('💰 EIP-681 transfer detected:', { 
-              contractAddress: address, 
-              recipient, 
-              amount,
-              allParams: Object.fromEntries(params.entries()),
-              amountInJPYC: amount ? (BigInt(amount) / BigInt(10 ** 18)).toString() : '0'
-            });
-            
-            return {
-              type: 'jpyc',
-              address: (recipient || address) as `0x${string}`,
-              amount: amount || undefined,
-              network,
-              chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
-              contractAddress: address as `0x${string}`,
-            };
-          }
-          
-          // dataパラメータがある場合（encoded transfer function）
-          const dataParam = params.get('data');
-          if (dataParam && dataParam.startsWith('0xa9059cbb')) {
-            // 0xa9059cbb = transfer(address,uint256)の関数シグネチャ
-            // 次の64文字 = 受取人アドレス（32バイトパディング）
-            // 次の64文字 = 金額（Wei単位、32バイトパディング）
-            const recipient = '0x' + dataParam.substring(34, 74); // 10 + 24 + 40
-            const amountHex = dataParam.substring(74, 138); // 64文字
-            const amount = BigInt('0x' + amountHex).toString();
-            
-            console.log('💰 EIP-681 data parameter detected:', {
-              contractAddress: address,
-              recipient,
-              amount,
-              amountInJPYC: (BigInt(amount) / BigInt(10 ** 18)).toString()
-            });
-            
-            return {
-              type: 'jpyc',
-              address: recipient as `0x${string}`,
-              amount,
-              network,
-              chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
-              contractAddress: address as `0x${string}`,
-            };
-          }
-          
-          // 通常のETH送金の場合（function_nameなし）
-          const value = params.get('value');
-          const amount = value || undefined;
-          
-          console.log('💵 EIP-681 native payment:', { address, amount, network });
+          // ★ value パラメータ（Wei単位）を取得
+          const valueWei = params.get('value');
+          const amountInJPYC = valueWei 
+            ? (BigInt(valueWei) / BigInt(10 ** 18)).toString()
+            : undefined;
           
           return {
             type: 'ethereum',
             address: address as `0x${string}`,
-            amount,
+            amount: amountInJPYC, // Wei→JPYC変換済み
             network,
             chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
+            contractAddress: address as `0x${string}`,
           };
         }
-        
-        // フォールバック: URLパース
-        const url = new URL(trimmed.replace('ethereum:', 'https://dummy/'));
-        const address = url.pathname as `0x${string}`;
-        const amount = url.searchParams.get('amount') || url.searchParams.get('value') || undefined;
-        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
-
-        return {
-          type: 'ethereum',
-          address,
-          amount,
-          network,
-          chainId,
-        };
       } catch (eipError) {
         console.error('EIP-681 parsing failed:', eipError);
       }
@@ -396,131 +214,6 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
         network: 'ethereum',
         chainId: SUPPORTED_NETWORKS.ethereum.chainId,
       };
-    }
-
-    // 4. jpyc: 形式: jpyc:address?amount=100&network=sepolia
-    if (trimmed.startsWith('jpyc:')) {
-      try {
-        const url = new URL(trimmed.replace('jpyc:', 'https://dummy/'));
-        const address = url.pathname as `0x${string}`;
-        const amount = url.searchParams.get('amount') || undefined;
-        const network = (url.searchParams.get('network') as NetworkType) || 'sepolia';
-        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
-
-        return {
-          type: 'jpyc',
-          address,
-          amount,
-          network,
-          chainId,
-          contractAddress: url.searchParams.get('contract') as `0x${string}` || undefined,
-        };
-      } catch (jpycError) {
-        console.error('JPYC parsing failed:', jpycError);
-      }
-    }
-
-    // 5. payment: 形式
-    if (trimmed.startsWith('payment:')) {
-      try {
-        const url = new URL(trimmed.replace('payment:', 'https://dummy/'));
-        const address = url.pathname as `0x${string}`;
-        const amount = url.searchParams.get('amount') || undefined;
-        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-        const memo = url.searchParams.get('memo') || undefined;
-        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
-
-        return {
-          type: 'payment',
-          address,
-          amount,
-          network,
-          memo,
-          chainId,
-        };
-      } catch (paymentError) {
-        console.error('Payment parsing failed:', paymentError);
-      }
-    }
-
-    // 7. tjpyc: 形式: tjpyc:address?amount=100&network=avalanche-fuji
-    if (trimmed.startsWith('tjpyc:')) {
-      try {
-        const url = new URL(trimmed.replace('tjpyc:', 'https://dummy/'));
-        const address = url.pathname as `0x${string}`;
-        const amount = url.searchParams.get('amount') || undefined;
-        const network = (url.searchParams.get('network') as NetworkType) || 'avalanche-fuji';
-        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
-
-        return {
-          type: 'tjpyc',
-          address,
-          amount,
-          network,
-          chainId,
-          contractAddress: url.searchParams.get('contract') as `0x${string}` || undefined,
-          tokenSymbol: 'tJPYC',
-        };
-      } catch (tjpycError) {
-        console.error('tJPYC parsing failed:', tjpycError);
-      }
-    }
-
-    // 8. sbt-payment: 形式
-    if (trimmed.startsWith('sbt-payment:')) {
-      try {
-        const url = new URL(trimmed.replace('sbt-payment:', 'https://dummy/'));
-        const address = url.pathname as `0x${string}`;
-        const amount = url.searchParams.get('amount') || undefined;
-        const network = (url.searchParams.get('network') as NetworkType) || 'ethereum';
-        const sbtRequired = url.searchParams.get('sbt')?.split(',') || [];
-        const minimumSBTRank = (url.searchParams.get('sbt-rank') as any) || undefined;
-        const chainId = SUPPORTED_NETWORKS[network]?.chainId;
-
-        return {
-          type: 'sbt-payment',
-          address,
-          amount,
-          network,
-          chainId,
-          sbtRequired,
-          minimumSBTRank,
-        };
-      } catch (sbtError) {
-        console.error('SBT payment parsing failed:', sbtError);
-      }
-    }
-
-    // 8. WalletConnect URI（一般的）
-    if (trimmed.startsWith('wc:')) {
-      console.log('WalletConnect URI detected but not supported for payments');
-      return null;
-    }
-
-    // 9. Coinbase Wallet URI
-    if (trimmed.startsWith('https://go.cb-w.com/dapp')) {
-      try {
-        const url = new URL(trimmed);
-        const cbUrl = decodeURIComponent(url.searchParams.get('cb_url') || '');
-        if (cbUrl.startsWith('ethereum:')) {
-          // Coinbase WrappedのEthereum URIを再帰的にパース
-          return parseQRCodeData(cbUrl);
-        }
-      } catch (coinbaseError) {
-        console.error('Coinbase Wallet parsing failed:', coinbaseError);
-      }
-    }
-
-    // 10. Rainbow Wallet URI
-    if (trimmed.startsWith('rainbow://')) {
-      try {
-        const ethereumUri = trimmed.replace('rainbow://', '');
-        if (ethereumUri.startsWith('ethereum:')) {
-          return parseQRCodeData(ethereumUri);
-        }
-      } catch (rainbowError) {
-        console.error('Rainbow Wallet parsing failed:', rainbowError);
-      }
     }
 
     console.log('Unknown QR code format:', trimmed);
