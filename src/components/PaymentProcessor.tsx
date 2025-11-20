@@ -137,39 +137,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
   useEffect(() => {
     if (isConfirmed && hash && parsedData && address) {
-      // 決済成功時に履歴を更新
+      // 決済成功時に履歴を更新（ステータスとtxHashのみ更新、networkとchainIdは保存時の値を維持）
       if (paymentId) {
         updatePaymentStatus(address, paymentId, 'success', hash);
-        
-        // 正しいnetworkとchainIdで更新
-        const currentChainId = chain?.id || 1;
-        const chainIdToNetwork: Record<number, NetworkType> = {
-          1: 'ethereum',
-          11155111: 'sepolia',
-          137: 'polygon',
-          80002: 'polygon-amoy',
-          43114: 'avalanche',
-          43113: 'avalanche-fuji',
-        };
-        const currentNetwork = chainIdToNetwork[currentChainId] || 'ethereum';
-        
-        // 履歴のnetworkとchainIdを更新
-        const storageKey = `payment_history_${address}`;
-        try {
-          const stored = localStorage.getItem(storageKey);
-          if (stored) {
-            const history = JSON.parse(stored);
-            const updated = history.map((item: any) => 
-              item.id === paymentId 
-                ? { ...item, network: currentNetwork, chainId: currentChainId, status: 'success', txHash: hash }
-                : item
-            );
-            localStorage.setItem(storageKey, JSON.stringify(updated));
-            console.log('Updated payment history with correct network:', currentNetwork, currentChainId);
-          }
-        } catch (error) {
-          console.error('Failed to update payment network:', error);
-        }
         
         // SBT進捗を取得（shopIdがある場合）
         if (parsedData.shopId) {
@@ -259,26 +229,19 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       }
     }
 
-    // 実際のウォレットのchainIdとnetworkを使用
-    const currentChainId = chain.id;
-    const chainIdToNetwork: Record<number, NetworkType> = {
-      1: 'ethereum',
-      11155111: 'sepolia',
-      137: 'polygon',
-      80002: 'polygon-amoy',
-      43114: 'avalanche',
-      43113: 'avalanche-fuji',
-    };
-    const currentNetwork = chainIdToNetwork[currentChainId] || 'ethereum';
+    // QRコードで指定されたネットワーク、または手動で選択されたネットワークを使用
+    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
+    const networkInfo = getNetworkInfo(paymentNetwork);
+    const paymentChainId = networkInfo.chainId;
     
-    console.log('Saving payment with network:', currentNetwork, 'chainId:', currentChainId);
+    console.log('Saving payment with network:', paymentNetwork, 'chainId:', paymentChainId, 'currentWalletChainId:', chain.id);
 
-    // 履歴に保存（決済実行前に保存）
+    // 履歴に保存（決済実行前に保存）- QRコードのネットワーク情報を使用
     const newPaymentId = savePaymentHistory(address, {
       amount,
       recipient: parsedData.address,
-      network: currentNetwork,
-      chainId: currentChainId,
+      network: paymentNetwork,
+      chainId: paymentChainId,
       memo: parsedData.memo,
       sbtUsed: parsedData.sbtRequired,
     });
