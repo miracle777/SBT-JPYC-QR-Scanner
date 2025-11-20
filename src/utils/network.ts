@@ -105,11 +105,11 @@ export function getNetworkInfo(network: NetworkType): PaymentNetwork {
  */
 export function parseQRCodeData(qrString: string): PaymentQRData | null {
   try {
-    console.log('Parsing QR code:', qrString);
+    console.log('🔍 Parsing QR code:', qrString);
     
     // 空文字チェック
     if (!qrString || qrString.trim() === '') {
-      console.log('Empty QR code string');
+      console.error('❌ Empty QR code string');
       return null;
     }
     
@@ -119,12 +119,13 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
     if (trimmed.startsWith('{')) {
       try {
         const data = JSON.parse(trimmed);
-        console.log('Parsed JSON data:', data);
+        console.log('✅ Parsed JSON data:', data);
         
         // ★ 独自規格: MASARU21_PAYMENT - amountは既にJPYC単位
         if (data.type === 'JPYC_PAYMENT' || data.type === 'MASARU21_PAYMENT') {
-          return {
-            type: 'jpyc',
+          console.log(`✅ Detected ${data.type} format`);
+          const result = {
+            type: 'jpyc' as const,
             address: data.to as `0x${string}`,
             amount: data.amount, // ★ 既にJPYC単位 - 変換不要
             network: (data.network as NetworkType) || 'sepolia',
@@ -137,6 +138,8 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             expiresAt: data.expires,
             tokenSymbol: 'JPYC',
           };
+          console.log('✅ Parsed result:', result);
+          return result;
         }
 
         // その他のJSON形式も同じ処理（シンプル化）

@@ -94,8 +94,8 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     // コントラクトアドレスを初期化（QRコードに含まれていない場合はネットワークに応じたデフォルト値）
     setEditableContractAddress(parsed.contractAddress || getDefaultContractAddress(detectedNetwork));
     
-    // ネットワーク検証を実行
-    const paymentNetwork = (parsedData.network as NetworkType) || 'sepolia';
+    // ネットワーク検証を実行（parsed を使用）
+    const paymentNetwork = (parsed.network as NetworkType) || 'sepolia';
     const paymentNetworkInfo = getNetworkInfo(paymentNetwork);
     const paymentChainId = paymentNetworkInfo.chainId;
     
