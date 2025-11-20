@@ -75,10 +75,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
-        <GoogleAnalytics />
         <StructuredData />
       </head>
       <body className="antialiased">
+        <GoogleAnalytics />
         <Providers>
           {children}
           <PWAInstallPrompt />
