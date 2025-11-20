@@ -236,6 +236,30 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     
     console.log('Saving payment with network:', paymentNetwork, 'chainId:', paymentChainId, 'currentWalletChainId:', chain.id);
 
+    // ✅ ネットワーク不一致チェック - トランザクション実行前にウォレットを正しいネットワークに切り替え
+    if (chain.id !== paymentChainId) {
+      console.log('⚠️ Network mismatch detected. Switching from', chain.id, 'to', paymentChainId);
+      
+      if (!switchChain) {
+        setErrorMessage(`ネットワークを${networkInfo.displayName}に切り替えてください（現在: Chain ID ${chain.id}）`);
+        setStep('error');
+        return;
+      }
+
+      try {
+        setStep('sending');
+        await switchChain({ chainId: paymentChainId });
+        console.log('✅ Network switched successfully to', paymentChainId);
+        // ネットワーク切り替え後、少し待機してから処理を続行
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (switchError: any) {
+        console.error('❌ Network switch failed:', switchError);
+        setErrorMessage(`ネットワークの切り替えに失敗しました: ${switchError.message || '不明なエラー'}`);
+        setStep('error');
+        return;
+      }
+    }
+
     // 履歴に保存（決済実行前に保存）- QRコードのネットワーク情報を使用
     const newPaymentId = savePaymentHistory(address, {
       amount,
