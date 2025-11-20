@@ -164,39 +164,45 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
             undefined;
           
+          const chainId = data.chainId || 11155111; // Default to Sepolia
+          const network = getNetworkFromChainId(chainId) || 'sepolia';
+          
           return {
             type: 'payment',
             address: (data.shopWallet || data.to) as `0x${string}`,
             amount: amountInJPYC,
-            chainId: data.chainId || 11155111, // Default to Sepolia
+            chainId: chainId,
             contractAddress: data.contractAddress as `0x${string}`,
             shopName: data.shopName,
             shopId: data.shopId,
             paymentId: data.paymentId,
             expiresAt: data.expiresAt,
             memo: data.description || data.shopName,
-            network: 'sepolia' as NetworkType,
+            network: network,
           };
         }
         
-        // スクリーンショットのような新しいJPYC Pay形式
+        // スクリーンショットと同じ形式のサンプル
         if (data.shopId && data.shopName && data.amount && data.contractAddress) {
           const amountInJPYC = data.amount ? 
             (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
             undefined;
           
+          const chainId = data.chainId || 11155111; // Default to Sepolia
+          const network = getNetworkFromChainId(chainId) || 'sepolia';
+          
           return {
             type: 'payment',
             address: (data.shopWallet || data.to || '0x0000000000000000000000000000000000000000') as `0x${string}`,
             amount: amountInJPYC,
-            chainId: data.chainId || (data.chainId === 137 ? 137 : 11155111),
+            chainId: chainId,
             contractAddress: data.contractAddress as `0x${string}`,
             shopName: data.shopName,
             shopId: data.shopId,
-            paymentId: data.paymentId || `pay_${Date.now()}`,
+            paymentId: data.paymentId || `pay_${Date.now().toString().slice(-8)}`,
             expiresAt: data.expiresAt,
             memo: data.description || `Payment from ${data.shopName}`,
-            network: (data.chainId === 137 ? 'polygon' : 'sepolia') as NetworkType,
+            network: network,
           };
         }
         
@@ -233,17 +239,21 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             (BigInt(data.amount) / BigInt(10 ** 18)).toString() : 
             undefined;
           
+          const chainId = data.chainId || 11155111;
+          const network = getNetworkFromChainId(chainId) || 'sepolia';
+          
           return {
             type: 'payment',
             address: data.shopWallet as `0x${string}`,
             amount: amountInJPYC,
-            chainId: data.chainId,
+            chainId: chainId,
             contractAddress: data.contractAddress as `0x${string}`,
             shopName: data.shopName,
             shopId: data.shopId,
             paymentId: data.paymentId,
             expiresAt: data.expiresAt,
             memo: data.description || data.shopName,
+            network: network,
           };
         }
         
