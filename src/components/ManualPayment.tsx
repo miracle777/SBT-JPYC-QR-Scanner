@@ -325,12 +325,12 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
           </label>
           <input
             type="text"
-            inputMode="decimal"
+            inputMode="numeric"
             value={amount}
             onChange={(e) => {
-              // 数字と小数点のみを許可
+              // 整数のみを許可（JPYCは1JPYC=1円なので小数点なし）
               const value = e.target.value;
-              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+              if (value === '' || /^\d+$/.test(value)) {
                 setAmount(value);
               }
             }}

@@ -379,7 +379,9 @@ export default function Home() {
                     </code>
                     <div className="text-xs text-green-600 mt-1">テスト・本番統一フォーマット</div>
                   </div>
-                  
+                </div>
+                
+                <div className="space-y-3">
                   <div className="bg-blue-50 border border-blue-200 rounded p-3">
                     <div className="font-semibold text-blue-800 flex items-center mb-1">
                       <span className="mr-2">⚡</span>
@@ -389,30 +391,6 @@ export default function Home() {
                       ethereum:0x...@11155111?value=...
                     </code>
                     <div className="text-xs text-blue-600 mt-1">MetaMask・Trust Wallet対応</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="bg-orange-50 border border-orange-200 rounded p-3">
-                    <div className="font-semibold text-orange-800 flex items-center mb-1">
-                      <span className="mr-2">🏪</span>
-                      店舗QRコード（レガシー）
-                    </div>
-                    <code className="text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded block overflow-x-auto">
-                      {`{"type":"payment",...}`}
-                    </code>
-                    <div className="text-xs text-orange-600 mt-1">既存店舗との互換性維持</div>
-                  </div>
-                  
-                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
-                    <div className="font-semibold text-purple-800 flex items-center mb-1">
-                      <span className="mr-2">🔗</span>
-                      ウォレット専用形式
-                    </div>
-                    <code className="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded block overflow-x-auto">
-                      rainbow://..., cb-wallet://...
-                    </code>
-                    <div className="text-xs text-purple-600 mt-1">Coinbase・Rainbowディープリンク</div>
                   </div>
                 </div>
               </div>
@@ -432,7 +410,7 @@ export default function Home() {
                     <div className="text-blue-600">専用対応</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-semibold text-purple-700">5フォーマット</div>
+                    <div className="font-semibold text-purple-700">2フォーマット</div>
                     <div className="text-purple-600">自動検出</div>
                   </div>
                   <div className="text-center">
