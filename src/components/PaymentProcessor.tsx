@@ -73,7 +73,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     
     // ✅ 修正: EIP-681形式の場合、amountはWei単位なのでJPYC単位に変換
     let initialAmount = parsed.amount || '0';
-    if (isStandardEthereumFormat && parsed.amount) {
+    if ((isStandardEthereumFormat || parsed.type === 'jpyc' || parsed.type === 'ethereum') && parsed.amount) {
       try {
         // Wei単位（18桁）からJPYC単位に変換
         const amountInJPYC = (BigInt(parsed.amount) / BigInt(10 ** 18)).toString();

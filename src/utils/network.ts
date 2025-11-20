@@ -265,20 +265,36 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
       }
     }
 
-    // 2. EIP-681形式: ethereum:0xaddress[@chainId][?parameters]
+    // 2. EIP-681形式: ethereum:0xaddress[@chainId][/function_name][?parameters]
     if (trimmed.startsWith('ethereum:')) {
       try {
-        // ethereum:0xaddress@chainId?value=amount形式の解析
-        const ethMatch = trimmed.match(/^ethereum:([^@?]+)(?:@(\d+))?(?:\?(.+))?$/);
-        if (ethMatch) {
-          const [, address, chainIdStr, paramStr] = ethMatch;
+        // ethereum:0xaddress@chainId/transfer?address=recipient&uint256=amount の形式も対応
+        const eip681Match = trimmed.match(/^ethereum:([^@?/]+)(?:@(\d+))?(?:\/([^?]+))?(?:\?(.+))?$/);
+        if (eip681Match) {
+          const [, address, chainIdStr, functionName, paramStr] = eip681Match;
           const params = new URLSearchParams(paramStr || '');
           
           const chainId = chainIdStr ? parseInt(chainIdStr) : undefined;
           const network = chainId ? getNetworkFromChainId(chainId) || 'ethereum' : 'ethereum';
           
-          // ✅ 修正: value はWei単位だが、JPYCもERC20で18 decimalsなので
-          // Wei単位のまま保持し、JPYC単位への変換は表示時に行う
+          // ERC-20 transfer関数の場合
+          if (functionName === 'transfer') {
+            const recipient = params.get('address');
+            const amount = params.get('uint256');
+            
+            console.log('EIP-681 transfer detected:', { contractAddress: address, recipient, amount });
+            
+            return {
+              type: 'jpyc',
+              address: (recipient || address) as `0x${string}`,
+              amount: amount || undefined,
+              network,
+              chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
+              contractAddress: address as `0x${string}`,
+            };
+          }
+          
+          // 通常のETH送金の場合（function_nameなし）
           const value = params.get('value');
           const amount = value || undefined;
           
