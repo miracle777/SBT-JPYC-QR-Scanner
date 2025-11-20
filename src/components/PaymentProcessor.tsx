@@ -284,11 +284,14 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       return;
     }
     
-    const network = selectedNetwork || 'sepolia';
+    // QRコードで指定されたネットワーク、または手動で選択されたネットワークを使用
+    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
+    const networkInfo = getNetworkInfo(paymentNetwork);
+    const paymentChainId = networkInfo.chainId;
     
     // SBT検証
     if (parsedData.sbtRequired && parsedData.sbtRequired.length > 0) {
-      const canPay = await canPayWithNetwork(address, network, BigInt(parseFloat(amount) * 10 ** 18));
+      const canPay = await canPayWithNetwork(address, paymentNetwork, BigInt(parseFloat(amount) * 10 ** 18));
       
       if (!canPay.canPay) {
         setErrorMessage(canPay.reason || 'この決済を実行する権限がありません');
@@ -296,11 +299,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         return;
       }
     }
-
-    // QRコードで指定されたネットワーク、または手動で選択されたネットワークを使用
-    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
-    const networkInfo = getNetworkInfo(paymentNetwork);
-    const paymentChainId = networkInfo.chainId;
     
     console.log('Saving payment with network:', paymentNetwork, 'chainId:', paymentChainId, 'currentWalletChainId:', chain.id);
 
