@@ -159,7 +159,7 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
             value={contractAddress}
             onChange={(e) => setContractAddress(e.target.value)}
             placeholder="0x..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs break-all"
           />
           
           {/* クイック選択ボタン */}
@@ -170,9 +170,9 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                  className="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
                 >
-                  🏛️ 公式JPYC (本番)
+                  🏛️ 公式JPYC
                 </button>
               </div>
             </div>
@@ -185,16 +185,16 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
                 >
-                  📄 標準JPYC
+                  📄 標準
                 </button>
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a')}
-                  className="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
                 >
-                  🎯 tJPYC (カスタム)
+                  🎯 tJPYC
                 </button>
               </div>
             </div>
@@ -207,9 +207,9 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                  className="px-3 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-800 rounded-lg transition"
                 >
-                  🏛️ 公式JPYC (本番)
+                  🏛️ 公式JPYC
                 </button>
               </div>
             </div>
@@ -222,16 +222,16 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
                 >
-                  📄 標準JPYC
+                  📄 標準
                 </button>
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345')}
-                  className="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
                 >
-                  🎯 tJPYC (カスタム)
+                  🎯 tJPYC
                 </button>
               </div>
             </div>
@@ -244,9 +244,9 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
                 >
-                  🏛️ 公式JPYC (本番)
+                  🏛️ 公式JPYC
                 </button>
               </div>
             </div>
@@ -259,18 +259,18 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                 <button
                   type="button"
                   onClick={() => setContractAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB')}
-                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition flex-1"
                   title="公式Faucetで取得できるJPYC"
                 >
-                  🏛️ 公式Faucet JPYC
+                  🏛️ 公式Faucet
                 </button>
                 <button
                   type="button"
                   onClick={() => setContractAddress('0xd3eF95d29A198868241FE374A999fc25F6152253')}
-                  className="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
+                  className="px-2 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition flex-1"
                   title="コミュニティが作成したJPYC"
                 >
-                  🏘️ コミュニティ JPYC
+                  🏘️ コミュニティ
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-1">
