@@ -664,6 +664,43 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           )}
         </div>
         
+        {/* ⚠️ ネットワーク不一致警告 - 送金ボタンの直前に配置 */}
+        {isNetworkMismatch && (
+          <div className="mb-4 p-4 bg-red-50 border-2 border-red-400 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-6 h-6 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-bold text-red-900 mb-2 text-base">
+                  ⚠️ ネットワークが違います！
+                </div>
+                <div className="text-sm text-red-800 mb-3 space-y-1">
+                  <div>今: <strong>{chain?.name || 'Unknown'}</strong></div>
+                  <div>必要: <strong className="text-red-900">{paymentNetworkInfo.displayName}</strong></div>
+                </div>
+                <button
+                  onClick={async () => {
+                    if (!switchChain) {
+                      setErrorMessage('ネットワークの切り替えができません');
+                      setStep('error');
+                      return;
+                    }
+                    try {
+                      await switchChain({ chainId: paymentChainId });
+                      await new Promise(resolve => setTimeout(resolve, 1000));
+                    } catch (error: any) {
+                      setErrorMessage(`ネットワークの切り替えに失敗しました: ${error.message}`);
+                      setStep('error');
+                    }
+                  }}
+                  className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold text-base"
+                >
+                  ⚡ {paymentNetworkInfo.displayName}に切り替える
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="flex gap-3">
           <button
             onClick={onComplete}
@@ -689,15 +726,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             送金する
           </button>
         </div>
-        
-        {/* ネットワーク不一致時の追加メッセージ */}
-        {isNetworkMismatch && (
-          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
-            <p className="text-sm text-yellow-800 font-semibold">
-              ⚠️ 先に上のボタンでネットワークを切り替えてください
-            </p>
-          </div>
-        )}
       </div>
     );
   }
