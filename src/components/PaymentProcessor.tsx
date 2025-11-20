@@ -71,9 +71,14 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     const allowEdit = isStandardEthereumFormat || (!isJSONFormat && (!parsed.amount || parsed.amount === '0'));
     setCanEditAmount(allowEdit);
     
-    // ✅ 修正: EIP-681形式の場合、amountはWei単位なのでJPYC単位に変換
+    // ✅ 修正: 金額の変換処理
     let initialAmount = parsed.amount || '0';
-    if ((isStandardEthereumFormat || parsed.type === 'jpyc' || parsed.type === 'ethereum') && parsed.amount) {
+    
+    // EIP-681形式（ethereum:で始まる）またはtype=ethereumの場合のみWei→JPYC変換
+    // JPYC_PAYMENT形式（type=jpyc）は既にJPYC単位なので変換不要
+    const needsConversion = (isStandardEthereumFormat && parsed.type === 'ethereum') || parsed.type === 'ethereum';
+    
+    if (needsConversion && parsed.amount) {
       try {
         // Wei単位（18桁）からJPYC単位に変換
         const amountInJPYC = (BigInt(parsed.amount) / BigInt(10 ** 18)).toString();
@@ -83,6 +88,10 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         console.error('Failed to convert Wei to JPYC:', error);
         initialAmount = parsed.amount; // フォールバック
       }
+    } else if (parsed.type === 'jpyc' || parsed.type === 'tjpyc') {
+      // JPYC形式は既にJPYC単位なのでそのまま使用
+      console.log('JPYC format - amount already in JPYC units:', parsed.amount);
+      initialAmount = parsed.amount || '0';
     }
     
     // 手動編集可能な金額を初期化
