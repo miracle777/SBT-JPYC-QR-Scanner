@@ -186,26 +186,84 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
           const [, address, chainIdStr, functionName, paramStr] = eip681Match;
           const params = new URLSearchParams(paramStr || '');
           
+          console.log('✅ Parsed EIP-681:', {
+            address,
+            chainId: chainIdStr,
+            functionName,
+            params: Object.fromEntries(params.entries())
+          });
+          
           const chainId = chainIdStr ? parseInt(chainIdStr) : undefined;
           const network = chainId ? getNetworkFromChainId(chainId) || 'ethereum' : 'ethereum';
           
-          // ★ value パラメータ（Wei単位）を取得
+          // ERC-20 transfer関数の場合（JPYC送金）
+          if (functionName === 'transfer') {
+            const recipient = params.get('address') || params.get('to') || params.get('recipient');
+            const amountWei = params.get('uint256') || params.get('value') || params.get('amount') || params.get('uint');
+            
+            console.log('✅ EIP-681 transfer detected:', {
+              contractAddress: address,
+              recipient,
+              amountWei,
+              amountInJPYC: amountWei ? (BigInt(amountWei) / BigInt(10 ** 18)).toString() : '0'
+            });
+            
+            return {
+              type: 'jpyc',
+              address: (recipient || address) as `0x${string}`,
+              amount: amountWei ? (BigInt(amountWei) / BigInt(10 ** 18)).toString() : undefined,
+              network,
+              chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
+              contractAddress: address as `0x${string}`,
+              tokenSymbol: 'JPYC',
+            };
+          }
+          
+          // dataパラメータがある場合（encoded transfer function）
+          const dataParam = params.get('data');
+          if (dataParam && dataParam.startsWith('0xa9059cbb')) {
+            // 0xa9059cbb = transfer(address,uint256)の関数シグネチャ
+            const recipient = '0x' + dataParam.substring(34, 74);
+            const amountHex = dataParam.substring(74, 138);
+            const amountWei = BigInt('0x' + amountHex).toString();
+            
+            console.log('✅ EIP-681 data parameter detected:', {
+              contractAddress: address,
+              recipient,
+              amountWei,
+              amountInJPYC: (BigInt(amountWei) / BigInt(10 ** 18)).toString()
+            });
+            
+            return {
+              type: 'jpyc',
+              address: recipient as `0x${string}`,
+              amount: (BigInt(amountWei) / BigInt(10 ** 18)).toString(),
+              network,
+              chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
+              contractAddress: address as `0x${string}`,
+              tokenSymbol: 'JPYC',
+            };
+          }
+          
+          // 通常のETH送金の場合（function_nameなし）
           const valueWei = params.get('value');
           const amountInJPYC = valueWei 
             ? (BigInt(valueWei) / BigInt(10 ** 18)).toString()
             : undefined;
           
+          console.log('✅ EIP-681 native payment:', { address, amountInJPYC, network });
+          
           return {
             type: 'ethereum',
             address: address as `0x${string}`,
-            amount: amountInJPYC, // Wei→JPYC変換済み
+            amount: amountInJPYC,
             network,
             chainId: chainId || SUPPORTED_NETWORKS[network]?.chainId,
             contractAddress: address as `0x${string}`,
           };
         }
       } catch (eipError) {
-        console.error('EIP-681 parsing failed:', eipError);
+        console.error('❌ EIP-681 parsing failed:', eipError);
       }
     }
 
