@@ -284,11 +284,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       return;
     }
     
-    // QRコードで指定されたネットワーク、または手動で選択されたネットワークを使用
-    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
-    const networkInfo = getNetworkInfo(paymentNetwork);
-    const paymentChainId = networkInfo.chainId;
-    
     // SBT検証
     if (parsedData.sbtRequired && parsedData.sbtRequired.length > 0) {
       const canPay = await canPayWithNetwork(address, paymentNetwork, BigInt(parseFloat(amount) * 10 ** 18));
@@ -307,7 +302,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       console.log('⚠️ Network mismatch detected. Switching from', chain.id, 'to', paymentChainId);
       
       if (!switchChain) {
-        setErrorMessage(`ネットワークを${networkInfo.displayName}に切り替えてください（現在: Chain ID ${chain.id}）`);
+        setErrorMessage(`ネットワークを${paymentNetworkInfo.displayName}に切り替えてください（現在: Chain ID ${chain.id}）`);
         setStep('error');
         return;
       }
