@@ -5,7 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchCh
 import { parseEther, parseUnits } from 'viem';
 import { AlertCircle, CheckCircle2, Loader2, Send, Award } from 'lucide-react';
 import { PaymentQRData, NetworkType } from '../types';
-import { parseQRCodeData, validateNetwork, getNetworkInfo, detectQRCodeFormat, describeQRCodeFormat } from '../utils/network';
+import { parseQRCodeData, validateNetwork, getNetworkInfo, detectQRCodeFormat, describeQRCodeFormat, getNetworkFromChainId } from '../utils/network';
 import { canPayWithNetwork, getUserVisitCount, checkUserHasSBT } from '../utils/sbt';
 import { NetworkValidation } from './NetworkValidation';
 import { savePaymentHistory, updatePaymentStatus } from '../utils/paymentHistory';
@@ -64,12 +64,9 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
     setParsedData(parsed);
     
-    // QRコード形式に応じて金額編集可能かを判定
-    // MetaMask等の標準形式（ethereum:）の場合は編集可能、JPYC形式は編集不可
-    const isStandardEthereumFormat = qrData.startsWith('ethereum:');
-    const isJSONFormat = format.includes('JPYC') || format.includes('JSON');
-    const allowEdit = isStandardEthereumFormat || (!isJSONFormat && (!parsed.amount || parsed.amount === '0'));
-    setCanEditAmount(allowEdit);
+    // QRコード決済では金額とコントラクトアドレスの変更を禁止（店舗決済のセキュリティ）
+    // 店舗が設定した金額を顧客が変更できてしまうのは危険
+    setCanEditAmount(false);
     
     // ✅ 修正: 金額の変換処理
     let initialAmount = parsed.amount || '0';
@@ -121,17 +118,39 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     // コントラクトアドレスを初期化（QRコードに含まれていない場合はネットワークに応じたデフォルト値）
     setEditableContractAddress(parsed.contractAddress || getDefaultContractAddress(detectedNetwork));
     
-    if (parsed.network) {
-      const validation = validateNetwork(chain?.id || 1, parsed.network as NetworkType);
-      setValidationResult(validation);
-      
-      if (validation.isValid) {
-        setStep('confirm');
-      } else {
-        setStep('validate');
-      }
-    } else {
+    // ネットワーク検証を実行
+    const paymentNetwork = (parsedData.network as NetworkType) || 'sepolia';
+    const paymentNetworkInfo = getNetworkInfo(paymentNetwork);
+    const paymentChainId = paymentNetworkInfo.chainId;
+    
+    // 現在のウォレットのネットワークと比較
+    const currentChainId = chain?.id || 1;
+    const isNetworkMatch = currentChainId === paymentChainId;
+    
+    if (isNetworkMatch) {
+      // ネットワークが一致している場合は確認画面へ
+      console.log('✅ Network matches. Proceeding to confirm.');
+      setValidationResult({
+        isValid: true,
+        currentNetwork: getNetworkFromChainId(currentChainId) || 'ethereum',
+        requiredNetwork: paymentNetwork,
+        mismatch: false,
+        message: `ネットワークが正しく設定されています (${paymentNetworkInfo.displayName})`,
+      });
       setStep('confirm');
+    } else {
+      // ネットワークが不一致の場合は検証画面へ
+      console.log('⚠️ Network mismatch detected. Showing validation screen.');
+      const currentNetwork = getNetworkFromChainId(currentChainId) || 'ethereum';
+      setValidationResult({
+        isValid: false,
+        currentNetwork,
+        requiredNetwork: paymentNetwork,
+        mismatch: true,
+        message: `ネットワークが異なります。現在: ${getNetworkInfo(currentNetwork).displayName}, 必要: ${paymentNetworkInfo.displayName}`,
+        action: 'switch-network',
+      });
+      setStep('validate');
     }
   }, [qrData, address, chain]);
 
@@ -181,16 +200,43 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     if (!parsedData?.chainId || !switchChain) return;
     
     try {
+      console.log('🔄 Switching network to', parsedData.chainId);
       await switchChain({ chainId: parsedData.chainId });
+      console.log('✅ Network switched successfully');
+      
+      // ネットワーク切り替え後、ウォレットの状態が安定するまで待機
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 検証結果を更新して確認画面へ
+      setValidationResult({
+        isValid: true,
+        currentNetwork: parsedData.network as NetworkType,
+        requiredNetwork: parsedData.network as NetworkType,
+        mismatch: false,
+        message: 'ネットワークが正しく切り替わりました',
+      });
       setStep('confirm');
-    } catch (error) {
-      setErrorMessage('ネットワークの切り替えに失敗しました');
+    } catch (error: any) {
+      console.error('❌ Network switch failed:', error);
+      setErrorMessage(`ネットワークの切り替えに失敗しました: ${error.message || '不明なエラー'}`);
       setStep('error');
     }
   };
 
   const handleConfirmPayment = async () => {
     if (!parsedData || !address || !chain) return;
+
+    // QRコードまたは手動選択されたネットワーク情報を取得
+    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
+    const paymentNetworkInfo = getNetworkInfo(paymentNetwork);
+    const paymentChainId = paymentNetworkInfo.chainId;
+
+    // ネットワーク不一致の再確認（念のため）
+    if (chain.id !== paymentChainId) {
+      setErrorMessage(`ネットワークを${paymentNetworkInfo.displayName}に切り替えてから送金してください（現在: Chain ID ${chain.id}）`);
+      setStep('error');
+      return;
+    }
 
     // editableAmountを使用（手動入力された金額）
     const amount = editableAmount || '0';
@@ -250,8 +296,8 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         setStep('sending');
         await switchChain({ chainId: paymentChainId });
         console.log('✅ Network switched successfully to', paymentChainId);
-        // ネットワーク切り替え後、少し待機してから処理を続行
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // ネットワーク切り替え後、ウォレットの状態が安定するまで待機
+        await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (switchError: any) {
         console.error('❌ Network switch failed:', switchError);
         setErrorMessage(`ネットワークの切り替えに失敗しました: ${switchError.message || '不明なエラー'}`);
@@ -259,6 +305,10 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
         return;
       }
     }
+
+    // ネットワーク切り替え後、現在のチェーンIDを再確認
+    // Note: chain.idは反応的に更新されるため、ここで再度確認する必要がある
+    console.log('Current wallet chain after switch attempt:', chain?.id, 'Expected:', paymentChainId);
 
     // 履歴に保存（決済実行前に保存）- QRコードのネットワーク情報を使用
     const newPaymentId = savePaymentHistory(address, {
@@ -312,6 +362,11 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       const networkInfo = getNetworkInfo(paymentNetwork);
       const paymentChainId = networkInfo.chainId;
 
+      // 最終的なネットワーク確認
+      if (chain?.id !== paymentChainId) {
+        throw new Error(`ネットワークが一致しません。現在: ${chain?.id}, 必要: ${paymentChainId} (${networkInfo.displayName})`);
+      }
+
       console.log('Payment details:', {
         contractAddress: jpycAddress,
         originalContractAddress: parsedData.contractAddress,
@@ -362,7 +417,7 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          ネットワーク確認
+          ⚠️ ネットワーク確認が必要です
         </h2>
         <NetworkValidation
           validation={validationResult}
@@ -377,12 +432,53 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
   if (step === 'confirm') {
     const networkInfo = selectedNetwork ? getNetworkInfo(selectedNetwork) : null;
+    const paymentNetwork = selectedNetwork || (parsedData.network as NetworkType) || 'sepolia';
+    const paymentNetworkInfo = getNetworkInfo(paymentNetwork);
+    const paymentChainId = paymentNetworkInfo.chainId;
+    const isNetworkMismatch = chain?.id !== paymentChainId;
     
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           決済内容の確認
         </h2>
+        
+        {/* ネットワーク不一致警告 */}
+        {isNetworkMismatch && (
+          <div className="mb-4 p-4 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-yellow-800 mb-2">
+                  ⚠️ ネットワークの切り替えが必要です
+                </div>
+                <p className="text-sm text-yellow-700 mb-3">
+                  現在のネットワーク: <strong>{chain?.name || 'Unknown'}</strong> (Chain ID: {chain?.id})<br />
+                  必要なネットワーク: <strong>{paymentNetworkInfo.displayName}</strong> (Chain ID: {paymentChainId})
+                </p>
+                <button
+                  onClick={async () => {
+                    if (!switchChain) {
+                      setErrorMessage('ネットワークの切り替えができません');
+                      setStep('error');
+                      return;
+                    }
+                    try {
+                      await switchChain({ chainId: paymentChainId });
+                      await new Promise(resolve => setTimeout(resolve, 1000));
+                    } catch (error: any) {
+                      setErrorMessage(`ネットワークの切り替えに失敗しました: ${error.message}`);
+                      setStep('error');
+                    }
+                  }}
+                  className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium"
+                >
+                  ネットワークを切り替える
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* QR形式情報表示 */}
         {qrFormat && (
@@ -450,89 +546,17 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           <div className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="text-sm text-gray-600">支払い金額</div>
-              {canEditAmount ? (
-                <button
-                  onClick={() => setIsEditingAmount(!isEditingAmount)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  {isEditingAmount ? 'キャンセル' : '金額を編集'}
-                </button>
-              ) : (
-                <div className="text-xs text-gray-400 italic">
-                  金額固定
-                </div>
-              )}
+              <div className="text-xs text-gray-500 italic flex items-center gap-1">
+                🔒 店舗設定金額（変更不可）
+              </div>
             </div>
             
-            {canEditAmount && isEditingAmount ? (
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <div className="text-sm text-gray-600">¥</div>
-                  <input
-                    type="number"
-                    value={editableAmount}
-                    onChange={(e) => setEditableAmount(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="金額を入力"
-                    min="0"
-                    step="1"
-                  />
-                  <div className="text-sm text-gray-600">{parsedData.tokenSymbol || 'JPYC'}</div>
-                </div>
-                
-                {/* 便利な金額ボタン */}
-                <div className="grid grid-cols-4 gap-2">
-                  {[100, 500, 1000, 5000].map((presetAmount) => (
-                    <button
-                      key={presetAmount}
-                      onClick={() => setEditableAmount(presetAmount.toString())}
-                      className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
-                    >
-                      ¥{presetAmount}
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => {
-                      setIsEditingAmount(false);
-                    }}
-                    className="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
-                  >
-                    確定
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditableAmount(parsedData.amount || '0');
-                      setIsEditingAmount(false);
-                    }}
-                    className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
-                  >
-                    リセット
-                  </button>
-                </div>
-                {parsedData.amount && editableAmount !== parsedData.amount && (
-                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                    💡 元の金額: ¥{parsedData.amount} {parsedData.tokenSymbol || 'JPYC'}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-2xl font-bold text-gray-800">
-                ¥{editableAmount || '0'} {parsedData.tokenSymbol || 'JPYC'}
-                {canEditAmount && parsedData.amount && editableAmount !== parsedData.amount && (
-                  <div className="text-sm font-normal text-amber-600 mt-1">
-                    元の金額から変更されています（元: ¥{parsedData.amount}）
-                  </div>
-                )}
-                {!canEditAmount && (
-                  <div className="text-sm font-normal text-gray-500 mt-1">
-                    💡 JPYC決済QRコードのため金額は固定です
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="text-3xl font-bold text-gray-800">
+              ¥{editableAmount || '0'} {parsedData.tokenSymbol || 'JPYC'}
+            </div>
+            <div className="text-sm font-normal text-blue-600 mt-2 bg-blue-50 border border-blue-200 rounded p-2">
+              💡 この金額は店舗が設定したものです。セキュリティのため変更できません。
+            </div>
           </div>
           
           <div className="border border-gray-200 rounded-lg p-4">
@@ -545,132 +569,47 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           <div className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="text-sm text-gray-600">{parsedData.tokenSymbol || 'JPYC'}コントラクト</div>
-              {canEditAmount ? (
-                <button
-                  onClick={() => setIsEditingContract(!isEditingContract)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  {isEditingContract ? 'キャンセル' : 'アドレスを編集'}
-                </button>
-              ) : (
-                <div className="text-xs text-gray-400 italic">
-                  アドレス固定
+              <div className="text-xs text-gray-500 italic flex items-center gap-1">
+                🔒 店舗指定（変更不可）
+              </div>
+            </div>
+            
+            <div className="text-xs font-mono text-gray-700 break-all bg-gray-50 p-2 rounded border border-gray-200">
+              {editableContractAddress}
+            </div>
+            
+            {/* トークン種類の判定表示 */}
+            <div className="mt-2">
+              {editableContractAddress.toLowerCase() === '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'.toLowerCase() && (
+                <div className="text-xs text-blue-600 font-semibold bg-blue-50 p-2 rounded border border-blue-200">
+                  🏛️ Sepolia公式Faucet JPYC
+                </div>
+              )}
+              {editableContractAddress.toLowerCase() === '0xd3eF95d29A198868241FE374A999fc25F6152253'.toLowerCase() && (
+                <div className="text-xs text-purple-600 font-semibold bg-purple-50 p-2 rounded border border-purple-200">
+                  🏘️ Sepoliaコミュニティ JPYC
+                </div>
+              )}
+              {(editableContractAddress.toLowerCase() === '0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'.toLowerCase() ||
+                editableContractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase()) && (
+                <div className="text-xs text-green-600 font-semibold bg-green-50 p-2 rounded border border-green-200">
+                  🎯 カスタムトークン: tJPYC
                 </div>
               )}
             </div>
-            
-            {canEditAmount && isEditingContract ? (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">コントラクトアドレス</label>
-                  <input
-                    type="text"
-                    value={editableContractAddress}
-                    onChange={(e) => setEditableContractAddress(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs font-mono"
-                    placeholder="0x..."
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">ネットワーク</label>
-                  <select
-                    value={selectedNetwork || 'sepolia'}
-                    onChange={(e) => setSelectedNetwork(e.target.value as NetworkType)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
-                  >
-                    <option value="ethereum">Ethereum Mainnet</option>
-                    <option value="sepolia">Sepolia Testnet</option>
-                    <option value="polygon">Polygon Mainnet</option>
-                    <option value="polygon-amoy">Polygon Amoy Testnet</option>
-                    <option value="avalanche">Avalanche C-Chain</option>
-                    <option value="avalanche-fuji">Avalanche Fuji Testnet</option>
-                  </select>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setIsEditingContract(false)}
-                    className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
-                  >
-                    確定
-                  </button>
-                  <button
-                    onClick={() => {
-                      // ネットワークに応じたデフォルトアドレスを設定
-                      const network = (parsedData.network as NetworkType) || 'sepolia';
-                      let defaultAddress = '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'; // Sepolia
-                      if (network === 'ethereum' || network === 'polygon' || network === 'avalanche') {
-                        defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // 本番
-                      } else if (network === 'polygon-amoy' || network === 'avalanche-fuji') {
-                        defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // テスト
-                      }
-                      setEditableContractAddress(parsedData.contractAddress || defaultAddress);
-                      setSelectedNetwork(network);
-                      setIsEditingContract(false);
-                    }}
-                    className="px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
-                  >
-                    リセット
-                  </button>
-                </div>
-                
-                {/* よく使うコントラクトアドレスのプリセット */}
-                <div>
-                  <div className="text-xs text-gray-600 mb-2">よく使うアドレス:</div>
-                  <div className="space-y-1">
-                    <button
-                      onClick={() => setEditableContractAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB')}
-                      className="w-full text-left text-xs bg-gray-50 border border-gray-200 rounded p-2 hover:bg-gray-100 transition"
-                    >
-                      <div className="font-medium">公式JPYC (Sepolia)</div>
-                      <div className="text-gray-500 font-mono">0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB</div>
-                    </button>
-                    <button
-                      onClick={() => setEditableContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
-                      className="w-full text-left text-xs bg-gray-50 border border-gray-200 rounded p-2 hover:bg-gray-100 transition"
-                    >
-                      <div className="font-medium">公式JPYC (Mainnet/Polygon/Avalanche)</div>
-                      <div className="text-gray-500 font-mono">0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="text-xs font-mono text-gray-700 break-all mb-2">
-                  {editableContractAddress}
-                </div>
-                {canEditAmount && (() => {
-                  // ネットワークに応じたデフォルトアドレスを計算
-                  const network = (parsedData.network as NetworkType) || 'sepolia';
-                  let defaultAddress = '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
-                  if (network === 'ethereum' || network === 'polygon' || network === 'avalanche') {
-                    defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29';
-                  } else if (network === 'polygon-amoy' || network === 'avalanche-fuji') {
-                    defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29';
-                  }
-                  const originalAddress = parsedData.contractAddress || defaultAddress;
-                  return editableContractAddress !== originalAddress;
-                })() && (
-                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-1">
-                    ⚠️ 元のアドレスから変更されています
-                  </div>
-                )}
-              </div>
-            )}
           </div>
           
           <div className="border border-gray-200 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">ネットワーク</div>
-            <div className="font-semibold" style={{ color: getNetworkInfo(selectedNetwork || 'sepolia')?.color }}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm text-gray-600">ネットワーク</div>
+              <div className="text-xs text-gray-500 italic">🔒 固定</div>
+            </div>
+            <div className="font-semibold text-lg" style={{ color: getNetworkInfo(selectedNetwork || 'sepolia')?.color }}>
               {getNetworkInfo(selectedNetwork || 'sepolia')?.displayName}
             </div>
-            {canEditAmount && selectedNetwork !== (parsedData.network as NetworkType) && (
-              <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-1 mt-2">
-                ⚠️ 元のネットワーク「{getNetworkInfo(parsedData.network as NetworkType)?.displayName}」から変更されています
-              </div>
-            )}
+            <div className="text-xs text-gray-500 mt-1">
+              Chain ID: {getNetworkInfo(selectedNetwork || 'sepolia')?.chainId}
+            </div>
           </div>
           
           {parsedData.memo && (
@@ -694,18 +633,29 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             onClick={handleConfirmPayment}
             disabled={
               isPending || 
+              isNetworkMismatch ||
               !editableAmount || 
               parseFloat(editableAmount || '0') <= 0 ||
               !editableContractAddress ||
               !editableContractAddress.startsWith('0x') ||
               editableContractAddress.length !== 42
             }
-            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
+            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            title={isNetworkMismatch ? 'ネットワークを切り替えてください' : ''}
           >
             <Send className="w-4 h-4" />
             送金する
           </button>
         </div>
+        
+        {/* ネットワーク不一致時の追加メッセージ */}
+        {isNetworkMismatch && (
+          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
+            <p className="text-sm text-yellow-800 font-semibold">
+              ⚠️ 先に上のボタンでネットワークを切り替えてください
+            </p>
+          </div>
+        )}
       </div>
     );
   }

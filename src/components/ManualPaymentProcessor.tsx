@@ -158,13 +158,32 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
   const handleConfirm = async () => {
     if (!userAddress) return;
 
-    // ネットワーク確認
+    // ネットワーク確認と自動切り替え
     if (chain?.id !== paymentData.chainId) {
-      setErrorMessage('ネットワークを切り替えてから送金してください');
-      return;
+      console.log('⚠️ Network mismatch in ManualPayment. Switching from', chain?.id, 'to', paymentData.chainId);
+      
+      if (!switchChain) {
+        setErrorMessage('ネットワークを切り替えてから送金してください');
+        return;
+      }
+
+      try {
+        setStep('sending');
+        await switchChain({ chainId: paymentData.chainId });
+        console.log('✅ Network switched successfully to', paymentData.chainId);
+        // ネットワーク切り替え後、ウォレットの状態が安定するまで待機
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (switchError: any) {
+        console.error('❌ Network switch failed:', switchError);
+        setErrorMessage(`ネットワークの切り替えに失敗しました: ${switchError.message || '不明なエラー'}`);
+        setStep('error');
+        return;
+      }
+    } else {
+      setStep('sending');
     }
 
-    setStep('sending');
+    console.log('Current wallet chain:', chain?.id, 'Expected:', paymentData.chainId);
 
     // 決済履歴を保存（位置情報を含む）
     const newPaymentId = savePaymentHistory(userAddress, {
@@ -198,6 +217,11 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
     });
 
     try {
+      // 最終的なネットワーク確認
+      if (chain?.id !== paymentData.chainId) {
+        throw new Error(`ネットワークが一致しません。現在: ${chain?.id}, 必要: ${paymentData.chainId}`);
+      }
+
       const amountInWei = parseUnits(paymentData.amount, 18);
 
       console.log('Sending payment:', {
@@ -207,6 +231,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
         amountInWei: amountInWei.toString(),
         chainId: paymentData.chainId,
         currentChainId: chain?.id,
+        networkMatches: chain?.id === paymentData.chainId,
       });
 
       // wagmi v2のwriteContractは非同期関数を返さないため、awaitを使わない
