@@ -88,9 +88,29 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     // 手動編集可能な金額を初期化
     setEditableAmount(initialAmount);
     
-    // コントラクトアドレスとネットワークを初期化
-    setEditableContractAddress(parsed.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB');
-    setSelectedNetwork((parsed.network as NetworkType) || 'sepolia');
+    // ネットワークを初期化
+    const detectedNetwork = (parsed.network as NetworkType) || 'sepolia';
+    setSelectedNetwork(detectedNetwork);
+    
+    // ネットワークに応じた正しいコントラクトアドレスを設定
+    const getDefaultContractAddress = (network: NetworkType): string => {
+      switch (network) {
+        case 'ethereum':
+        case 'polygon':
+        case 'avalanche':
+          return '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // 本番環境
+        case 'sepolia':
+          return '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'; // Sepoliaテスト
+        case 'polygon-amoy':
+        case 'avalanche-fuji':
+          return '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // テスト環境
+        default:
+          return '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
+      }
+    };
+    
+    // コントラクトアドレスを初期化（QRコードに含まれていない場合はネットワークに応じたデフォルト値）
+    setEditableContractAddress(parsed.contractAddress || getDefaultContractAddress(detectedNetwork));
     
     if (parsed.network) {
       const validation = validateNetwork(chain?.id || 1, parsed.network as NetworkType);
@@ -548,8 +568,16 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
                   </button>
                   <button
                     onClick={() => {
-                      setEditableContractAddress(parsedData.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB');
-                      setSelectedNetwork((parsedData.network as NetworkType) || 'sepolia');
+                      // ネットワークに応じたデフォルトアドレスを設定
+                      const network = (parsedData.network as NetworkType) || 'sepolia';
+                      let defaultAddress = '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'; // Sepolia
+                      if (network === 'ethereum' || network === 'polygon' || network === 'avalanche') {
+                        defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // 本番
+                      } else if (network === 'polygon-amoy' || network === 'avalanche-fuji') {
+                        defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'; // テスト
+                      }
+                      setEditableContractAddress(parsedData.contractAddress || defaultAddress);
+                      setSelectedNetwork(network);
                       setIsEditingContract(false);
                     }}
                     className="px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
@@ -584,7 +612,18 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
                 <div className="text-xs font-mono text-gray-700 break-all mb-2">
                   {editableContractAddress}
                 </div>
-                {canEditAmount && editableContractAddress !== (parsedData.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB') && (
+                {canEditAmount && (() => {
+                  // ネットワークに応じたデフォルトアドレスを計算
+                  const network = (parsedData.network as NetworkType) || 'sepolia';
+                  let defaultAddress = '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
+                  if (network === 'ethereum' || network === 'polygon' || network === 'avalanche') {
+                    defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29';
+                  } else if (network === 'polygon-amoy' || network === 'avalanche-fuji') {
+                    defaultAddress = '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29';
+                  }
+                  const originalAddress = parsedData.contractAddress || defaultAddress;
+                  return editableContractAddress !== originalAddress;
+                })() && (
                   <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-1">
                     ⚠️ 元のアドレスから変更されています
                   </div>
