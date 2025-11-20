@@ -414,6 +414,7 @@ export function detectQRCodeFormat(qrString: string): string {
   if (trimmed.startsWith('{')) {
     try {
       const data = JSON.parse(trimmed);
+      if (data.type === 'MASARU21_PAYMENT') return 'masaru21 Payment (Unified)';
       if (data.type === 'JPYC_PAYMENT') return 'JPYC Payment v2';
       if (data.type === 'payment') return 'Shop Payment';
       if (data.shopWallet) return 'Shop QR Code';
@@ -443,6 +444,8 @@ export function describeQRCodeFormat(qrString: string): string {
   const format = detectQRCodeFormat(qrString);
   
   switch (format) {
+    case 'masaru21 Payment (Unified)':
+      return 'masaru21決済（統一標準）- テスト・本番統一の推奨形式';
     case 'JPYC Payment v2':
       return 'JPYC決済（新版）- 店舗情報付きの高機能決済QRコード';
     case 'Shop Payment':

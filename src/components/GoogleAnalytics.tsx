@@ -8,7 +8,7 @@ export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 // ページビューを送信
 export const pageview = (url: string) => {
-  if (!GA_MEASUREMENT_ID || !window.gtag) return;
+  if (!GA_MEASUREMENT_ID || typeof window === 'undefined' || !window.gtag) return;
   
   window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: url,
@@ -27,7 +27,7 @@ export const event = ({
   label?: string;
   value?: number;
 }) => {
-  if (!GA_MEASUREMENT_ID || !window.gtag) return;
+  if (!GA_MEASUREMENT_ID || typeof window === 'undefined' || !window.gtag) return;
 
   window.gtag('event', action, {
     event_category: category,
@@ -36,7 +36,7 @@ export const event = ({
   });
 };
 
-// ページ遷移を追跡 (Suspense内で使用)
+// ページ遷移を追跡 (必ずSuspense内で使用)
 function GoogleAnalyticsTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
