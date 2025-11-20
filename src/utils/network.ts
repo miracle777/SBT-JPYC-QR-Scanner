@@ -277,9 +277,10 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
           const chainId = chainIdStr ? parseInt(chainIdStr) : undefined;
           const network = chainId ? getNetworkFromChainId(chainId) || 'ethereum' : 'ethereum';
           
-          // value はETH単位（Wei）、functionName があればコントラクト呼び出し
+          // ✅ 修正: value はWei単位だが、JPYCもERC20で18 decimalsなので
+          // Wei単位のまま保持し、JPYC単位への変換は表示時に行う
           const value = params.get('value');
-          const amount = value ? (BigInt(value) / BigInt(10 ** 18)).toString() : undefined;
+          const amount = value || undefined;
           
           return {
             type: 'ethereum',

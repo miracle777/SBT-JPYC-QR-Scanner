@@ -71,8 +71,22 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     const allowEdit = isStandardEthereumFormat || (!isJSONFormat && (!parsed.amount || parsed.amount === '0'));
     setCanEditAmount(allowEdit);
     
+    // ✅ 修正: EIP-681形式の場合、amountはWei単位なのでJPYC単位に変換
+    let initialAmount = parsed.amount || '0';
+    if (isStandardEthereumFormat && parsed.amount) {
+      try {
+        // Wei単位（18桁）からJPYC単位に変換
+        const amountInJPYC = (BigInt(parsed.amount) / BigInt(10 ** 18)).toString();
+        initialAmount = amountInJPYC;
+        console.log('EIP-681 amount converted:', parsed.amount, 'Wei ->', amountInJPYC, 'JPYC');
+      } catch (error) {
+        console.error('Failed to convert Wei to JPYC:', error);
+        initialAmount = parsed.amount; // フォールバック
+      }
+    }
+    
     // 手動編集可能な金額を初期化
-    setEditableAmount(parsed.amount || '0');
+    setEditableAmount(initialAmount);
     
     // コントラクトアドレスとネットワークを初期化
     setEditableContractAddress(parsed.contractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB');
