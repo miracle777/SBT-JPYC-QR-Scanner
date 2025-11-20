@@ -54,7 +54,6 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     setQrDescription(description);
 
     const parsed = parseQRCodeData(qrData);
-    console.log('Parsed payment data:', parsed);
     
     if (!parsed) {
       setErrorMessage(`QRコード解析に失敗しました。\n形式: ${format}\n説明: ${description}`);
@@ -68,31 +67,8 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
     // 店舗が設定した金額を顧客が変更できてしまうのは危険
     setCanEditAmount(false);
     
-    // ✅ 修正: 金額の変換処理
-    let initialAmount = parsed.amount || '0';
-    
-    // EIP-681形式（ethereum:で始まる）またはtype=ethereumの場合のみWei→JPYC変換
-    // JPYC_PAYMENT形式（type=jpyc）は既にJPYC単位なので変換不要
-    const needsConversion = (isStandardEthereumFormat && parsed.type === 'ethereum') || parsed.type === 'ethereum';
-    
-    if (needsConversion && parsed.amount) {
-      try {
-        // Wei単位（18桁）からJPYC単位に変換
-        const amountInJPYC = (BigInt(parsed.amount) / BigInt(10 ** 18)).toString();
-        initialAmount = amountInJPYC;
-        console.log('EIP-681 amount converted:', parsed.amount, 'Wei ->', amountInJPYC, 'JPYC');
-      } catch (error) {
-        console.error('Failed to convert Wei to JPYC:', error);
-        initialAmount = parsed.amount; // フォールバック
-      }
-    } else if (parsed.type === 'jpyc' || parsed.type === 'tjpyc') {
-      // JPYC形式は既にJPYC単位なのでそのまま使用
-      console.log('JPYC format - amount already in JPYC units:', parsed.amount);
-      initialAmount = parsed.amount || '0';
-    }
-    
-    // 手動編集可能な金額を初期化
-    setEditableAmount(initialAmount);
+    // parseQRCodeData が既にJPYC単位に変換済みなのでそのまま使用
+    setEditableAmount(parsed.amount || '0');
     
     // ネットワークを初期化
     const detectedNetwork = (parsed.network as NetworkType) || 'sepolia';
@@ -220,6 +196,52 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
       console.error('❌ Network switch failed:', error);
       setErrorMessage(`ネットワークの切り替えに失敗しました: ${error.message || '不明なエラー'}`);
       setStep('error');
+    }
+  };
+
+  // トークンをMetaMaskに追加する関数
+  const handleAddTokenToWallet = async (contractAddress: string, tokenSymbol?: string) => {
+    try {
+      // トークン情報を決定
+      let symbol = tokenSymbol || 'JPYC';
+      let tokenImage = 'https://jpyc.jp/img/logo.png';
+      
+      // カスタムtJPYCトークンの場合
+      const customTokenAddresses = [
+        '0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345', // Avalanche Fuji
+        '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a', // Polygon Amoy
+      ];
+      
+      if (customTokenAddresses.some(addr => 
+        addr.toLowerCase() === contractAddress.toLowerCase()
+      )) {
+        symbol = 'tJPYC';
+      }
+      
+      console.log('🪙 Adding token to MetaMask:', { contractAddress, symbol });
+      
+      // @ts-ignore
+      const wasAdded = await window.ethereum?.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: contractAddress,
+            symbol: symbol,
+            decimals: 18,
+            image: tokenImage,
+          },
+        },
+      });
+      
+      if (wasAdded) {
+        console.log('✅ Token added to MetaMask successfully');
+      }
+      
+      return wasAdded;
+    } catch (error: any) {
+      console.error('Failed to add token:', error);
+      return false;
     }
   };
 
@@ -351,10 +373,20 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
 
     setStep('sending');
 
+    // トークンをMetaMaskに追加（MetaMaskで正しい金額を表示するため）
+    const jpycAddress = editableContractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
+    try {
+      await handleAddTokenToWallet(jpycAddress, parsedData.tokenSymbol);
+      // トークン追加後、少し待機
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (tokenError) {
+      console.warn('Token add failed, but continuing with transaction:', tokenError);
+      // トークン追加失敗しても決済は続行
+    }
+
     try {
       // JPYC ERC20トークン転送
-      // 編集されたcontractAddressを使用
-      const jpycAddress = editableContractAddress || '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB';
+      // parseQRCodeDataが既にJPYC単位に変換しているので、ここでWei単位に変換
       const amountInWei = parseUnits(amount, 18);
 
       // QRコードまたは手動選択されたネットワーク情報を使用
@@ -480,53 +512,63 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
           </div>
         )}
         
-        {/* QR形式情報表示 */}
-        {qrFormat && (
-          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <div className="text-sm text-gray-600 mb-1">QRコード形式</div>
-            <div className="text-sm font-medium text-gray-800">
-              {qrFormat}
+        {/* トークン追加推奨メッセージ */}
+        {!isNetworkMismatch && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <div className="font-semibold text-blue-800 mb-2">
+                  💡 MetaMaskで正しい金額を表示するために
+                </div>
+                <p className="text-sm text-blue-700 mb-3">
+                  トークンをMetaMaskに追加すると、送金画面で正しい金額が表示されます。<br/>
+                  追加しない場合、MetaMaskで異常に大きな数値が表示されることがありますが、実際の送金額は正しく処理されます。
+                </p>
+                <button
+                  onClick={async () => {
+                    await handleAddTokenToWallet(editableContractAddress, parsedData.tokenSymbol);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  🪙 トークンをMetaMaskに追加
+                </button>
+              </div>
             </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {qrDescription}
-            </div>
-            
-            {/* デバッグ情報（開発時のみ表示） */}
-            <details className="mt-2">
-              <summary className="text-xs text-gray-500 cursor-pointer">📊 詳細情報（デバッグ用）</summary>
-              <div className="mt-2 p-2 bg-white rounded text-xs font-mono break-all">
-                <div className="mb-2">
-                  <div className="font-semibold text-gray-700">元のQRデータ:</div>
-                  <div className="text-gray-600">{qrData?.substring(0, 200)}{qrData && qrData.length > 200 ? '...' : ''}</div>
-                </div>
-                <div className="mb-2">
-                  <div className="font-semibold text-gray-700">パース結果:</div>
-                  <div className="text-gray-600">
-                    type: {parsedData.type}<br/>
-                    amount: {parsedData.amount || '未設定'}<br/>
-                    network: {parsedData.network || '未設定'}<br/>
-                    contract: {parsedData.contractAddress?.substring(0, 10)}...
-                  </div>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-700">表示金額:</div>
-                  <div className="text-gray-600">{editableAmount} JPYC</div>
-                </div>
-              </div>
-            </details>
-            
-            {!canEditAmount && (
-              <div className="mt-2 px-2 py-1 bg-blue-100 border border-blue-200 rounded text-xs text-blue-700">
-                💰 この形式では金額は決済QR作成時に固定されています
-              </div>
-            )}
-            {canEditAmount && (
-              <div className="mt-2 px-2 py-1 bg-green-100 border border-green-200 rounded text-xs text-green-700">
-                ✏️ この形式では金額を手動で設定できます
-              </div>
-            )}
           </div>
         )}
+        
+        {/* デバッグ情報表示 - スマホでも見える */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg">
+          <div className="text-sm font-semibold text-blue-800 mb-2">🔍 決済情報デバッグ</div>
+          <div className="space-y-2 text-xs">
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">QR形式:</div>
+              <div className="text-gray-700">{qrFormat}</div>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">パース結果 type:</div>
+              <div className="text-gray-700">{parsedData.type}</div>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">QRの金額データ:</div>
+              <div className="text-gray-700 font-mono break-all">{parsedData.amount || '未設定'}</div>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">表示用金額 (editableAmount):</div>
+              <div className="text-gray-700 font-mono text-lg">{editableAmount} JPYC</div>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">送信される金額 (Wei):</div>
+              <div className="text-gray-700 font-mono break-all">
+                {editableAmount ? (BigInt(parseFloat(editableAmount) * 10 ** 18)).toString() : '0'}
+              </div>
+            </div>
+            <div className="bg-white p-2 rounded border border-blue-200">
+              <div className="font-semibold text-blue-700">コントラクト:</div>
+              <div className="text-gray-700 font-mono text-xs break-all">{editableContractAddress}</div>
+            </div>
+          </div>
+        </div>
         
         <div className="space-y-4 mb-6">
           {parsedData.shopName && (

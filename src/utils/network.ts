@@ -121,12 +121,12 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
         const data = JSON.parse(trimmed);
         console.log('Parsed JSON data:', data);
         
-        // 統一JPYC決済形式（推奨）
-        if (data.type === 'JPYC_PAYMENT') {
+        // 統一JPYC決済形式（推奨）- MASARU21_PAYMENT
+        if (data.type === 'JPYC_PAYMENT' || data.type === 'MASARU21_PAYMENT') {
           return {
             type: 'jpyc',
             address: data.to as `0x${string}`,
-            amount: data.amount,
+            amount: data.amount, // 既にJPYC単位
             network: (data.network as NetworkType) || 'sepolia',
             chainId: data.chainId || SUPPORTED_NETWORKS[data.network as NetworkType]?.chainId,
             contractAddress: data.contractAddress as `0x${string}`,
@@ -135,7 +135,7 @@ export function parseQRCodeData(qrString: string): PaymentQRData | null {
             memo: data.merchant?.description,
             timestamp: data.timestamp,
             expiresAt: data.expires,
-            tokenSymbol: data.network?.includes('fuji') ? 'tJPYC' : 'JPYC', // ネットワークから自動判別
+            tokenSymbol: data.network?.includes('fuji') ? 'tJPYC' : 'JPYC',
           };
         }
 
