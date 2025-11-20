@@ -193,16 +193,15 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
     // Polygon Mainnetネットワークから取得
     if (SBT_ADDRESSES.polygon) {
       try {
-        console.log('🔗 Checking Polygon Mainnet...');
-        // 注意: 現在Polygon MainnetにはSBTコントラクトがデプロイされていない
-        // 将来のデプロイに備えてコードは残しておく
+        console.log('🔗 Checking Polygon Mainnet...', SBT_ADDRESSES.polygon);
         const polygonSBTs = await fetchSBTsFromPolygon(userAddress);
+        console.log('📦 Polygon Mainnet SBTs found:', polygonSBTs.length);
         sbts.push(...polygonSBTs);
       } catch (error) {
         console.error('❌ Failed to fetch SBTs from Polygon Mainnet:', error);
       }
     } else {
-      console.log('ℹ️ Polygon Mainnet SBT contract not deployed yet');
+      console.log('⚠️ Polygon Mainnet contract address not configured');
     }
 
     // Polygon Amoyネットワークからも取得
@@ -259,14 +258,310 @@ export async function fetchUserSBTs(userAddress: `0x${string}`): Promise<SBT[]> 
   }
 }
 
-// Polygon Mainnet用の関数（将来のデプロイに備えて）
+// Polygon Mainnet用の関数
 async function fetchSBTsFromPolygon(userAddress: `0x${string}`): Promise<SBT[]> {
   const sbts: SBT[] = [];
   
   try {
-    // 注意: Polygon MainnetにSBTコントラクトがデプロイされたら、
-    // ここにPolygon Mainnet用のクライアント作成とSBT取得ロジックを実装
-    console.log('📋 Polygon Mainnet SBT contract not yet deployed');
+    console.log(`🌐 fetchSBTsFromPolygon: Starting fetch for ${userAddress}`);
+    
+    const polygonClient = createPublicClient({
+      chain: {
+        id: 137,
+        name: 'Polygon Mainnet',
+        network: 'polygon',
+        nativeCurrency: {
+          decimals: 18,
+          name: 'MATIC',
+          symbol: 'MATIC',
+        },
+        rpcUrls: {
+          default: { http: ['https://polygon-rpc.com'] },
+          public: { http: ['https://polygon-rpc.com'] },
+        },
+      },
+      transport: http(),
+    });
+
+    const contractAddress = SBT_ADDRESSES.polygon!;
+    console.log('📋 Polygon Mainnet contract address:', contractAddress);
+    
+    // ユーザーが保有するSBTの数を取得
+    console.log('🔍 Calling balanceOf on Polygon Mainnet...');
+    let balance: bigint;
+    try {
+      balance = await polygonClient.readContract({
+        address: contractAddress,
+        abi: SBT_ABI,
+        functionName: 'balanceOf',
+        args: [userAddress],
+      }) as bigint;
+      
+      console.log('📊 Polygon Mainnet SBT balance:', balance.toString());
+    } catch (balanceError) {
+      console.error('❌ Error calling balanceOf on Polygon Mainnet:', balanceError);
+      throw new Error(`Failed to get Polygon Mainnet balance: ${balanceError}`);
+    }
+    
+    if (balance === 0n) {
+      console.log('💬 No SBTs found for this user on Polygon Mainnet');
+      return sbts;
+    }
+    
+    // イベントログを使用してユーザーが所有するトークンIDを取得
+    console.log('🔍 Getting user tokens via Transfer events on Polygon Mainnet...');
+    let userTokenIds: bigint[] = [];
+    
+    try {
+      // Transferイベントを検索してユーザーのトークンを特定
+      const logs = await polygonClient.getLogs({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { name: 'from', type: 'address', indexed: true },
+            { name: 'to', type: 'address', indexed: true },
+            { name: 'tokenId', type: 'uint256', indexed: true }
+          ]
+        },
+        args: {
+          to: userAddress,
+        },
+        fromBlock: 'earliest',
+        toBlock: 'latest'
+      });
+      
+      console.log('📊 Found Transfer events on Polygon Mainnet:', logs.length);
+      
+      // トークンIDを抽出
+      for (const log of logs) {
+        if (log.args && log.args.tokenId) {
+          const tokenId = log.args.tokenId as bigint;
+          
+          // そのトークンが現在もユーザーが所有しているかチェック
+          try {
+            const owner = await polygonClient.readContract({
+              address: contractAddress,
+              abi: SBT_ABI,
+              functionName: 'ownerOf',
+              args: [tokenId],
+            }) as string;
+            
+            if (owner.toLowerCase() === userAddress.toLowerCase()) {
+              userTokenIds.push(tokenId);
+              console.log('✅ Confirmed Polygon Mainnet token ownership:', tokenId.toString());
+            }
+          } catch (ownerError) {
+            console.log('⚠️ Polygon Mainnet token may have been burned:', tokenId.toString());
+          }
+        }
+      }
+    } catch (eventError) {
+      console.error('❌ Error getting Transfer events on Polygon Mainnet:', eventError);
+      // フォールバック: 簡単な範囲でトークンIDを試行
+      console.log('🔄 Trying fallback method with token ID range on Polygon Mainnet...');
+      for (let tokenId = 1; tokenId <= 1000; tokenId++) {
+        try {
+          const owner = await polygonClient.readContract({
+            address: contractAddress,
+            abi: SBT_ABI,
+            functionName: 'ownerOf',
+            args: [BigInt(tokenId)],
+          }) as string;
+          
+          if (owner.toLowerCase() === userAddress.toLowerCase()) {
+            userTokenIds.push(BigInt(tokenId));
+            console.log('✅ Found owned Polygon Mainnet token via fallback:', tokenId.toString());
+          }
+        } catch {
+          // トークンが存在しないか所有していない
+        }
+        
+        // 見つかったトークン数がbalanceと一致したら終了
+        if (userTokenIds.length >= Number(balance)) {
+          break;
+        }
+      }
+    }
+    
+    console.log('📋 Polygon Mainnet user token IDs found:', userTokenIds.map(id => id.toString()));
+    
+    // 各トークンのメタデータを取得
+    for (const tokenId of userTokenIds) {
+      try {
+        console.log('🔍 Processing Polygon Mainnet token:', tokenId.toString());
+        
+        // トークンURIを取得
+        let tokenURI = '';
+        try {
+          tokenURI = await polygonClient.readContract({
+            address: contractAddress,
+            abi: SBT_ABI,
+            functionName: 'tokenURI',
+            args: [tokenId],
+          }) as string;
+          
+          console.log('Polygon Mainnet Token URI:', tokenURI);
+        } catch (uriError) {
+          console.warn('Failed to get tokenURI for Polygon Mainnet token:', uriError);
+        }
+        
+        // メタデータを取得・解析
+        let metadata: any = {};
+        let imageUrl = '';
+        let actualShopId = 1; // デフォルトはDemo Store
+        let categoryInfo = '';
+        
+        console.log('🔍 Polygon Mainnet tokenURI:', tokenURI);
+        
+        if (tokenURI.startsWith('data:application/json;base64,')) {
+          // Base64エンコードされたJSON
+          try {
+            const base64Data = tokenURI.replace('data:application/json;base64,', '');
+            const jsonString = Buffer.from(base64Data, 'base64').toString('utf-8');
+            metadata = JSON.parse(jsonString);
+            console.log('📄 Polygon Mainnet decoded metadata:', metadata);
+            
+            imageUrl = metadata.image || '';
+            // メタデータからshopIdを抽出（複数のフィールドを確認）
+            actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+            
+            // カテゴリ情報を抽出
+            const categoryFromAttributes = metadata.attributes?.find((attr: any) => attr.trait_type === 'Category' || attr.trait_type === 'category')?.value;
+            categoryInfo = metadata.category || categoryFromAttributes;
+          } catch (e) {
+            console.error('❌ Failed to decode Polygon Mainnet base64 metadata:', e);
+          }
+        } else if (tokenURI.startsWith('http')) {
+          // HTTPSのメタデータURL
+          try {
+            const response = await axios.get(tokenURI);
+            metadata = response.data;
+            console.log('📄 Polygon Mainnet fetched metadata:', metadata);
+            
+            imageUrl = metadata.image || '';
+            actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+          } catch (e) {
+            console.error('❌ Failed to fetch Polygon Mainnet metadata from URL:', e);
+          }
+        } else if (tokenURI.startsWith('ipfs://')) {
+          // IPFSのメタデータURL
+          try {
+            console.log('🌐 Fetching IPFS metadata for Polygon Mainnet...');
+            const ipfsUrl = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            console.log('🔗 IPFS URL:', ipfsUrl);
+            
+            const response = await axios.get(ipfsUrl, {
+              timeout: 10000, // 10秒タイムアウト
+              headers: {
+                'Accept': 'application/json',
+              }
+            });
+            metadata = response.data;
+            console.log('📄 Polygon Mainnet IPFS metadata:', metadata);
+            
+            imageUrl = metadata.image || '';
+            // IPFSの画像URLをHTTPSに変換
+            if (imageUrl && imageUrl.startsWith('ipfs://')) {
+              imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+              console.log('🖼️ Converted image URL:', imageUrl);
+            }
+            
+            actualShopId = metadata.shopId || metadata.shop_id || metadata.attributes?.find((attr: any) => attr.trait_type === 'Shop ID')?.value || actualShopId;
+            
+            // カテゴリ情報を抽出
+            const categoryFromAttributes = metadata.attributes?.find((attr: any) => attr.trait_type === 'Category' || attr.trait_type === 'category')?.value;
+            categoryInfo = metadata.category || categoryFromAttributes;
+          } catch (e) {
+            console.error('❌ Failed to fetch Polygon Mainnet IPFS metadata:', e);
+            console.log('🔄 Using fallback for IPFS metadata...');
+          }
+        }
+        
+        // ショップ情報を取得
+        const shopInfo = REGISTERED_SHOPS[actualShopId as keyof typeof REGISTERED_SHOPS];
+        console.log(`🏪 Polygon Mainnet shop lookup: shopId=${actualShopId}, found=${!!shopInfo}`, shopInfo);
+        
+        // 画像URLが取得できない場合はデフォルト画像を生成
+        if (!imageUrl || imageUrl.includes('placeholder')) {
+          const polygonBadgeName = encodeURIComponent(metadata.name || shopInfo?.name || '来店記念');
+          const polygonShopName = encodeURIComponent(shopInfo?.name || 'SBT JPYC Pay Demo Store');
+          imageUrl = `https://img.shields.io/badge/${polygonBadgeName}-${polygonShopName}-8247E5?style=for-the-badge&logo=polygon&logoColor=white`;
+        }
+        
+        // IPFSリンクをHTTPSリンクに変換
+        if (imageUrl.startsWith('ipfs://')) {
+          imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+        }
+        
+        // メタデータを拡張
+        const enhancedMetadata = {
+          ...metadata,
+          name: metadata.name || `来店記念 - ${shopInfo?.name || 'SBT JPYC Pay Demo Store'}`,
+          description: metadata.description || `${shopInfo?.name || 'SBT JPYC Pay Demo Store'}でのスタンプカード (Polygon Mainnet)`,
+          image: imageUrl,
+          external_url: metadata.external_url || 'https://jpyc.jp',
+          background_color: metadata.background_color || '8247E5',
+          shopId: actualShopId,
+          attributes: [
+            {
+              trait_type: 'Shop Name',
+              value: shopInfo?.name || 'SBT JPYC Pay Demo Store'
+            },
+            {
+              trait_type: 'Shop Category', 
+              value: categoryInfo || shopInfo?.category || 'デモ・実験店舗'
+            },
+            {
+              trait_type: 'Rank',
+              value: metadata.rank || shopInfo?.sbtTemplate?.rank || 'bronze'
+            },
+            {
+              trait_type: 'Network',
+              value: 'Polygon Mainnet'
+            },
+            {
+              trait_type: 'Token Standard',
+              value: 'ERC721'
+            }
+          ]
+        };
+      
+        const polygonToken: SBT = {
+          id: `sbt-polygon-${contractAddress}-${tokenId}`,
+          name: enhancedMetadata.name,
+          symbol: metadata.symbol || shopInfo?.name?.substring(0, 4).toUpperCase() || 'DEMO',
+          address: contractAddress,
+          issuer: shopInfo?.name || 'Unknown Shop',
+          issuerAddress: shopInfo?.wallet || contractAddress,
+          description: enhancedMetadata.description,
+          network: 'polygon',
+          chainId: 137,
+          tokenId: tokenId,
+          metadata: enhancedMetadata,
+          imageUrl: imageUrl,
+          rank: metadata.rank || shopInfo?.sbtTemplate?.rank || 'bronze',
+          issuedDate: new Date(),
+          // 拡張情報
+          shopId: actualShopId,
+          shopName: shopInfo?.name,
+          shopCategory: categoryInfo || shopInfo?.category,
+          benefits: metadata.benefits || (shopInfo?.sbtTemplate?.benefits ? [...shopInfo.sbtTemplate.benefits] : []),
+          thumbnailUrl: imageUrl,
+          bannerUrl: shopInfo?.bannerUrl,
+          external_url: enhancedMetadata.external_url,
+          background_color: enhancedMetadata.background_color,
+          youtube_url: metadata.youtube_url,
+          animationUrl: metadata.animation_url,
+        };
+        
+        sbts.push(polygonToken);
+        console.log('✅ Added Polygon Mainnet SBT:', polygonToken);
+      } catch (tokenError) {
+        console.error(`Failed to fetch Polygon Mainnet token ${tokenId.toString()}:`, tokenError);
+      }
+    }
   } catch (error) {
     console.error('Failed to fetch SBTs from Polygon Mainnet:', error);
   }
