@@ -93,7 +93,7 @@
   "amount": "100",
   "network": "ethereum",
   "chainId": 1,
-  "contractAddress": "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+  "contractAddress": "0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29",
   "merchant": {
     "name": "本番店舗",
     "id": "shop_12345",
@@ -113,7 +113,7 @@
   "amount": "100",
   "network": "polygon",
   "chainId": 137,
-  "contractAddress": "0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c",
+  "contractAddress": "0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29",
   "merchant": {
     "name": "Polygon店舗",
     "id": "shop_12345",
@@ -276,9 +276,9 @@ function generateMetaMaskJPYCQR(params: {
 }): string {
   
   const networkConfig = {
-    ethereum: { chainId: 1, contract: '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB' },
+    ethereum: { chainId: 1, contract: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29' },
     sepolia: { chainId: 11155111, contract: '0xd3eF95d29A198868241FE374A999fc25F6152253' },
-    polygon: { chainId: 137, contract: '0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c' }
+    polygon: { chainId: 137, contract: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29' }
   };
   
   const config = networkConfig[params.network];
@@ -489,9 +489,9 @@ function generateMasaru21PaymentQR(params: {
   
   // ネットワーク情報の自動設定
   const networkConfig = {
-    'ethereum': { chainId: 1, contract: '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB' },
+    'ethereum': { chainId: 1, contract: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29' },
     'sepolia': { chainId: 11155111, contract: '0xd3eF95d29A198868241FE374A999fc25F6152253' },
-    'polygon': { chainId: 137, contract: '0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c' },
+    'polygon': { chainId: 137, contract: '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29' },
     'polygon-amoy': { chainId: 80002, contract: '0x...' }, // 要設定
     'avalanche': { chainId: 43114, contract: '0x...' }, // 要設定
     'avalanche-fuji': { chainId: 43113, contract: '0x...' }, // 要設定
@@ -570,9 +570,9 @@ def generate_masaru21_payment_qr(
     
     # ネットワーク設定の自動選択
     network_config = {
-        'ethereum': {'chainId': 1, 'contract': '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'},
+        'ethereum': {'chainId': 1, 'contract': '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'},
         'sepolia': {'chainId': 11155111, 'contract': '0xd3eF95d29A198868241FE374A999fc25F6152253'},
-        'polygon': {'chainId': 137, 'contract': '0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'},
+        'polygon': {'chainId': 137, 'contract': '0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'},
         'polygon-amoy': {'chainId': 80002, 'contract': '0x...'},  # 要設定
         'avalanche': {'chainId': 43114, 'contract': '0x...'},  # 要設定
         'avalanche-fuji': {'chainId': 43113, 'contract': '0x...'},  # 要設定

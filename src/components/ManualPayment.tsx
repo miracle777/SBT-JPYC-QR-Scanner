@@ -163,6 +163,21 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
           />
           
           {/* クイック選択ボタン */}
+          {selectedNetwork === 'polygon' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Polygon Mainnet クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                  className="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition"
+                >
+                  🏛️ 公式JPYC (本番)
+                </button>
+              </div>
+            </div>
+          )}
+          
           {selectedNetwork === 'polygon-amoy' && (
             <div className="mt-2 space-y-2">
               <p className="text-xs font-semibold text-gray-600">Polygon Amoy クイック選択:</p>
@@ -185,6 +200,21 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
             </div>
           )}
           
+          {selectedNetwork === 'avalanche' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Avalanche C-Chain クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                  className="px-3 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-800 rounded-lg transition"
+                >
+                  🏛️ 公式JPYC (本番)
+                </button>
+              </div>
+            </div>
+          )}
+          
           {selectedNetwork === 'avalanche-fuji' && (
             <div className="mt-2 space-y-2">
               <p className="text-xs font-semibold text-gray-600">Avalanche Fuji クイック選択:</p>
@@ -202,6 +232,21 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
                   className="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition"
                 >
                   🎯 tJPYC (カスタム)
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {selectedNetwork === 'ethereum' && (
+            <div className="mt-2 space-y-2">
+              <p className="text-xs font-semibold text-gray-600">Ethereum Mainnet クイック選択:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContractAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29')}
+                  className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition"
+                >
+                  🏛️ 公式JPYC (本番)
                 </button>
               </div>
             </div>
