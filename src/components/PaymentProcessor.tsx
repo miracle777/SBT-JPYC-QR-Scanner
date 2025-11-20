@@ -390,6 +390,31 @@ export function PaymentProcessor({ qrData, onComplete }: PaymentProcessorProps) 
             <div className="text-xs text-gray-500 mt-1">
               {qrDescription}
             </div>
+            
+            {/* デバッグ情報（開発時のみ表示） */}
+            <details className="mt-2">
+              <summary className="text-xs text-gray-500 cursor-pointer">📊 詳細情報（デバッグ用）</summary>
+              <div className="mt-2 p-2 bg-white rounded text-xs font-mono break-all">
+                <div className="mb-2">
+                  <div className="font-semibold text-gray-700">元のQRデータ:</div>
+                  <div className="text-gray-600">{qrData?.substring(0, 200)}{qrData && qrData.length > 200 ? '...' : ''}</div>
+                </div>
+                <div className="mb-2">
+                  <div className="font-semibold text-gray-700">パース結果:</div>
+                  <div className="text-gray-600">
+                    type: {parsedData.type}<br/>
+                    amount: {parsedData.amount || '未設定'}<br/>
+                    network: {parsedData.network || '未設定'}<br/>
+                    contract: {parsedData.contractAddress?.substring(0, 10)}...
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-700">表示金額:</div>
+                  <div className="text-gray-600">{editableAmount} JPYC</div>
+                </div>
+              </div>
+            </details>
+            
             {!canEditAmount && (
               <div className="mt-2 px-2 py-1 bg-blue-100 border border-blue-200 rounded text-xs text-blue-700">
                 💰 この形式では金額は決済QR作成時に固定されています
