@@ -3,7 +3,7 @@ title: JPYC対応 SBTスタンプ型ウォレット & QRコード決済アプリ
 emoji: 🪪
 type: "tech"
 topics: ["web3","jpyc","sbt","nextjs","polygon","avalanche","wallet","qr"]
-published: false
+published: ture
 ---
 
 ## 概要
