@@ -1,40 +1,41 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
+const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
-  register: true,
-  skipWaiting: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
   disable: process.env.NODE_ENV === 'development',
-  // 強制的にサービスワーカーを更新
-  buildExcludes: [/middleware-manifest\.json$/],
-  // キャッシュバスティングを強化
-  dynamicStartUrlRedirect: '/index.html',
   fallbacks: {
     document: '/offline.html',
   },
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/api\..*/,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'api-cache-v2',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 1800, // キャッシュ時間を短縮
+  workboxOptions: {
+    disableDevLogs: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/api\..*/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'api-cache-v2',
+          expiration: {
+            maxEntries: 32,
+            maxAgeSeconds: 1800,
+          },
         },
       },
-    },
-    {
-      urlPattern: /\.(?:js|css|html)$/,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-resources-v2',
-        expiration: {
-          maxEntries: 60,
-          maxAgeSeconds: 86400,
+      {
+        urlPattern: /\.(?:js|css|html)$/,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'static-resources-v2',
+          expiration: {
+            maxEntries: 60,
+            maxAgeSeconds: 86400,
+          },
         },
       },
-    },
-  ],
+    ],
+  },
 });
 
 const nextConfig = {
