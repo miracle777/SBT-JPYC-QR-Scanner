@@ -4,6 +4,7 @@ import { Providers } from './providers';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 import { GoogleAnalytics } from '../components/GoogleAnalytics';
 import { StructuredData } from '../components/StructuredData';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://jpyc-pay.app'),
@@ -82,6 +83,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <PWAInstallPrompt />
+          <Analytics />
           <footer className="mt-8 py-4 px-4 text-xs text-gray-500 border-t border-gray-200">
             <div className="space-y-1 text-left">
               <p>※ 本プログラムは、JPYC株式会社による公式コンテンツではありません。</p>
