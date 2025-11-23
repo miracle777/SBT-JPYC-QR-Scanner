@@ -114,11 +114,8 @@ const faqData: FAQItem[] = [
             <ol className="text-gray-600 space-y-2 ml-4 list-decimal">
               <li><a href="https://www.hashport.network/" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">HashPort Wallet</a>をダウンロード</li>
               <li>ウォレットを作成またはインポート</li>
-              <li>アプリのURL欄に以下を入力：
-                <div className="bg-white p-2 rounded border mt-2 font-mono text-xs">
-                  https://jpyc-pay.app
-                </div>
-              </li>
+              <li>HashPort Walletアプリの<strong>ブラウザ機能</strong>またはURL入力欄を使用</li>
+              <li>現在表示中のこのアプリのURLをコピーして入力</li>
               <li>アプリ内ブラウザでサイトが開きます</li>
               <li>「ウォレット接続」ボタンをタップ</li>
               <li>HashPortアプリで接続を承認</li>
@@ -131,11 +128,13 @@ const faqData: FAQItem[] = [
             🔗 WalletConnect接続方法
           </h4>
           <ol className="text-sm text-gray-600 space-y-2 ml-4 list-decimal">
-            <li>PC/スマートフォンでアプリを開く</li>
-            <li>「ウォレット接続」を選択</li>
-            <li>QRコードまたはディープリンクでHashPortアプリが開く</li>
-            <li>アプリ内で「Accept」または「承認」をタップ</li>
-            <li><strong>重要</strong>: 承認ボタンが表示されるまで数秒待機</li>
+            <li>このアプリの「ウォレット接続」ボタンをタップします</li>
+            <li>MetaMaskなどのアプリを選ぶ画面で、<strong>WalletConnect</strong>のアイコンをタップします</li>
+            <li>そのあとHashPort Walletを検索して、アイコンを見つけます</li>
+            <li>アイコンをタップして、表示される画面の<strong>リンクボタン</strong>を探します</li>
+            <li>リンクボタンをクリックして、<strong>表示される接続用の情報をコピー</strong>します</li>
+            <li>HashPort Walletでカメラスキャン画面を開き、<strong>URL入力欄に先ほどコピーした情報を貼り付け</strong>ます</li>
+            <li>接続が完了します</li>
           </ol>
         </div>
         
