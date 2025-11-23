@@ -26,11 +26,35 @@ const queryClient = new QueryClient({
             error?.message?.includes('decrypt')) {
           return false;
         }
+        // WalletConnectタイムアウトの場合は1回だけリトライ
+        if (error?.message?.includes('timeout') || 
+            error?.message?.includes('Timeout')) {
+          return failureCount < 1;
+        }
+        // 接続関連エラーは2回までリトライ
+        if (error?.message?.includes('connect') || 
+            error?.message?.includes('network')) {
+          return failureCount < 2;
+        }
         return failureCount < 3;
       },
       refetchOnWindowFocus: false, // WalletConnect接続時の不要な再取得を防ぐ
       staleTime: 5 * 60 * 1000, // 5分間キャッシュを有効とする
+      // WalletConnect関連のクエリのタイムアウトを延長
+      meta: {
+        isWalletConnect: true
+      }
     },
+    mutations: {
+      retry: (failureCount, error) => {
+        // ウォレット接続関連は1回だけリトライ
+        if (error?.message?.includes('User rejected') || 
+            error?.message?.includes('user rejected')) {
+          return false;
+        }
+        return failureCount < 1;
+      }
+    }
   },
 });
 
@@ -75,6 +99,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <RainbowKitProvider
           modalSize="compact"
           showRecentTransactions={true}
+          appInfo={{
+            appName: 'JPYC Payment Scanner',
+            learnMoreUrl: 'https://sbt-jpyc-qr-scanner.vercel.app',
+          }}
+          coolMode={false}
         >
           {children}
         </RainbowKitProvider>

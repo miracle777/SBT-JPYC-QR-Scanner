@@ -112,20 +112,44 @@ export function WalletConnector() {
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2 w-full max-w-sm"
+            className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg w-full max-w-sm"
           >
-            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-xs text-red-700 dark:text-red-300">
-                {error}
-              </p>
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-xs text-red-700 dark:text-red-300">
+                  {error}
+                </p>
+              </div>
+              <div className="flex gap-1">
+                {connectionAttempts < 3 && (
+                  <button
+                    onClick={handleRetry}
+                    disabled={isRetrying}
+                    className="text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
+                    title="再試行"
+                  >
+                    {isRetrying ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
+                <button
+                  onClick={clearError}
+                  className="text-red-600 hover:text-red-700 transition-colors"
+                  title="エラーを閉じる"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
             </div>
-            <button
-              onClick={clearError}
-              className="text-red-600 hover:text-red-700 transition-colors"
-            >
-              <X className="h-3 w-3" />
-            </button>
+            {connectionAttempts > 0 && (
+              <div className="mt-2 text-xs text-red-600 dark:text-red-400">
+                接続試行: {connectionAttempts}/3
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -177,29 +201,49 @@ export function WalletConnector() {
                   {(() => {
                     if (!connected) {
                       return (
-                        <button
-                          onClick={() => {
-                            try {
-                              clearError();
-                              openConnectModal();
-                            } catch (err: unknown) {
-                              console.error('Connect error:', err);
-                              const errorMessage = err instanceof Error ? err.message : String(err);
-                              setError(
-                                errorMessage?.includes('User rejected') || 
-                                errorMessage?.includes('user rejected')
-                                  ? 'ウォレットでの接続要求が拒否されました。再度お試しください。'
-                                  : 'ウォレット接続中にエラーが発生しました。'
-                              );
-                            }
-                          }}
-                          disabled={isConnecting}
-                          type="button"
-                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
-                        >
-                          <Wallet className="h-4 w-4" />
-                          {isConnecting ? '接続中...' : 'ウォレット接続'}
-                        </button>
+                        <div className="space-y-3">
+                          <button
+                            onClick={() => {
+                              try {
+                                clearError();
+                                setConnectionTimeoutHandler();
+                                openConnectModal();
+                              } catch (err: unknown) {
+                                console.error('Connect error:', err);
+                                const errorMessage = err instanceof Error ? err.message : String(err);
+                                setError(
+                                  errorMessage?.includes('User rejected') || 
+                                  errorMessage?.includes('user rejected')
+                                    ? 'ウォレットでの接続要求が拒否されました。再度お試しください。'
+                                    : 'ウォレット接続中にエラーが発生しました。'
+                                );
+                              }
+                            }}
+                            disabled={isConnecting || isLoading || isRetrying}
+                            type="button"
+                            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                          >
+                            {isConnecting || isLoading || isRetrying ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                接続中...
+                              </>
+                            ) : (
+                              <>
+                                <Wallet className="h-4 w-4" />
+                                ウォレット接続
+                              </>
+                            )}
+                          </button>
+
+                          {(isConnecting || isLoading) && (
+                            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                              <p>• ウォレットアプリで接続を承認してください</p>
+                              <p>• QRコードをスキャンするか、ディープリンクをタップしてください</p>
+                              <p>• 接続に時間がかかる場合があります（最大45秒）</p>
+                            </div>
+                          )}
+                        </div>
                       );
                     }
 
@@ -242,23 +286,34 @@ export function WalletConnector() {
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5 mt-3">
             <p>• Sepolia / Polygon Amoy / Polygon 対応</p>
             <p>• ウォレットのネットワーク設定を優先</p>
-            <p>• MetaMask推奨</p>
-            <button
-              onClick={async () => {
-                try {
-                  if (typeof window !== 'undefined' && window.ethereum) {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                  } else {
-                    window.open('https://metamask.io/download/', '_blank');
+            <p>• MetaMask / Trust Wallet / Coinbase Wallet 対応</p>
+            <div className="flex flex-col gap-2 mt-2">
+              <button
+                onClick={async () => {
+                  try {
+                    if (typeof window !== 'undefined' && window.ethereum) {
+                      await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    } else {
+                      window.open('https://metamask.io/download/', '_blank');
+                    }
+                  } catch (error) {
+                    console.error('Failed to connect MetaMask:', error);
                   }
-                } catch (error) {
-                  console.error('Failed to connect MetaMask:', error);
-                }
-              }}
-              className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
-            >
-              🦊 MetaMaskをダウンロード
-            </button>
+                }}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
+              >
+                🦊 MetaMaskをダウンロード
+              </button>
+              
+              {connectionAttempts >= 3 && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
+                >
+                  🔄 ページを更新
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </motion.div>
