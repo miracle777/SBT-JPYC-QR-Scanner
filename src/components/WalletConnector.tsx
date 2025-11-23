@@ -5,6 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useDisconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
+import { WalletTroubleshootingGuide } from './WalletTroubleshootingGuide';
 
 export function WalletConnector() {
   const { isConnected, isConnecting, isDisconnected } = useAccount();
@@ -31,10 +32,10 @@ export function WalletConnector() {
     clearConnectionTimeout();
     const timeout = setTimeout(() => {
       if (isConnecting && !isConnected) {
-        setError('接続がタイムアウトしました。もう一度お試しください。');
+        setError('接続がタイムアウトしました。ウォレットアプリで承認を確認するか、アプリを再起動してください。');
         setIsRetrying(false);
       }
-    }, 45000); // 45秒でタイムアウト
+    }, 60000); // 60秒でタイムアウト（Trust Wallet対応）
     setConnectionTimeout(timeout);
   }, [isConnecting, isConnected, clearConnectionTimeout]);
 
@@ -214,7 +215,9 @@ export function WalletConnector() {
                             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                               <p>• ウォレットアプリで接続を承認してください</p>
                               <p>• QRコードをスキャンするか、ディープリンクをタップしてください</p>
-                              <p>• 接続に時間がかかる場合があります（最大45秒）</p>
+                              <p>• Trust Wallet: アカウント作成後に再試行してください</p>
+                              <p>• HashPort Wallet: アプリが開いたら承認ボタンをタップ</p>
+                              <p>• 接続に時間がかかる場合があります（最大60秒）</p>
                             </div>
                           )}
                         </div>
@@ -260,7 +263,7 @@ export function WalletConnector() {
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5 mt-3">
             <p>• Sepolia / Polygon Amoy / Polygon 対応</p>
             <p>• ウォレットのネットワーク設定を優先</p>
-            <p>• MetaMask / Trust Wallet / Coinbase Wallet 対応</p>
+            <p>• MetaMask / Trust Wallet / Coinbase Wallet / HashPort Wallet 対応</p>
             <div className="flex flex-col gap-2 mt-2">
               <button
                 onClick={async () => {
@@ -279,6 +282,21 @@ export function WalletConnector() {
                 🦊 MetaMaskをダウンロード
               </button>
               
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => window.open('https://trustwallet.com/', '_blank')}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                >
+                  🛡️ Trust Wallet
+                </button>
+                <button
+                  onClick={() => window.open('https://www.hashport.network/', '_blank')}
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                >
+                  ⚡ HashPort Wallet
+                </button>
+              </div>
+              
               {connectionAttempts >= 3 && (
                 <button
                   onClick={() => window.location.reload()}
@@ -288,6 +306,7 @@ export function WalletConnector() {
                 </button>
               )}
             </div>
+            <WalletTroubleshootingGuide />
           </div>
         </div>
       </motion.div>
