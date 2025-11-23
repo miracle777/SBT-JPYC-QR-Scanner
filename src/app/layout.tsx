@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
+import { PWAUpdatePrompt } from '../components/PWAUpdatePrompt';
 import { GoogleAnalytics } from '../components/GoogleAnalytics';
 import { StructuredData } from '../components/StructuredData';
 import { Analytics } from '@vercel/analytics/next';
@@ -81,6 +82,7 @@ export default function RootLayout({
         <ProvidersWrapper>
           {children}
           <PWAInstallPrompt />
+          <PWAUpdatePrompt />
           <Analytics />
           {/* JPYC免責事項 - デスクトップで左寄せ、コンテンツの下に表示 */}
           <footer className="mt-8 py-6 px-4 bg-gray-50 border-t border-gray-200">

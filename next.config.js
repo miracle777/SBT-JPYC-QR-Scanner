@@ -11,6 +11,8 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   },
   workboxOptions: {
     disableDevLogs: true,
+    skipWaiting: true,
+    clientsClaim: true,
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/api\..*/,
