@@ -83,7 +83,7 @@ export default function Home() {
               <button
                 onClick={() => setShowHelp(true)}
                 className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="ヘルプとSBTの説明"
+                title="FAQ・よくある質問"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -643,13 +643,13 @@ export default function Home() {
           </div>
         </footer>
 
-        {/* ヘルプモーダル */}
+        {/* FAQモーダル */}
         {showHelp && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  🎫 SBT（ソウルバウンドトークン）について
+                  ❓ FAQ・よくある質問
                 </h2>
                 <button
                   onClick={() => setShowHelp(false)}
@@ -662,196 +662,321 @@ export default function Home() {
               </div>
               
               <div className="p-6 space-y-6">
-                {/* SBTとは */}
-                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center">
-                    <span className="mr-2">💎</span>
-                    SBTとは？
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    SBT（Soulbound Token / ソウルバウンドトークン）は、<strong>譲渡不可能なデジタル証明書</strong>です。
-                    通常のNFTとは異なり、取得したウォレットに永続的に結び付いており、売買や譲渡ができません。
-                    これにより、<strong>個人の実績や体験を確実に証明</strong>することができます。
-                  </p>
-                </div>
-
-                {/* このアプリでのSBT */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-green-800 mb-3 flex items-center">
-                    <span className="mr-2">🏪</span>
-                    このアプリでのSBTコレクション
-                  </h3>
-                  <div className="space-y-4">
-                    <p className="text-gray-700">
-                      <strong>専用のJPYC決済アプリで発行されたSBTのみが表示されます！</strong>
-                      このアプリは「SBT-JPYC-Pay」で発行されたSBTを表示する専用ビューアーです。
-                    </p>
-                    <div className="bg-blue-50 border border-blue-200 rounded p-4">
-                      <h4 className="font-semibold text-blue-800 mb-2">📍 対応店舗・SBT発行元</h4>
-                      <div className="text-sm text-blue-700">
-                        <p>• <strong>SBT JPYC Pay Demo Store</strong> - デモ・実験店舗</p>
-                        <p>• <strong>Cafe JPYC</strong> - JPYCカフェ</p>
-                        <p>• <strong>Tech Store JPYC</strong> - エレクトロニクス専門店</p>
-                      </div>
-                    </div>
-                    <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
-                      <h4 className="font-semibold text-yellow-800 mb-2">⚙️ 技術詳細</h4>
-                      <div className="text-sm text-yellow-700">
-                        <p className="mb-2">• <strong>コントラクト</strong>:</p>
-                        <p className="ml-4 mb-2 break-all font-mono text-xs">0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4</p>
-                        <p>• <strong>対応ネットワーク</strong>: Sepolia テストネット・Polygon Amoy</p>
-                        <p>• <strong>標準</strong>: ERC-721準拠（譲渡不可能）</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* SBTの特徴 */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                {/* アプリ概要 */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-blue-800 mb-3 flex items-center">
-                    <span className="mr-2">✨</span>
-                    SBTの特徴とメリット
+                    <span className="mr-2">📱</span>
+                    このアプリについて
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div className="flex items-start">
-                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-800">譲渡不可能</div>
-                          <div className="text-sm text-gray-600">売買や譲渡ができないため、本人の実績として確実に証明</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-800">永続保存</div>
-                          <div className="text-sm text-gray-600">ブロックチェーン上に永続的に記録される</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-start">
-                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-800">透明性</div>
-                          <div className="text-sm text-gray-600">取得日時や条件を公開的に検証可能</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="bg-green-100 p-1 rounded-full mr-3 mt-1">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-800">コレクション性</div>
-                          <div className="text-sm text-gray-600">様々な店舗のSBTを集めてコレクションを作成</div>
-                        </div>
-                      </div>
-                    </div>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    <strong>SBT masaru21 QR Scanner</strong>は、JPYC決済とSBT（ソウルバウンドトークン）コレクション機能を備えたデモアプリです。
+                    テストネットワークでの安全な決済体験とSBT表示機能をお試しいただけます。
+                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <p className="text-sm text-yellow-700">
+                      <strong>⚠️ 重要:</strong> このアプリは<strong>テスト・デモ用</strong>です。実際の商用利用は想定していません。
+                    </p>
                   </div>
                 </div>
 
-                {/* 使い方 */}
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-yellow-800 mb-3 flex items-center">
-                    <span className="mr-2">📋</span>
-                    SBT取得と表示の手順
+                {/* ウォレット接続関連FAQ */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
+                    <span className="mr-2">🦊</span>
+                    ウォレット接続について
                   </h3>
+                  
                   <div className="space-y-4">
-                    <div className="flex items-center">
-                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">1</div>
-                      <div>
-                        <div className="font-semibold">SBT-JPYC-Payアプリで決済</div>
-                        <div className="text-sm text-gray-600">専用の決済アプリで対応店舗でJPYC決済を実行</div>
-                      </div>
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-green-700 mb-2">Q. 対応しているウォレットは？</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下のウォレットに対応しています：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• <strong>MetaMask</strong> - PC・スマートフォン両対応（推奨）</li>
+                        <li>• <strong>Trust Wallet</strong> - スマートフォン専用</li>
+                        <li>• <strong>Coinbase Wallet</strong> - スマートフォン専用</li>
+                        <li>• <strong>Rainbow Wallet</strong> - スマートフォン専用</li>
+                      </ul>
                     </div>
-                    <div className="flex items-center">
-                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">2</div>
-                      <div>
-                        <div className="font-semibold">条件達成でSBT自動発行</div>
-                        <div className="text-sm text-gray-600">店舗での決済回数が条件に達するとSBTが自動発行される</div>
-                      </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-green-700 mb-2">Q. ウォレット接続できません</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• ウォレットアプリが最新版になっているか</li>
+                        <li>• ブラウザの拡張機能が有効になっているか（MetaMask）</li>
+                        <li>• ページを再読み込みしてから再試行</li>
+                        <li>• 他のウォレット拡張機能と競合していないか確認</li>
+                      </ul>
                     </div>
-                    <div className="flex items-center">
-                      <div className="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4">3</div>
-                      <div>
-                        <div className="font-semibold">このアプリでコレクション表示</div>
-                        <div className="text-sm text-gray-600">このアプリで取得したSBTのコレクションを確認・表示</div>
-                      </div>
-                    </div>
-                    <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded">
-                      <p className="text-sm text-orange-700">
-                        <strong>⚠️ 注意:</strong> このアプリは<strong>SBT表示専用</strong>です。SBTの発行は「SBT-JPYC-Pay」アプリで行われます。
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-green-700 mb-2">Q. スマートフォンで接続が切れます</h4>
+                      <p className="text-sm text-gray-600">
+                        A. WalletConnectの仕様で、アプリ切り替え時に接続が切断される場合があります。
+                        再接続ボタンをタップして再度接続してください。
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* 技術情報 */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center">
-                    <span className="mr-2">⚙️</span>
-                    技術的詳細
+                {/* ネットワーク・決済関連FAQ */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                    <span className="mr-2">🌐</span>
+                    ネットワーク・決済について
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="font-semibold text-gray-700 mb-2">対応ネットワーク</div>
-                      <ul className="space-y-1 text-gray-600">
-                        <li>• Sepolia テストネット</li>
-                        <li>• Polygon Amoy テストネット</li>
-                        <li>• （将来的にメインネット対応予定）</li>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-blue-700 mb-2">Q. どのネットワークが使えますか？</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下の6つのネットワークに対応しています：</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                        <div className="text-gray-600">
+                          <div className="font-medium text-purple-600">Ethereum系:</div>
+                          <ul className="ml-4">
+                            <li>• Ethereum Mainnet</li>
+                            <li>• Sepolia Testnet（推奨）</li>
+                          </ul>
+                        </div>
+                        <div className="text-gray-600">
+                          <div className="font-medium text-purple-600">Polygon系:</div>
+                          <ul className="ml-4">
+                            <li>• Polygon Mainnet</li>
+                            <li>• Polygon Amoy Testnet</li>
+                          </ul>
+                        </div>
+                        <div className="text-gray-600">
+                          <div className="font-medium text-red-600">Avalanche系:</div>
+                          <ul className="ml-4">
+                            <li>• Avalanche C-Chain</li>
+                            <li>• Avalanche Fuji Testnet</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-blue-700 mb-2">Q. JPYCが表示されません</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• 正しいネットワークに接続されているか</li>
+                        <li>• ウォレットにJPYCトークンが追加されているか</li>
+                        <li>• テストネットの場合：Faucetから取得済みか</li>
+                        <li>• ページを再読み込みしてから再確認</li>
                       </ul>
                     </div>
-                    <div>
-                      <div className="font-semibold text-gray-700 mb-2">標準仕様</div>
-                      <ul className="space-y-1 text-gray-600">
-                        <li>• ERC-721準拠</li>
-                        <li>• 譲渡機能無効化（SBT）</li>
-                        <li>• メタデータ標準対応</li>
-                        <li>• 店舗情報埋め込み</li>
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-blue-700 mb-2">Q. テストJPYCはどこで入手できますか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. 各テストネットで以下のコントラクトからテスト用JPYCを取得できます：
+                      </p>
+                      <ul className="text-xs text-gray-500 mt-2 space-y-1">
+                        <li>• <strong>Sepolia</strong>: 0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB</li>
+                        <li>• <strong>Polygon Amoy</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</li>
+                        <li>• <strong>Avalanche Fuji</strong>: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29</li>
                       </ul>
                     </div>
-                  </div>
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                    <p className="text-xs text-blue-700">
-                      <strong>コントラクトアドレス:</strong> 0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4
-                    </p>
                   </div>
                 </div>
 
-                {/* 連携アプリ情報 */}
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-pink-800 mb-3 flex items-center">
-                    <span className="mr-2">🔗</span>
-                    連携アプリについて
+                {/* SBT関連FAQ */}
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center">
+                    <span className="mr-2">🎫</span>
+                    SBT（ソウルバウンドトークン）について
                   </h3>
-                  <p className="text-gray-700 mb-4">
-                    このアプリは「SBT-JPYC-Pay」アプリと連携して動作します。SBTの発行は決済アプリで行われ、このアプリではコレクションの表示・管理を行います。
-                  </p>
-                  <div className="bg-white p-4 rounded border">
-                    <h4 className="font-semibold text-purple-800 mb-2">📱 SBT-JPYC-Pay（決済アプリ）</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• 店舗での JPYC 決済機能</li>
-                      <li>• SBT 発行・管理機能</li>
-                      <li>• 店舗登録・訪問回数カウント</li>
-                      <li>• 決済履歴管理</li>
-                    </ul>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-purple-700 mb-2">Q. SBTとは何ですか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. SBT（Soulbound Token）は<strong>譲渡不可能なデジタル証明書</strong>です。
+                        通常のNFTと異なり、売買や譲渡ができないため、個人の実績や体験を確実に証明できます。
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-purple-700 mb-2">Q. SBTが表示されません</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• 対応店舗での決済を行ったか</li>
+                        <li>• 必要な訪問回数に達しているか</li>
+                        <li>• 正しいネットワーク（Sepolia、Amoy等）に接続しているか</li>
+                        <li>• SBTコレクションページから確認</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-purple-700 mb-2">Q. SBTはどこで発行されますか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. このアプリは<strong>SBT表示専用</strong>です。SBTの発行は別の「SBT-JPYC-Pay」アプリで行われます。
+                        対応店舗で決済を行うとSBTが自動発行されます。
+                      </p>
+                    </div>
                   </div>
-                  <div className="mt-3 text-xs text-gray-500">
-                    <p>※ 現在プライベート開発中 - 完成後に公開予定</p>
+                </div>
+
+                {/* QRコード・決済関連FAQ */}
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-orange-800 mb-4 flex items-center">
+                    <span className="mr-2">📸</span>
+                    QRコードスキャン・決済について
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-orange-700 mb-2">Q. QRコードがスキャンできません</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• カメラの使用許可が有効になっているか</li>
+                        <li>• HTTPS接続されているか（スマートフォンの場合）</li>
+                        <li>• QRコードがはっきりと映っているか</li>
+                        <li>• 照明が十分で反射していないか</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-orange-700 mb-2">Q. ネットワーク警告が表示されます</h4>
+                      <p className="text-sm text-gray-600">
+                        A. QRコードに指定されたネットワークと、現在のウォレット接続先が異なっています。
+                        「ネットワーク切り替え」ボタンで自動切り替えするか、手動でネットワークを変更してください。
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-orange-700 mb-2">Q. 対応QRコードフォーマットは？</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下のフォーマットに対応しています：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• <strong>JPYC統一形式</strong>: {`{"type":"JPYC_PAYMENT",...}`}</li>
+                        <li>• <strong>EIP-681形式</strong>: ethereum:0x...@chainId?value=...</li>
+                        <li>• <strong>独自形式</strong>: payment:address?network=...&amount=...</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PWA・技術関連FAQ */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span className="mr-2">📱</span>
+                    PWA・技術について
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-gray-700 mb-2">Q. PWA（アプリ化）できますか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. はい、スマートフォンのホーム画面に追加してアプリのように使用できます。
+                        ブラウザメニューから「ホーム画面に追加」を選択してください。
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-gray-700 mb-2">Q. データは保存されますか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. 決済履歴や設定は<strong>ブラウザ内にローカル保存</strong>されます。
+                        サーバーには送信されず、ブラウザデータを削除すると履歴も削除されます。
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-gray-700 mb-2">Q. オープンソースですか？</h4>
+                      <p className="text-sm text-gray-600">
+                        A. はい、GitHubで公開予定です。コードの改善提案やバグ報告をお待ちしています。
+                        <a href="https://github.com/miracle777/SBT-JPYC-QR-Scanner" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                          GitHubリポジトリ
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* トラブルシューティング */}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-red-800 mb-4 flex items-center">
+                    <span className="mr-2">🔧</span>
+                    トラブルシューティング
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-red-700 mb-2">Q. アプリが動作しません</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下の手順を順番に試してください：</p>
+                      <ol className="text-sm text-gray-600 ml-4 space-y-1 list-decimal">
+                        <li>ページを再読み込み（F5キー）</li>
+                        <li>ブラウザキャッシュをクリア</li>
+                        <li>他のブラウザで試す</li>
+                        <li>デバイスの再起動</li>
+                      </ol>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-red-700 mb-2">Q. エラーが発生しました</h4>
+                      <p className="text-sm text-gray-600">
+                        A. ブラウザのコンソール（F12キー）でエラー内容を確認し、
+                        <a href="https://x.com/masaru21" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                          @masaru21
+                        </a>
+                        までエラー内容をお知らせください。
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-red-700 mb-2">Q. 決済が失敗します</h4>
+                      <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
+                      <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                        <li>• ガス代（手数料）が十分にあるか</li>
+                        <li>• JPYCの残高が十分にあるか</li>
+                        <li>• 正しいネットワークに接続されているか</li>
+                        <li>• ネットワークが混雑していないか</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 連絡先・サポート */}
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
+                    <span className="mr-2">📞</span>
+                    サポート・お問い合わせ
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border">
+                      <h4 className="font-semibold text-green-700 mb-3">🐛 バグ報告・機能要望</h4>
+                      <div className="space-y-2">
+                        <a
+                          href="https://github.com/miracle777/SBT-JPYC-QR-Scanner/issues"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 2C4.477 2 0 6.484 0 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 12.017C20 6.484 15.523 2 10 2z" clipRule="evenodd" />
+                          </svg>
+                          GitHub Issues（推奨）
+                        </a>
+                        <a
+                          href="https://x.com/masaru21"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                          </svg>
+                          X (Twitter) @masaru21
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                      <p className="text-sm text-yellow-700">
+                        <strong>⚠️ 注意:</strong> このアプリはテスト版です。実際の資産損失については一切責任を負いません。
+                        テストネットでのみご利用ください。
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
