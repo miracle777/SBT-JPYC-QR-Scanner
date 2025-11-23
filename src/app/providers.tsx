@@ -46,6 +46,26 @@ const config = getDefaultConfig({
     avalancheFuji   // Avalanche Fuji Testnet (ChainID: 43113)
   ],
   ssr: true,
+  // WalletConnect接続設定を強化
+  walletConnectOptions: {
+    projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d',
+    metadata: {
+      name: 'JPYC Payment Scanner',
+      description: 'SBT and JPYC payment scanner with network validation',
+      url: 'https://sbt-jpyc-qr-scanner.vercel.app',
+      icons: ['https://sbt-jpyc-qr-scanner.vercel.app/images/icon-192x192.png']
+    },
+    // タイムアウト設定を延長（デフォルトは30秒）
+    timeout: 60000,
+    // QRモード表示時間を延長
+    showQrModal: true,
+    qrModalOptions: {
+      themeMode: 'light',
+      themeVariables: {
+        '--wcm-z-index': '99999'
+      }
+    }
+  }
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {

@@ -1,16 +1,103 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
 
 export function WalletConnector() {
-  const { isConnected, isConnecting } = useAccount();
+  const { isConnected, isConnecting, isDisconnected } = useAccount();
+  const { connect, connectors, error: connectError, isLoading } = useConnect();
+  const { disconnect } = useDisconnect();
   const [error, setError] = useState<string | null>(null);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [connectionTimeout, setConnectionTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const clearError = () => setError(null);
+  const clearError = useCallback(() => {
+    setError(null);
+    setConnectionAttempts(0);
+  }, []);
+
+  const clearConnectionTimeout = useCallback(() => {
+    if (connectionTimeout) {
+      clearTimeout(connectionTimeout);
+      setConnectionTimeout(null);
+    }
+  }, [connectionTimeout]);
+
+  // 接続タイムアウトを設定
+  const setConnectionTimeoutHandler = useCallback(() => {
+    clearConnectionTimeout();
+    const timeout = setTimeout(() => {
+      if (isConnecting && !isConnected) {
+        setError('接続がタイムアウトしました。もう一度お試しください。');
+        setIsRetrying(false);
+      }
+    }, 45000); // 45秒でタイムアウト
+    setConnectionTimeout(timeout);
+  }, [isConnecting, isConnected, clearConnectionTimeout]);
+
+  // 接続エラーを監視
+  useEffect(() => {
+    if (connectError) {
+      clearConnectionTimeout();
+      setIsRetrying(false);
+      
+      const errorMessage = connectError.message || String(connectError);
+      
+      if (errorMessage.includes('User rejected') || 
+          errorMessage.includes('user rejected') ||
+          errorMessage.includes('denied') ||
+          errorMessage.includes('rejected')) {
+        setError('接続要求が拒否されました。ウォレットで承認してください。');
+      } else if (errorMessage.includes('timeout') || 
+                 errorMessage.includes('Timeout')) {
+        setError('接続がタイムアウトしました。ネットワーク接続を確認してください。');
+      } else if (errorMessage.includes('WalletConnect') && 
+                 errorMessage.includes('QR')) {
+        setError('QRコードの読み込みに失敗しました。ウォレットアプリでQRコードをスキャンしてください。');
+      } else {
+        setError('ウォレット接続中にエラーが発生しました。しばらく待ってから再度お試しください。');
+      }
+    }
+  }, [connectError, clearConnectionTimeout]);
+
+  // 接続成功時にクリーンアップ
+  useEffect(() => {
+    if (isConnected) {
+      clearConnectionTimeout();
+      clearError();
+      setIsRetrying(false);
+    }
+  }, [isConnected, clearConnectionTimeout, clearError]);
+
+  // 再接続処理
+  const handleRetry = useCallback(async () => {
+    if (connectionAttempts >= 3) {
+      setError('接続試行回数が上限に達しました。ページを更新して再度お試しください。');
+      return;
+    }
+
+    setIsRetrying(true);
+    setError(null);
+    setConnectionAttempts(prev => prev + 1);
+    
+    try {
+      // 一度切断してから再接続
+      if (isConnected) {
+        disconnect();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      setConnectionTimeoutHandler();
+    } catch (err) {
+      console.error('Retry error:', err);
+      setError('再接続に失敗しました。');
+      setIsRetrying(false);
+    }
+  }, [connectionAttempts, isConnected, disconnect, setConnectionTimeoutHandler]);
 
   // 接続済みの場合は何も表示しない
   if (isConnected) {
