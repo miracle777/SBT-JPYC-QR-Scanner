@@ -81,13 +81,21 @@ export const JPYC_COMMUNITY_CONFIG = {
   abi: JPYC_ABI,
 } as const;
 
-// JPYCの表示フォーマット関数（整数表示）
+// JPYCの表示フォーマット関数（小数点以下2桁表示）
 export function formatJPYCDisplay(balance: bigint, decimals: number = 18): string {
   const divisor = BigInt(10 ** decimals);
   const whole = balance / divisor;
+  const remainder = balance % divisor;
   
-  // JPYCは整数で表示（小数点以下なし）
-  return whole.toLocaleString('ja-JP');
+  // 小数点以下2桁を計算
+  const fractionalPart = Number(remainder) / Number(divisor);
+  const decimal = whole + fractionalPart;
+  
+  // 小数点以下2桁で表示
+  return decimal.toLocaleString('ja-JP', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 // カスタムtJPYCトークンの設定
