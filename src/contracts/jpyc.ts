@@ -64,8 +64,8 @@ export const JPYC_ADDRESSES = {
   
   // Avalanche C-Chain Mainnet - Official JPYC
   avalanche: getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'),
-  // Avalanche Fuji Testnet - カスタムJPYCと公式テストJPYCの両方対応
-  'avalanche-fuji': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),       // カスタムJPYC (Fuji専用)
+  // Avalanche Fuji Testnet - 公式テストJPYCとカスタムJPYCの両方対応
+  'avalanche-fuji': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),       // 公式FujiテストJPYC
   'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),  // カスタムJPYC (Fuji専用)
   'avalanche-fuji-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'), // 公式FujiテストJPYC
 } as const;
@@ -167,8 +167,13 @@ export function getTokenInfo(network: JPYCNetworkType) {
     (!USE_OFFICIAL_TESTNET && (network === 'polygon-amoy' || network === 'avalanche-fuji'));
     
   // Faucetトークンの判定
-  const isFaucetToken = network.includes('-faucet') || 
+  const isFaucetToken = network.includes('-faucet') || network.includes('-community') ||
     (!USE_OFFICIAL_TESTNET && network === 'sepolia');
+  
+  // 公式テストネットJPYCの判定
+  const isOfficialTestnet = network === 'sepolia' || network === 'avalanche-fuji' || 
+    network.includes('-official') || 
+    (USE_OFFICIAL_TESTNET && (network.includes('-official') || ['ethereum', 'polygon', 'avalanche'].includes(network)));
   
   if (isCustomToken) {
     return {
@@ -178,6 +183,8 @@ export function getTokenInfo(network: JPYCNetworkType) {
       isCustomToken: true,
       isFaucetToken: false,
       isOfficialTestnet: false,
+    };
+  }
     };
   }
   
@@ -211,10 +218,10 @@ export function getNetworkDisplayName(network: JPYCNetworkType): string {
   } else if (tokenInfo.isFaucetToken) {
     return `${baseName} (Faucet JPYC)`;
   } else if (tokenInfo.isOfficialTestnet) {
-    return `${baseName} (Official JPYC)`;
+    return `${baseName} (Official Test JPYC)`;
   }
   
-  return baseName;
+  return `${baseName} (JPYC)`;
 }
 
 // ネットワークタイプ

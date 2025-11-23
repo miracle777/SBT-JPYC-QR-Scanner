@@ -16,13 +16,14 @@ interface NetworkBalance {
 
 const NETWORK_CONFIGS: { network: JPYCNetworkType; displayName: string; isMainnet: boolean; color: string; chainId: number }[] = [
   { network: 'ethereum', displayName: 'Ethereum Mainnet (JPYC)', isMainnet: true, color: '#627EEA', chainId: 1 },
-  { network: 'sepolia-faucet', displayName: 'Sepolia - Faucet (JPYC)', isMainnet: false, color: '#FF8C00', chainId: 11155111 },
-  { network: 'sepolia-community', displayName: 'Sepolia - Community (JPYC)', isMainnet: false, color: '#FFA500', chainId: 11155111 },
+  { network: 'sepolia', displayName: 'Sepolia (Official Test JPYC)', isMainnet: false, color: '#FF8C00', chainId: 11155111 },
+  { network: 'sepolia-faucet', displayName: 'Sepolia - Faucet (JPYC)', isMainnet: false, color: '#FFA500', chainId: 11155111 },
+  { network: 'sepolia-community', displayName: 'Sepolia - Community (JPYC)', isMainnet: false, color: '#FFB84D', chainId: 11155111 },
   { network: 'polygon', displayName: 'Polygon Mainnet (JPYC)', isMainnet: true, color: '#8247E5', chainId: 137 },
   { network: 'polygon-amoy', displayName: 'Polygon Amoy (JPYC)', isMainnet: false, color: '#A29EE3', chainId: 80002 },
   { network: 'polygon-amoy-custom', displayName: 'Polygon Amoy (Custom tJPYC)', isMainnet: false, color: '#B19EE3', chainId: 80002 },
   { network: 'avalanche', displayName: 'Avalanche C-Chain (JPYC)', isMainnet: true, color: '#E84142', chainId: 43114 },
-  { network: 'avalanche-fuji', displayName: 'Avalanche Fuji (JPYC)', isMainnet: false, color: '#FF6B6B', chainId: 43113 },
+  { network: 'avalanche-fuji', displayName: 'Avalanche Fuji (Official Test JPYC)', isMainnet: false, color: '#FF6B6B', chainId: 43113 },
   { network: 'avalanche-fuji-custom', displayName: 'Avalanche Fuji (Custom tJPYC)', isMainnet: false, color: '#FF8B8B', chainId: 43113 },
 ];
 

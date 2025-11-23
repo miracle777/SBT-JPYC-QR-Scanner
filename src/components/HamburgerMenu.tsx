@@ -85,10 +85,8 @@ export function HamburgerMenu() {
               <span className="font-medium">アドレス帳</span>
             </Link>
 
-            <a
-              href="https://github.com/miracle777/SBT-JPYC-QR-Scanner/wiki/FAQ"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/faq"
               onClick={closeMenu}
               className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
             >
@@ -97,7 +95,7 @@ export function HamburgerMenu() {
                 <div className="font-medium">FAQ・よくある質問</div>
                 <div className="text-xs text-gray-500">トラブルシューティング・使い方</div>
               </div>
-            </a>
+            </Link>
 
             <div className="border-t border-gray-200 my-4"></div>
 
