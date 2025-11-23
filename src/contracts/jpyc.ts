@@ -185,8 +185,6 @@ export function getTokenInfo(network: JPYCNetworkType) {
       isOfficialTestnet: false,
     };
   }
-    };
-  }
   
   return {
     symbol: 'JPYC',
