@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
 
 export function WalletConnector() {
   const { isConnected, isConnecting, isDisconnected } = useAccount();
-  const { connect, connectors, error: connectError, isLoading } = useConnect();
   const { disconnect } = useDisconnect();
   const [error, setError] = useState<string | null>(null);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
@@ -38,31 +37,6 @@ export function WalletConnector() {
     }, 45000); // 45秒でタイムアウト
     setConnectionTimeout(timeout);
   }, [isConnecting, isConnected, clearConnectionTimeout]);
-
-  // 接続エラーを監視
-  useEffect(() => {
-    if (connectError) {
-      clearConnectionTimeout();
-      setIsRetrying(false);
-      
-      const errorMessage = connectError.message || String(connectError);
-      
-      if (errorMessage.includes('User rejected') || 
-          errorMessage.includes('user rejected') ||
-          errorMessage.includes('denied') ||
-          errorMessage.includes('rejected')) {
-        setError('接続要求が拒否されました。ウォレットで承認してください。');
-      } else if (errorMessage.includes('timeout') || 
-                 errorMessage.includes('Timeout')) {
-        setError('接続がタイムアウトしました。ネットワーク接続を確認してください。');
-      } else if (errorMessage.includes('WalletConnect') && 
-                 errorMessage.includes('QR')) {
-        setError('QRコードの読み込みに失敗しました。ウォレットアプリでQRコードをスキャンしてください。');
-      } else {
-        setError('ウォレット接続中にエラーが発生しました。しばらく待ってから再度お試しください。');
-      }
-    }
-  }, [connectError, clearConnectionTimeout]);
 
   // 接続成功時にクリーンアップ
   useEffect(() => {
@@ -219,11 +193,11 @@ export function WalletConnector() {
                                 );
                               }
                             }}
-                            disabled={isConnecting || isLoading || isRetrying}
+                            disabled={isConnecting || isRetrying}
                             type="button"
                             className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
                           >
-                            {isConnecting || isLoading || isRetrying ? (
+                            {isConnecting || isRetrying ? (
                               <>
                                 <Loader2 className="h-4 w-4 animate-spin" />
                                 接続中...
@@ -236,7 +210,7 @@ export function WalletConnector() {
                             )}
                           </button>
 
-                          {(isConnecting || isLoading) && (
+                          {(isConnecting) && (
                             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                               <p>• ウォレットアプリで接続を承認してください</p>
                               <p>• QRコードをスキャンするか、ディープリンクをタップしてください</p>

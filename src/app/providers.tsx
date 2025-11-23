@@ -40,10 +40,6 @@ const queryClient = new QueryClient({
       },
       refetchOnWindowFocus: false, // WalletConnect接続時の不要な再取得を防ぐ
       staleTime: 5 * 60 * 1000, // 5分間キャッシュを有効とする
-      // WalletConnect関連のクエリのタイムアウトを延長
-      meta: {
-        isWalletConnect: true
-      }
     },
     mutations: {
       retry: (failureCount, error) => {
@@ -69,27 +65,7 @@ const config = getDefaultConfig({
     avalanche,      // Avalanche C-Chain (ChainID: 43114)
     avalancheFuji   // Avalanche Fuji Testnet (ChainID: 43113)
   ],
-  ssr: true,
-  // WalletConnect接続設定を強化
-  walletConnectOptions: {
-    projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d',
-    metadata: {
-      name: 'JPYC Payment Scanner',
-      description: 'SBT and JPYC payment scanner with network validation',
-      url: 'https://sbt-jpyc-qr-scanner.vercel.app',
-      icons: ['https://sbt-jpyc-qr-scanner.vercel.app/images/icon-192x192.png']
-    },
-    // タイムアウト設定を延長（デフォルトは30秒）
-    timeout: 60000,
-    // QRモード表示時間を延長
-    showQrModal: true,
-    qrModalOptions: {
-      themeMode: 'light',
-      themeVariables: {
-        '--wcm-z-index': '99999'
-      }
-    }
-  }
+  ssr: false,
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -99,11 +75,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <RainbowKitProvider
           modalSize="compact"
           showRecentTransactions={true}
-          appInfo={{
-            appName: 'JPYC Payment Scanner',
-            learnMoreUrl: 'https://sbt-jpyc-qr-scanner.vercel.app',
-          }}
-          coolMode={false}
         >
           {children}
         </RainbowKitProvider>
