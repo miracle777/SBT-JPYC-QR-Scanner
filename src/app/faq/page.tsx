@@ -188,9 +188,31 @@ const faqData: FAQItem[] = [
               <p className="text-sm text-gray-600 mb-2">
                 Trust WalletにJPYCトークンのコントラクトアドレスを追加してください：
               </p>
-              <div className="bg-gray-100 p-2 rounded text-xs font-mono space-y-1">
-                <div>Polygon: 0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c</div>
-                <div>Sepolia: 0xd3eF95d29A198868241FE374A999fc25F6152253</div>
+              <div className="space-y-3">
+                <div>
+                  <div className="font-semibold text-xs text-gray-700 mb-1">Ethereum/Polygon/Avalanche 公式JPYC:</div>
+                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
+                    0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-xs text-gray-700 mb-1">Sepolia 公式テストJPYC (将来配布予定):</div>
+                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
+                    0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-xs text-gray-700 mb-1">Sepolia Community JPYC (現行):</div>
+                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
+                    0xd3eF95d29A198868241FE374A999fc25F6152253
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-xs text-gray-700 mb-1">Sepolia Faucet JPYC (現行):</div>
+                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
+                    0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB
+                  </div>
+                </div>
               </div>
             </div>
           </div>
