@@ -8,27 +8,6 @@
   "theme_color": "#627EEA",
   "orientation": "portrait",
   "categories": ["finance", "utilities"],
-  "icons": [
-    {
-      "src": "/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "QRスキャン",
-      "short_name": "スキャン",
-      "description": "QRコードをスキャンして決済",
-      "url": "/",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
-    }
-  ]
+  "icons": [],
+  "shortcuts": []
 }

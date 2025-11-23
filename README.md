@@ -10,30 +10,64 @@
 
 **ソースコード**: <https://github.com/miracle777/SBT-JPYC-QR-Scanner>
 
-## 📜 SBTコントラクト情報
+## 📜 コントラクトアドレス一覧
 
-### Sepolia Testnet
+### 🎖️ SBT (Soulbound Token) コントラクト
 
-- **公式JPYCテストネット**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+#### Polygon Mainnet ✨ (推奨)
+- **SBTコントラクト**: `0x26C55F745c5BF80475C2D024F9F07ce56E308039`
+- **チェーンID**: 137
+- **デプロイヤー**: `0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd`
+- **ブロックエクスプローラ**: [Polygonscan](https://polygonscan.com/address/0x26C55F745c5BF80475C2D024F9F07ce56E308039)
+
+#### Ethereum Sepolia Testnet
+- **SBTコントラクト**: `0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4`
+- **チェーンID**: 11155111
+- **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4)
+
+#### Polygon Amoy Testnet
+- **SBTコントラクト**: `0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E`
+- **チェーンID**: 80002
+- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E)
+
+### 💴 JPYC (JPY Coin) コントラクト
+
+#### Ethereum Mainnet
+- **JPYCコントラクト**: `0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c`
+- **チェーンID**: 1
+- **ブロックエクスプローラ**: [Etherscan](https://etherscan.io/address/0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c)
+
+#### Polygon Mainnet
+- **JPYCコントラクト**: `0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c`
+- **チェーンID**: 137
+- **ブロックエクスプローラ**: [Polygonscan](https://polygonscan.com/address/0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c)
+
+#### Avalanche C-Chain
+- **JPYCコントラクト**: `0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c`
+- **チェーンID**: 43114
+- **ブロックエクスプローラ**: [Snowtrace](https://snowtrace.io/address/0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c)
+
+#### Ethereum Sepolia Testnet (テスト用)
 - **Faucet用JPYC**: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
 - **コミュニティJPYC**: `0xd3eF95d29A198868241FE374A999fc25F6152253`
 - **チェーンID**: 11155111
 - **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
 
-> **注意**: SepoliaテストネットではFaucetの都合で複数のコントラクトアドレスが存在します。
+> **注意**: 公式のJPYC供給がないため、Faucet用アドレスを使用しています。
 
-### Polygon Amoy Testnet
-
-- **JPYCテストネット**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+#### Polygon Amoy Testnet (テスト用)
+- **tJPYC（カスタム）**: `0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a`
 - **チェーンID**: 80002
-- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/)
+- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a)
 
-### Polygon Mainnet ✨
-- **コントラクトアドレス**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-- **チェーンID**: 137
-- **デプロイヤー**: `0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd`
-- **ブロックエクスプローラ**: [Polygonscan](https://polygonscan.com/address/0x26C55F745c5BF80475C2D024F9F07ce56E308039)
-- **デプロイトランザクション**: [Polygonscan TX](https://polygonscan.com/tx/0xfddd464e1a51614694872bf85523ff16881d27e6a84a925a37976ab1cd7bf755)
+> **注意**: 公式のJPYC供給がないため、開発者専用のtJPYCを使用。
+
+#### Avalanche Fuji Testnet (テスト用)
+- **tJPYC（カスタム）**: `0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345`
+- **チェーンID**: 43113
+- **ブロックエクスプローラ**: [Snowtrace Testnet](https://testnet.snowtrace.io/address/0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345)
+
+> **注意**: 公式のJPYC供給がないため、開発者専用のtJPYCを使用。
 
 > ⚠️ **注意**: Sepolia と Polygon Amoy はテストネット用のコントラクトです。本番環境では Polygon Mainnet をご利用ください。
 
@@ -277,8 +311,8 @@ npm run build && npm run start
    - 設定 → 「トークンを管理」
    - 「カスタムトークンを追加」を選択
    - Polygonネットワーク: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-   - Sepoliaテストネット（公式）: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
    - Sepoliaテストネット（Faucet用）: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
+   - Sepoliaテストネット（コミュニティ用）: `0xd3eF95d29A198868241FE374A999fc25F6152253`
 4. アプリで「ウォレット接続」を選択
 5. Trust Walletアプリが開くので「接続」を承認
 6. **接続完了後**: ページを再読み込みして正常表示を確認

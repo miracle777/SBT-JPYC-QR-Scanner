@@ -73,7 +73,7 @@ const config = getDefaultConfig({
       name: 'JPYC Payment Scanner',
       description: 'SBT and JPYC payment scanner with network validation',
       url: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://jpyc-pay.app',
-      icons: ['https://jpyc-pay.app/images/icon-192x192.png'],
+      icons: [],
     },
     // Trust WalletとHashPort Wallet対応
     showQrModal: true,

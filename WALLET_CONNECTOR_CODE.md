@@ -542,9 +542,8 @@ const checkTrustWalletAccount = async () => {
 - `Account not found` エラー: **真の原因はJPYCトークン未追加**
   - Trust WalletにJPYCコントラクトアドレスを手動で追加が必須
   - Polygon: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-  - Sepolia(公式): `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
   - Sepolia(Faucet用): `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
-  - Sepolia: `0xd3eF95d29A198868241FE374A999fc25F6152253`
+  - Sepolia(コミュニティ用): `0xd3eF95d29A198868241FE374A999fc25F6152253`
 - UI接続状態の問題: 実際は接続済みだがUIで「接続中」表示
   - 解決: ページリロードで正常表示
   - 根本原因: 接続完了イベントの検出タイミング問題

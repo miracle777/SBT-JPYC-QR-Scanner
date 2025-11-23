@@ -165,8 +165,8 @@ https://faucet.jpyc.jp/
 - **「アカウントが無い」エラーの真の原因**: JPYCトークンのコントラクトアドレスが未追加
   - **必須対応**: Trust WalletにJPYCトークンを手動で追加
    - Polygonネットワーク: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-   - Sepoliaテストネット（公式）: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
    - Sepoliaテストネット（Faucet用）: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
+   - Sepoliaテストネット（コミュニティ用）: `0xd3eF95d29A198868241FE374A999fc25F6152253`
   - Sepoliaテストネット: `0xd3eF95d29A198868241FE374A999fc25F6152253`
 - **UI表示の問題**: 「接続中」と表示されるが実際は接続済み
   - **解決方法**: ページを再読み込み（F5キー）

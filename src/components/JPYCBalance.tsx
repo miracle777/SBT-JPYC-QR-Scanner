@@ -16,9 +16,8 @@ interface NetworkBalance {
 
 const NETWORK_CONFIGS: { network: JPYCNetworkType; displayName: string; isMainnet: boolean; color: string; chainId: number }[] = [
   { network: 'ethereum', displayName: 'Ethereum Mainnet (JPYC)', isMainnet: true, color: '#627EEA', chainId: 1 },
-  { network: 'sepolia', displayName: 'Sepolia - Official (100 JPYC)', isMainnet: false, color: '#FF8C00', chainId: 11155111 },
-  { network: 'sepolia-community', displayName: 'Sepolia - Community (882 JPYC)', isMainnet: false, color: '#FFA500', chainId: 11155111 },
-  { network: 'sepolia-additional', displayName: 'Sepolia - Additional (0 JPYC)', isMainnet: false, color: '#FFD700', chainId: 11155111 },
+  { network: 'sepolia-faucet', displayName: 'Sepolia - Faucet (JPYC)', isMainnet: false, color: '#FF8C00', chainId: 11155111 },
+  { network: 'sepolia-community', displayName: 'Sepolia - Community (JPYC)', isMainnet: false, color: '#FFA500', chainId: 11155111 },
   { network: 'polygon', displayName: 'Polygon Mainnet (JPYC)', isMainnet: true, color: '#8247E5', chainId: 137 },
   { network: 'polygon-amoy', displayName: 'Polygon Amoy (JPYC)', isMainnet: false, color: '#A29EE3', chainId: 80002 },
   { network: 'polygon-amoy-custom', displayName: 'Polygon Amoy (Custom tJPYC)', isMainnet: false, color: '#B19EE3', chainId: 80002 },
@@ -163,7 +162,17 @@ function JPYCBalanceRow({ network, displayName, color, isVisible, userAddress }:
   };
 
   const actualDecimals = decimals ? Number(decimals) : tokenInfo.decimals;
-  const formattedBalance = balance ? formatJPYCDisplay(balance as bigint, actualDecimals) : '0.00';
+  
+  // BigIntを安全に処理
+  let formattedBalance = '0.00';
+  if (balance && typeof balance === 'bigint') {
+    try {
+      formattedBalance = formatJPYCDisplay(balance, actualDecimals);
+    } catch (error) {
+      console.error('Balance formatting error:', error, 'balance:', balance, 'decimals:', actualDecimals);
+      formattedBalance = '0.00';
+    }
+  }
 
   // エラーハンドリングの改善
   if (error) {
