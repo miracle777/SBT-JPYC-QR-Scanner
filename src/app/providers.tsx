@@ -65,7 +65,7 @@ const config = getDefaultConfig({
     avalanche,      // Avalanche C-Chain (ChainID: 43114)
     avalancheFuji   // Avalanche Fuji Testnet (ChainID: 43113)
   ],
-  ssr: false,
+  ssr: true,
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
