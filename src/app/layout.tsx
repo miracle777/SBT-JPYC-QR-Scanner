@@ -82,11 +82,20 @@ export default function RootLayout({
           {children}
           <PWAInstallPrompt />
           <Analytics />
-          <footer className="mt-8 py-4 px-4 text-xs text-gray-500 border-t border-gray-200">
-            <div className="space-y-1 text-left">
-              <p>※ 本プログラムは、JPYC株式会社による公式コンテンツではありません。</p>
-              <p>※ 「JPYC」は、JPYC株式会社の提供するステーブルコインです。</p>
-              <p>※ JPYC及びJPYCロゴは、JPYC株式会社の登録商標です。</p>
+          {/* JPYC免責事項 - デスクトップで左寄せ、コンテンツの下に表示 */}
+          <footer className="mt-8 py-6 px-4 bg-gray-50 border-t border-gray-200">
+            <div className="max-w-2xl mx-auto">
+              <div className="text-left space-y-2">
+                <p className="text-xs text-gray-600">
+                  ※ 本プログラムは、JPYC株式会社による公式コンテンツではありません。
+                </p>
+                <p className="text-xs text-gray-600">
+                  ※ 「JPYC」は、JPYC株式会社の提供するステーブルコインです。
+                </p>
+                <p className="text-xs text-gray-600">
+                  ※ JPYC及びJPYCロゴは、JPYC株式会社の登録商標です。
+                </p>
+              </div>
             </div>
           </footer>
         </ProvidersWrapper>
