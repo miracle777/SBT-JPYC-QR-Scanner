@@ -328,7 +328,7 @@ export function ManualPayment({ onSubmit }: ManualPaymentProps) {
             inputMode="numeric"
             value={amount}
             onChange={(e) => {
-              // 整数のみを許可（JPYCは1JPYC=1円なので小数点なし）
+              // 小数点以下2桁まで許可（JPYCは小数点以下も表示）
               const value = e.target.value;
               if (value === '' || /^\d+$/.test(value)) {
                 setAmount(value);

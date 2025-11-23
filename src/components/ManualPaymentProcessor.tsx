@@ -327,7 +327,7 @@ export function ManualPaymentProcessor({ paymentData, onComplete, onCancel }: Ma
                   ⚠️ 残高不足
                 </div>
                 <p className="text-sm text-red-700 mb-2">
-                  現在の残高: {(Number(tokenBalance) / 1e18).toLocaleString('ja-JP')} {paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase() ? 'tJPYC' : 'JPYC'}
+                  現在の残高: {(Number(tokenBalance) / 1e18).toLocaleString('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase() ? 'tJPYC' : 'JPYC'}
                   <br />
                   送金額: {parseFloat(paymentData.amount).toLocaleString('ja-JP')} {paymentData.contractAddress.toLowerCase() === '0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'.toLowerCase() ? 'tJPYC' : 'JPYC'}
                 </p>

@@ -313,7 +313,7 @@ export default function Home() {
               <div>✅ <strong>Avalanche C-Chain・Fuji</strong>: <code className="text-xs">0xE7C3...3c29</code></div>
               <div>✅ <strong>Sepolia</strong>: 複数のJPYCアドレスに対応</div>
               <div>🔧 <strong>カスタムtJPYCテスト</strong>: Fuji・Amoyで利用可能</div>
-              <div>💰 <strong>表示形式</strong>: JPYCは整数で表示（小数点なし）</div>
+              <div>💰 <strong>表示形式</strong>: JPYCは小数点以下2桁で表示</div>
             </div>
           </div>
         </div>
