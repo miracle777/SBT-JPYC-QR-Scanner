@@ -53,12 +53,29 @@ const nextConfig = {
     forceSwcTransforms: true,
   },
   // webpackでビルド時にサーバー専用パッケージを外部化
-  serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream', 'lokijs', 'encoding'],
+  serverExternalPackages: [
+    'pino', 
+    'pino-pretty', 
+    'thread-stream', 
+    'lokijs', 
+    'encoding',
+    'atomic-sleep',
+    'sonic-boom',
+    'pino-abstract-transport'
+  ],
   
   webpack: (config, { isServer }) => {
     // クライアント側でNode.js専用モジュールを外部化
     if (!isServer) {
-      config.externals.push('pino-pretty', 'lokijs', 'encoding');
+      config.externals.push(
+        'pino-pretty', 
+        'pino', 
+        'lokijs', 
+        'encoding',
+        'thread-stream',
+        'atomic-sleep',
+        'sonic-boom'
+      );
       
       // fallback設定
       config.resolve.fallback = {
@@ -71,6 +88,8 @@ const nextConfig = {
         stream: false,
         util: false,
         url: false,
+        os: false,
+        worker_threads: false,
       };
       
       // React Native専用パッケージのfallback設定
@@ -83,6 +102,9 @@ const nextConfig = {
         'react-native$': false,
         'react-native-randombytes': false,
         'react-native-get-random-values': false,
+        // ピノ関連のfallback
+        'pino': false,
+        'pino-pretty': false,
       };
 
       // MetaMask SDK関連の問題を解決
@@ -92,6 +114,14 @@ const nextConfig = {
           fullySpecified: false,
         },
       });
+      
+      // ピノ関連のモジュールを無視する設定
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^(pino-pretty|pino|thread-stream|atomic-sleep|sonic-boom)$/,
+        })
+      );
     }
     
     return config;
