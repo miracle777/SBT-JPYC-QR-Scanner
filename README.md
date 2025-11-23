@@ -48,26 +48,32 @@
 - **ブロックエクスプローラ**: [Snowtrace](https://snowtrace.io/address/0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c)
 
 #### Ethereum Sepolia Testnet (テスト用)
+
+- **公式SepoliaテストJPYC**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
 - **Faucet用JPYC**: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
 - **コミュニティJPYC**: `0xd3eF95d29A198868241FE374A999fc25F6152253`
 - **チェーンID**: 11155111
 - **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
 
-> **注意**: 公式のJPYC供給がないため、Faucet用アドレスを使用しています。
+> **注意**: 公式テストJPYCとFaucet用JPYCの両方が利用可能です。
 
 #### Polygon Amoy Testnet (テスト用)
+
+- **公式AmoyテストJPYC**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
 - **tJPYC（カスタム）**: `0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a`
 - **チェーンID**: 80002
-- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a)
+- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/)
 
-> **注意**: 公式のJPYC供給がないため、開発者専用のtJPYCを使用。
+> **注意**: 公式のAmoyテストJPYCとカスタムtJPYCの両方が利用可能です。
 
 #### Avalanche Fuji Testnet (テスト用)
-- **tJPYC（カスタム）**: `0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345`
-- **チェーンID**: 43113
-- **ブロックエクスプローラ**: [Snowtrace Testnet](https://testnet.snowtrace.io/address/0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345)
 
-> **注意**: 公式のJPYC供給がないため、開発者専用のtJPYCを使用。
+- **カスタムJPYC (Fuji専用)**: `0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345`
+- **公式FujiテストJPYC**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+- **チェーンID**: 43113
+- **ブロックエクスプローラ**: [Snowtrace Testnet](https://testnet.snowtrace.io/)
+
+> **注意**: Fuji専用のカスタムJPYCと公式テストJPYCの両方が利用可能です。
 
 > ⚠️ **注意**: Sepolia と Polygon Amoy はテストネット用のコントラクトです。本番環境では Polygon Mainnet をご利用ください。
 

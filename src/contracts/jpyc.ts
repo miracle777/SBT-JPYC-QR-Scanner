@@ -49,25 +49,25 @@ export const JPYC_ADDRESSES = {
   // Ethereum Mainnet - Official JPYC
   ethereum: getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'),
   
-  // Ethereum Sepolia Testnet - 現在はFaucetアドレス使用、将来公式供給時は切り替え可能
-  sepolia: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),        // 現在: Faucet用JPYC
+  // Ethereum Sepolia Testnet - 公式テストJPYCとFaucetアドレスの両方対応
+  sepolia: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),        // 公式SepoliaテストJPYC
   'sepolia-faucet': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),     // Faucet用JPYC (現行)
   'sepolia-community': getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'), // コミュニティJPYC
-  'sepolia-official': getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'),   // 将来の公式JPYC (予約)
+  'sepolia-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),   // 公式SepoliaテストJPYC
   
   // Polygon Mainnet - Official JPYC
   polygon: getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'),
-  // Polygon Amoy Testnet - 現在はカスタムtJPYC、将来公式供給時は切り替え可能
-  'polygon-amoy': getAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'),       // 現在: カスタムtJPYC
+  // Polygon Amoy Testnet - 公式テストJPYCとカスタムtJPYCの両方対応
+  'polygon-amoy': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),       // 公式Amoyテスト用JPYC
   'polygon-amoy-custom': getAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'),  // カスタムtJPYC (現行)
-  'polygon-amoy-official': getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'), // 将来の公式JPYC (予約)
+  'polygon-amoy-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'), // 公式Amoyテスト用JPYC
   
   // Avalanche C-Chain Mainnet - Official JPYC
   avalanche: getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'),
-  // Avalanche Fuji Testnet - 現在はカスタムtJPYC、将来公式供給時は切り替え可能
-  'avalanche-fuji': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),       // 現在: カスタムtJPYC
-  'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),  // カスタムtJPYC (現行)
-  'avalanche-fuji-official': getAddress('0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c'), // 将来の公式JPYC (予約)
+  // Avalanche Fuji Testnet - カスタムJPYCと公式テストJPYCの両方対応
+  'avalanche-fuji': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),       // カスタムJPYC (Fuji専用)
+  'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),  // カスタムJPYC (Fuji専用)
+  'avalanche-fuji-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'), // 公式FujiテストJPYC
 } as const;
 
 // 環境変数によるアドレス選択設定
