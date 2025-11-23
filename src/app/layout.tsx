@@ -1,16 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import dynamic from 'next/dynamic';
 import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 import { GoogleAnalytics } from '../components/GoogleAnalytics';
 import { StructuredData } from '../components/StructuredData';
 import { Analytics } from '@vercel/analytics/next';
-
-// ProvidersをSSRなしでdynamic importする
-const Providers = dynamic(() => import('./providers').then(mod => ({ default: mod.Providers })), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
-});
+import { ProvidersWrapper } from '../components/ProvidersWrapper';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://jpyc-pay.app'),
@@ -84,7 +78,7 @@ export default function RootLayout({
       <body className="antialiased">
         <StructuredData />
         <GoogleAnalytics />
-        <Providers>
+        <ProvidersWrapper>
           {children}
           <PWAInstallPrompt />
           <Analytics />
@@ -95,7 +89,7 @@ export default function RootLayout({
               <p>※ JPYC及びJPYCロゴは、JPYC株式会社の登録商標です。</p>
             </div>
           </footer>
-        </Providers>
+        </ProvidersWrapper>
       </body>
     </html>
   );
