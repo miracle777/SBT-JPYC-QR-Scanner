@@ -20,7 +20,7 @@
 - **チェーンID**: 11155111
 - **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
 
-> **注意**: SepoliaテストネットではFaucetの都合で複数のアドレスが存在します。
+> **注意**: SepoliaテストネットではFaucetの都合で複数のコントラクトアドレスが存在します。
 
 ### Polygon Amoy Testnet
 

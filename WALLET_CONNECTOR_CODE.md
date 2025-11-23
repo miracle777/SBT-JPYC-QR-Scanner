@@ -540,7 +540,7 @@ const checkTrustWalletAccount = async () => {
 
 **トラブルシューティング**:
 - `Account not found` エラー: **真の原因はJPYCトークン未追加**
-  - Trust WalletにJPYCコントラクトアドレスを手動追加が必須
+  - Trust WalletにJPYCコントラクトアドレスを手動で追加が必須
   - Polygon: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
   - Sepolia(公式): `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
   - Sepolia(Faucet用): `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
