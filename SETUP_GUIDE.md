@@ -69,9 +69,22 @@ ipconfig | findstr "IPv4"
 # カメラ許可を与える
 ```
 
-## ⚙️ ステップ3: MetaMask のセットアップ
+## ⚙️ ステップ3: ウォレットのセットアップ
 
-### 3.1 Sepolia テストネットの追加
+### 3.1 対応ウォレット
+
+このアプリは以下のウォレットに対応しています：
+
+| ウォレット | 接続方法 | プラットフォーム | 推奨度 |
+|-----------|---------|----------------|-------|
+| **MetaMask** | ブラウザ拡張 / モバイルアプリ | PC / スマートフォン | ⭐⭐⭐ |
+| **Trust Wallet** | WalletConnect | スマートフォン | ⭐⭐⭐ |
+| **HashPort Wallet** | URL接続 / WalletConnect | スマートフォン | ⭐⭐ |
+| **Coinbase Wallet** | WalletConnect | スマートフォン | ⭐⭐ |
+
+### 3.2 MetaMask のセットアップ（PC）
+
+#### Sepolia テストネットの追加
 
 1. MetaMask を開く
 2. ネットワークを切り替え
@@ -86,12 +99,12 @@ RPC URL: https://sepolia.infura.io/v3/
 ブロックエクスプローラーURL: https://sepolia.etherscan.io
 ```
 
-### 3.2 テスト用 ETH の取得
+#### テスト用 ETH の取得
 
 Chainlink Faucet でテスト用 ETH を取得：
 https://faucets.chain.link/sepolia
 
-### 3.3 JPYC トークンの追加
+#### JPYC トークンの追加
 
 MetaMask でトークンをインポート：
 
@@ -101,12 +114,72 @@ MetaMask でトークンをインポート：
 小数点: 18
 ```
 
-### 3.4 テスト用 JPYC の取得
+#### テスト用 JPYC の取得
 
 JPYC Faucet でテスト用 JPYC を取得：
 https://faucet.jpyc.jp/
 
-## 🧪 ステップ4: 機能テスト
+### 3.3 モバイルウォレットのセットアップ
+
+#### Trust Wallet
+
+1. [Trust Wallet](https://trustwallet.com/) をダウンロード
+2. **重要**: ウォレット（アカウント）を必ず作成
+   - シードフレーズを安全に保存
+   - アカウント作成を完了させる
+3. Sepolia ネットワークを追加（MetaMaskと同様）
+4. JPYC トークンをインポート（上記のコントラクトアドレスを使用）
+
+**接続方法**: WalletConnect経由で接続
+
+#### HashPort Wallet
+
+1. [HashPort Wallet](https://www.hashport.network/) をダウンロード
+2. ウォレットを作成またはインポート
+3. Sepolia ネットワークを追加
+4. JPYC トークンをインポート
+
+**推奨接続方法**: 
+- **URL接続** - アプリのURL欄に `https://jpyc-pay.app` を入力
+- **WalletConnect** - QRコード経由
+
+#### Coinbase Wallet
+
+1. Coinbase Walletアプリをダウンロード
+2. ウォレットを作成またはインポート
+3. Sepolia ネットワークを追加
+4. JPYC トークンをインポート
+
+**接続方法**: WalletConnect経由で接続
+
+### 3.4 ウォレット接続のトラブルシューティング
+
+#### 一般的な問題
+
+- **接続が60秒でタイムアウトする**: 正常です。「再試行」ボタンで再接続してください
+- **「アカウントが無い」エラー**: ウォレットでアカウント作成を完了させてください
+- **QRコードが読み込めない**: カメラ権限とHTTPS接続を確認してください
+
+#### Trust Wallet 固有の問題
+
+- **「アカウントが無い」エラーの真の原因**: JPYCトークンのコントラクトアドレスが未追加
+  - **必須対応**: Trust WalletにJPYCトークンを手動で追加
+   - Polygonネットワーク: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+   - Sepoliaテストネット（公式）: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+   - Sepoliaテストネット（Faucet用）: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
+  - Sepoliaテストネット: `0xd3eF95d29A198868241FE374A999fc25F6152253`
+- **UI表示の問題**: 「接続中」と表示されるが実際は接続済み
+  - **解決方法**: ページを再読み込み（F5キー）
+  - ウォレットアドレスが正常に表示されます
+- **接続確認方法**: ブラウザの開発者ツール（F12）でコンソールを確認
+
+#### HashPort Wallet 固有の問題
+
+- **WalletConnectで接続できない**: URL接続方法（アプリ内ブラウザ）を試してください
+- **承認ボタンが表示されない**: 数秒待機してから「Accept」ボタンをタップしてください
+- **接続が途中で切れる**: アプリのバックグラウンド実行を許可し、省電力モードを無効化してください
+
+## ⚙️ ステップ4: 機能テスト
 
 ### 4.1 ウォレット接続テスト
 

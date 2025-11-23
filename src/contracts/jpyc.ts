@@ -45,22 +45,23 @@ export const JPYC_ABI = [
 
 // JPYC Contract Addresses per Network
 export const JPYC_ADDRESSES = {
-  // Ethereum Mainnet
+  // Ethereum Mainnet - Official JPYC
   ethereum: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
-  // Ethereum Sepolia Testnet - Official JPYC (推奨)
-  sepolia: getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
-  // Ethereum Sepolia Testnet - Alternative addresses
-  'sepolia-community': getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
-  'sepolia-additional': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
-  // Polygon Mainnet
+  // Ethereum Sepolia Testnet - 公式JPYCテストネットワーク
+  sepolia: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
+  // Ethereum Sepolia Testnet - Faucet用アドレス、故意的に異なるアドレスにしている可能性あり
+  'sepolia-faucet': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),
+  'sepolia-community': getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'),
+  
+  // Polygon Mainnet - Official JPYC
   polygon: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
-  // Polygon Amoy Testnet 
+  // Polygon Amoy Testnet - 公式JPYCテストネットワーク
   'polygon-amoy': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
-  // Avalanche C-Chain Mainnet
+  // Avalanche C-Chain Mainnet - Official JPYC
   avalanche: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
-  // Avalanche Fuji Testnet
+  // Avalanche Fuji Testnet - 公式JPYCテストネットワーク
   'avalanche-fuji': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
   // カスタムテストトークン (tJPYC)
@@ -70,14 +71,14 @@ export const JPYC_ADDRESSES = {
 
 // JPYC Contract Configuration (backward compatibility)
 export const JPYC_CONFIG = {
-  // 推奨JPYC Address (Sepolia testnet)
+  // 推奨JPYC Address (Sepolia testnet 公式)
   address: JPYC_ADDRESSES.sepolia,
   abi: JPYC_ABI,
 } as const;
 
-// コミュニティJPYC Configuration
+// コミュニティJPYC Configuration (Faucet用)
 export const JPYC_COMMUNITY_CONFIG = {
-  address: JPYC_ADDRESSES['sepolia-community'],
+  address: JPYC_ADDRESSES['sepolia-faucet'],
   abi: JPYC_ABI,
 } as const;
 

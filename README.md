@@ -13,17 +13,23 @@
 ## 📜 SBTコントラクト情報
 
 ### Sepolia Testnet
-- **コントラクトアドレス**: `0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4`
+
+- **公式JPYCテストネット**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+- **Faucet用JPYC**: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
+- **コミュニティJPYC**: `0xd3eF95d29A198868241FE374A999fc25F6152253`
 - **チェーンID**: 11155111
-- **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x96FFdC8495742e1F0b0819dc1cB4548Bf3AD23A4)
+- **ブロックエクスプローラ**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
+
+> **注意**: SepoliaテストネットではFaucetの都合で複数のアドレスが存在します。
 
 ### Polygon Amoy Testnet
-- **コントラクトアドレス**: `0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E`
+
+- **JPYCテストネット**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
 - **チェーンID**: 80002
-- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/address/0x6b39d1F8a9799aB3E1Ea047052e831186106DD8E)
+- **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/)
 
 ### Polygon Mainnet ✨
-- **コントラクトアドレス**: `0x26C55F745c5BF80475C2D024F9F07ce56E308039`
+- **コントラクトアドレス**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
 - **チェーンID**: 137
 - **デプロイヤー**: `0x5888578ad9a33Ce8a9FA3A0ca40816665bfaD8Fd`
 - **ブロックエクスプローラ**: [Polygonscan](https://polygonscan.com/address/0x26C55F745c5BF80475C2D024F9F07ce56E308039)
@@ -225,6 +231,147 @@ npm run dev-http
 # 本番ビルド
 npm run build && npm run start
 ```
+
+## 🔗 ウォレット接続ガイド
+
+このアプリは複数のウォレットに対応しており、それぞれ異なる接続方法があります。
+
+### 対応ウォレット一覧
+
+| ウォレット | 接続方法 | プラットフォーム | 推奨度 |
+|-----------|---------|----------------|-------|
+| **MetaMask** | ブラウザ拡張 / モバイルアプリ | PC / スマートフォン | ⭐⭐⭐ |
+| **Trust Wallet** | WalletConnect | スマートフォン | ⭐⭐⭐ |
+| **HashPort Wallet** | URL接続 / WalletConnect | スマートフォン | ⭐⭐ |
+| **Coinbase Wallet** | WalletConnect | スマートフォン | ⭐⭐ |
+
+### 🦊 MetaMask
+
+**推奨環境**: PC（ブラウザ拡張）、スマートフォン（MetaMaskアプリ）
+
+#### PC での接続
+
+1. [MetaMask拡張機能](https://metamask.io/download/)をインストール
+2. ウォレットを作成またはインポート
+3. アプリで「ウォレット接続」→「MetaMask」を選択
+4. MetaMask拡張機能で「接続」を承認
+
+#### スマートフォンでの接続
+
+1. MetaMaskアプリをダウンロード
+2. ウォレットを作成またはインポート
+3. アプリで「ウォレット接続」を選択
+4. MetaMaskアプリが自動で開き、接続を承認
+
+### 🛡️ Trust Wallet
+
+**推奨環境**: スマートフォン（Trust Walletアプリ）
+
+#### 接続手順
+
+1. [Trust Wallet](https://trustwallet.com/)をダウンロード
+2. **重要**: ウォレット（アカウント）を必ず作成
+   - シードフレーズを安全に保存
+   - アカウント作成を完了させる
+3. **必須**: JPYCトークンをTrust Walletに追加
+   - 設定 → 「トークンを管理」
+   - 「カスタムトークンを追加」を選択
+   - Polygonネットワーク: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+   - Sepoliaテストネット（公式）: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
+   - Sepoliaテストネット（Faucet用）: `0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB`
+4. アプリで「ウォレット接続」を選択
+5. Trust Walletアプリが開くので「接続」を承認
+6. **接続完了後**: ページを再読み込みして正常表示を確認
+
+#### Trust Walletのトラブルシューティング
+
+- **「アカウントが無い」エラー**: **重要** - Trust WalletにJPYCトークンのコントラクトアドレスを追加してください
+  - Polygonネットワーク: `0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c`
+  - Sepoliaテストネット: `0xd3eF95d29A198868241FE374A999fc25F6152253`
+- **「接続中」のまま進まない**: 接続は完了していますが、UI表示に問題があります
+  - **解決方法**: ページを再読み込み（F5）してください
+  - ウォレットアドレスが正常に表示されます
+
+### ⚡ HashPort Wallet
+
+**推奨環境**: スマートフォン（HashPort Walletアプリ）
+
+#### 🎯 URL接続方法（推奨）
+
+**この方法が最も確実に接続できます:**
+
+1. [HashPort Wallet](https://www.hashport.network/)をダウンロード
+2. ウォレットを作成またはインポート
+3. アプリのURL欄に以下を入力:
+
+   ```url
+   https://jpyc-pay.app
+   ```
+
+4. アプリ内ブラウザでサイトが開きます
+5. 「ウォレット接続」ボタンをタップ
+6. HashPortアプリで接続を承認
+
+#### WalletConnect接続方法
+
+1. PC/スマートフォンでアプリを開く
+2. 「ウォレット接続」を選択
+3. QRコードまたはディープリンクでHashPortアプリが開く
+4. アプリ内で「Accept」または「承認」をタップ
+5. **重要**: 承認ボタンが表示されるまで数秒待機
+
+#### HashPortのトラブルシューティング
+
+- **アプリが開くが接続できない**: 承認ボタンが表示されるまで待機し、「Accept」をタップ
+- **接続が途中で切れる**: アプリのバックグラウンド実行を許可し、省電力モードを無効化
+
+### 💼 Coinbase Wallet
+
+**推奨環境**: スマートフォン（Coinbase Walletアプリ）
+
+#### Coinbase Walletの接続手順
+
+1. Coinbase Walletアプリをダウンロード
+2. ウォレットを作成またはインポート
+3. アプリで「ウォレット接続」を選択
+4. Coinbase Walletアプリが開き、接続を承認
+
+### 🚨 共通のトラブルシューティング
+
+#### 接続に失敗する場合
+
+1. **ウォレットアプリを最新版に更新**
+2. **デバイスの再起動**
+3. **ブラウザキャッシュをクリア**
+4. **ネットワーク接続を確認**（WiFi ↔ モバイルデータ）
+5. **時間を置いて再試行**（WalletConnectサーバーの負荷軽減）
+
+#### 接続タイムアウトの場合
+
+- 接続タイムアウトは60秒に設定されています
+- タイムアウト後、「再試行」ボタンで再度接続を試してください
+- 3回失敗した場合は、ページを更新してください
+
+#### ネットワーク設定
+
+接続後、以下のネットワークに対応しています：
+
+- **Ethereum Mainnet** (ChainID: 1)
+- **Sepolia Testnet** (ChainID: 11155111) - 推奨
+- **Polygon Mainnet** (ChainID: 137)
+- **Polygon Amoy Testnet** (ChainID: 80002)
+- **Avalanche C-Chain** (ChainID: 43114)
+- **Avalanche Fuji Testnet** (ChainID: 43113)
+
+### 📱 モバイル使用時の注意点
+
+1. **HTTPS接続**: モバイルでカメラ機能を使用するには、HTTPS接続が必要です
+2. **カメラ権限**: QRスキャンにはカメラアクセス許可が必要です
+3. **アプリ切り替え**: ウォレットアプリとブラウザ間の切り替えがスムーズに行えるよう、両方のアプリを最新版に保ってください
+
+## 🔧 詳細なトラブルシューティング
+
+アプリ内の「ウォレット接続のトラブルシューティング」ボタンから、各ウォレット固有の問題と解決策を確認できます。
 
 ## 📱 使用方法
 
