@@ -18,16 +18,24 @@ const WalletSessionManager = dynamic(() => import('./WalletSessionManager').then
   ssr: false
 });
 
+// WalletErrorBoundaryをdynamic importする
+const WalletErrorBoundary = dynamic(() => import('./WalletErrorBoundary').then(mod => ({ default: mod.WalletErrorBoundary })), {
+  ssr: false,
+  loading: () => null
+});
+
 interface ProvidersWrapperProps {
   children: ReactNode;
 }
 
 export function ProvidersWrapper({ children }: ProvidersWrapperProps) {
   return (
-    <Providers>
-      <WalletSessionManager>
-        {children}
-      </WalletSessionManager>
-    </Providers>
+    <WalletErrorBoundary>
+      <Providers>
+        <WalletSessionManager>
+          {children}
+        </WalletSessionManager>
+      </Providers>
+    </WalletErrorBoundary>
   );
 }

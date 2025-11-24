@@ -35,7 +35,7 @@ export function WalletConnector() {
   // セッションの健全性をチェック
   const checkSessionHealth = useCallback(async (): Promise<boolean> => {
     try {
-      if (!window.ethereum || !isConnected || !address) {
+      if (typeof window === 'undefined' || !window.ethereum || !isConnected || !address) {
         return false;
       }
 
@@ -56,10 +56,15 @@ export function WalletConnector() {
           return false;
         }
         
-        // ネットワーク接続をテスト
-        await window.ethereum.request({ 
-          method: 'eth_chainId' 
-        });
+        // ネットワーク接続をテスト（エラーハンドリング強化）
+        try {
+          await window.ethereum.request({ 
+            method: 'eth_chainId' 
+          });
+        } catch (error) {
+          console.warn('Chain ID check failed:', error);
+          return false;
+        }
       }
       
       return true;

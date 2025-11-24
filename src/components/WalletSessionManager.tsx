@@ -25,7 +25,7 @@ export function WalletSessionManager({ children }: WalletSessionManagerProps) {
   // MetaMaskの接続状態を確認する関数
   const checkMetaMaskConnection = useCallback(async (): Promise<boolean> => {
     try {
-      if (!window.ethereum || !isConnected || !address) {
+      if (typeof window === 'undefined' || !window.ethereum || !isConnected || !address) {
         return false;
       }
 
@@ -48,7 +48,7 @@ export function WalletSessionManager({ children }: WalletSessionManagerProps) {
           return false;
         }
         
-        // ネットワーク接続をテスト
+        // ネットワーク接続をテスト（エラーハンドリング強化）
         try {
           await window.ethereum.request({ 
             method: 'eth_chainId' 
@@ -171,7 +171,7 @@ export function WalletSessionManager({ children }: WalletSessionManagerProps) {
 
   // MetaMaskアカウント変更の監視
   useEffect(() => {
-    if (!window.ethereum) return;
+    if (typeof window === 'undefined' || !window.ethereum) return;
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0 && isConnected) {
@@ -183,7 +183,9 @@ export function WalletSessionManager({ children }: WalletSessionManagerProps) {
         // アカウントが変更された場合
         setShowSessionWarning(true);
         setTimeout(() => {
-          window.location.reload(); // ページをリロードして状態を同期
+          if (typeof window !== 'undefined') {
+            window.location.reload(); // ページをリロードして状態を同期
+          }
         }, 2000);
       }
     };
@@ -202,19 +204,42 @@ export function WalletSessionManager({ children }: WalletSessionManagerProps) {
       setIsSessionValid(false);
     };
 
-    if (window.ethereum.on) {
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-      window.ethereum.on('connect', handleConnect);
-      window.ethereum.on('disconnect', handleDisconnect);
+    const ethereum = window.ethereum as (typeof window.ethereum & {
+      on?: (event: string, callback: (data?: unknown) => void) => void;
+      removeListener?: (event: string, callback: (data?: unknown) => void) => void;
+    });
+    
+    const handleAccountsChangedWrapper = (data: unknown) => {
+      if (Array.isArray(data)) {
+        handleAccountsChanged(data);
+      }
+    };
+    
+    const handleChainChangedWrapper = () => {
+      handleChainChanged();
+    };
+    
+    const handleConnectWrapper = () => {
+      handleConnect();
+    };
+    
+    const handleDisconnectWrapper = () => {
+      handleDisconnect();
+    };
+    
+    if (ethereum?.on) {
+      ethereum.on('accountsChanged', handleAccountsChangedWrapper);
+      ethereum.on('chainChanged', handleChainChangedWrapper);
+      ethereum.on('connect', handleConnectWrapper);
+      ethereum.on('disconnect', handleDisconnectWrapper);
     }
 
     return () => {
-      if (window.ethereum.removeListener) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('chainChanged', handleChainChanged);
-        window.ethereum.removeListener('connect', handleConnect);
-        window.ethereum.removeListener('disconnect', handleDisconnect);
+      if (ethereum?.removeListener) {
+        ethereum.removeListener('accountsChanged', handleAccountsChangedWrapper);
+        ethereum.removeListener('chainChanged', handleChainChangedWrapper);
+        ethereum.removeListener('connect', handleConnectWrapper);
+        ethereum.removeListener('disconnect', handleDisconnectWrapper);
       }
     };
   }, [isConnected, address, checkSessionHealth]);

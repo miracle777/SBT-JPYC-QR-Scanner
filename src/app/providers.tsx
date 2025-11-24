@@ -68,33 +68,18 @@ const config = getDefaultConfig({
     avalancheFuji   // Avalanche Fuji Testnet (ChainID: 43113)
   ],
   ssr: true,
-  // WalletConnect設定を強化
+  // WalletConnect設定を安全に設定
   walletConnectParameters: {
     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '6555c7059cb6013d85148b2253053b8d',
     metadata: {
       name: 'JPYC Payment Scanner',
       description: 'SBT and JPYC payment scanner with network validation',
-      url: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://jpyc-pay.app',
-      icons: [],
+      url: typeof window !== 'undefined' ? window.location.origin : 'https://jpyc-pay.app',
+      icons: ['https://jpyc-pay.app/images/logo-192x192.png'],
     },
-    // Trust WalletとHashPort Wallet対応
-    showQrModal: true,
-    optionalChains: [1, 11155111, 137, 80002, 43114, 43113],
-    // 接続タイムアウトを延長（PC環境での長時間接続を考慮）
-    timeout: 120000, // 2分に延長
-    // モバイルリンクオプション
-    enableExplorer: true,
-    // セッション管理の改善
-    sessionTimeout: 7 * 24 * 60 * 60 * 1000, // 7日間のセッション維持
-    reconnect: true, // 自動再接続を有効化
   },
   // SSR対応とクライアントサイドハイドレーションの改善
   syncConnectedChain: true, // チェーン同期を有効化
-  // ストレージ設定（長期間の接続状態保存）
-  storage: {
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    key: 'jpyc-wallet-state',
-  }
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
