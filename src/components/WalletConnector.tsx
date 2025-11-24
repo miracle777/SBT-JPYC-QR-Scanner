@@ -1,24 +1,19 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useDisconnect, useReconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2, Wifi } from 'lucide-react';
+import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
 import { WalletTroubleshootingGuide } from './WalletTroubleshootingGuide';
 
 export function WalletConnector() {
-  const { isConnected, isConnecting, isDisconnected, address, connector } = useAccount();
+  const { isConnected, isConnecting } = useAccount();
   const { disconnect } = useDisconnect();
-  const { reconnect } = useReconnect();
   const [error, setError] = useState<string | null>(null);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [connectionTimeout, setConnectionTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [lastSessionCheck, setLastSessionCheck] = useState<number>(0);
-  const [isSessionHealthy, setIsSessionHealthy] = useState(true);
-  
-  const sessionCheckInterval = useRef<NodeJS.Timeout | null>(null);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -32,109 +27,67 @@ export function WalletConnector() {
     }
   }, [connectionTimeout]);
 
-  // セッションの健全性をチェック
-  const checkSessionHealth = useCallback(async (): Promise<boolean> => {
-    try {
-      if (typeof window === 'undefined' || !window.ethereum || !isConnected || !address) {
-        return false;
-      }
-
-      // MetaMaskの場合の詳細チェック
-      if (connector?.name?.toLowerCase().includes('metamask') || 
-          window.ethereum.isMetaMask) {
-        
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_accounts' 
-        });
-        
-        if (!accounts || accounts.length === 0) {
-          return false;
-        }
-        
-        const currentAccount = accounts[0];
-        if (currentAccount.toLowerCase() !== address.toLowerCase()) {
-          return false;
-        }
-        
-        // ネットワーク接続をテスト（エラーハンドリング強化）
-        try {
-          await window.ethereum.request({ 
-            method: 'eth_chainId' 
-          });
-        } catch (error) {
-          console.warn('Chain ID check failed:', error);
-          return false;
-        }
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Session health check failed:', error);
-      return false;
+  // ウォレットの検出と状態チェック（WalletConnect規格準拠）
+  const detectWalletProvider = useCallback(() => {
+    if (typeof window === 'undefined') return { type: 'unknown', available: false };
+    
+    const ethereum = window.ethereum as typeof window.ethereum & {
+      isMetaMask?: boolean;
+      isTrust?: boolean;
+      isCoinbaseWallet?: boolean;
+      [key: string]: unknown;
+    };
+    
+    // MetaMask
+    if (ethereum?.isMetaMask) {
+      return { type: 'MetaMask', available: true, icon: '🦊' };
     }
-  }, [isConnected, address, connector]);
-
-  // セッション監視を開始
-  const startSessionMonitoring = useCallback(() => {
-    if (sessionCheckInterval.current) {
-      clearInterval(sessionCheckInterval.current);
+    
+    // Trust Wallet
+    if (ethereum?.isTrust) {
+      return { type: 'Trust Wallet', available: true, icon: '🛡️' };
     }
-
-    sessionCheckInterval.current = setInterval(async () => {
-      if (isConnected) {
-        const isHealthy = await checkSessionHealth();
-        setIsSessionHealthy(isHealthy);
-        setLastSessionCheck(Date.now());
-        
-        if (!isHealthy) {
-          console.warn('Session unhealthy, may need reconnection');
-          setError('ウォレットセッションが無効になっています。再接続が必要です。');
-        }
-      }
-    }, 30000); // 30秒ごとにチェック
-  }, [isConnected, checkSessionHealth]);
-
-  // セッション監視を停止
-  const stopSessionMonitoring = useCallback(() => {
-    if (sessionCheckInterval.current) {
-      clearInterval(sessionCheckInterval.current);
-      sessionCheckInterval.current = null;
+    
+    // Coinbase Wallet
+    if (ethereum?.isCoinbaseWallet) {
+      return { type: 'Coinbase Wallet', available: true, icon: '🔵' };
     }
+    
+    // 一般的なEthereum Provider
+    if (ethereum) {
+      return { type: 'Ethereum Wallet', available: true, icon: '💰' };
+    }
+    
+    return { type: 'unknown', available: false, icon: '⚠️' };
   }, []);
 
-  // 接続タイムアウトを設定
+  // 接続タイムアウトを設定（PC環境用に短縮）
   const setConnectionTimeoutHandler = useCallback(() => {
     clearConnectionTimeout();
     const timeout = setTimeout(() => {
       if (isConnecting && !isConnected) {
-        setError('接続がタイムアウトしました。ウォレットアプリで承認を確認するか、アプリを再起動してください。');
+        setError('MetaMask拡張機能での承認が必要です。ポップアップを確認するか、拡張機能アイコンをクリックしてください。');
         setIsRetrying(false);
       }
-    }, 60000); // 60秒でタイムアウト（Trust Wallet対応）
+    }, 30000); // 30秒でタイムアウト（PC環境用）
     setConnectionTimeout(timeout);
   }, [isConnecting, isConnected, clearConnectionTimeout]);
 
-  // 接続成功時にクリーンアップ
+  // 接続成功時のクリーンアップ
   useEffect(() => {
     if (isConnected) {
       clearConnectionTimeout();
       clearError();
       setIsRetrying(false);
-      setIsSessionHealthy(true);
-      startSessionMonitoring();
-    } else {
-      stopSessionMonitoring();
-      setIsSessionHealthy(true);
     }
-  }, [isConnected, clearConnectionTimeout, clearError, startSessionMonitoring, stopSessionMonitoring]);
+  }, [isConnected, clearConnectionTimeout, clearError]);
 
   // コンポーネントアンマウント時のクリーンアップ
   useEffect(() => {
     return () => {
-      stopSessionMonitoring();
       clearConnectionTimeout();
     };
-  }, [stopSessionMonitoring, clearConnectionTimeout]);
+  }, [clearConnectionTimeout]);
 
   // 再接続処理
   const handleRetry = useCallback(async () => {
@@ -148,18 +101,10 @@ export function WalletConnector() {
     setConnectionAttempts(prev => prev + 1);
     
     try {
-      // セッションが無効な場合は強制的に再接続
-      if (!isSessionHealthy && isConnected) {
-        console.log('Forcing reconnection due to unhealthy session');
+      // 一度切断してから再接続
+      if (isConnected) {
         disconnect();
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await reconnect();
-      } else {
-        // 一度切断してから再接続
-        if (isConnected) {
-          disconnect();
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
       setConnectionTimeoutHandler();
@@ -168,7 +113,7 @@ export function WalletConnector() {
       setError('再接続に失敗しました。');
       setIsRetrying(false);
     }
-  }, [connectionAttempts, isConnected, isSessionHealthy, disconnect, reconnect, setConnectionTimeoutHandler]);
+  }, [connectionAttempts, isConnected, disconnect, setConnectionTimeoutHandler]);
 
   // 接続済みの場合は何も表示しない
   if (isConnected) {
@@ -292,7 +237,7 @@ export function WalletConnector() {
                             }}
                             disabled={isConnecting || isRetrying}
                             type="button"
-                            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:cursor-not-allowed flex items-center gap-2 justify-center"
                           >
                             {isConnecting || isRetrying ? (
                               <>
@@ -308,12 +253,16 @@ export function WalletConnector() {
                           </button>
 
                           {(isConnecting) && (
-                            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                              <p>• ウォレットアプリで接続を承認してください</p>
-                              <p>• QRコードをスキャンするか、ディープリンクをタップしてください</p>
-                              <p>• Trust Wallet: アカウント作成後に再試行してください</p>
-                              <p>• HashPort Wallet: アプリが開いたら承認ボタンをタップ</p>
-                              <p>• 接続に時間がかかる場合があります（最大60秒）</p>
+                            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1 mt-3">
+                              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                <p className="font-medium text-blue-800 dark:text-blue-200 mb-2">📱 ウォレット接続手順</p>
+                                <div className="space-y-1 text-blue-700 dark:text-blue-300">
+                                  <p>• ウォレットアプリで接続を承認</p>
+                                  <p>• QRコードのスキャンまたはディープリンク</p>
+                                  <p>• PC:ブラウザ拡張機能のポップアップを確認</p>
+                                  <p>• 接続に最大30秒ほどかかる場合があります</p>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -344,33 +293,9 @@ export function WalletConnector() {
 
                     return (
                       <div className="flex items-center justify-center">
-                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
-                          isSessionHealthy 
-                            ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800'
-                            : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800'
-                        }`}>
-                          {isSessionHealthy ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4" />
-                          )}
-                          <span className="text-sm font-medium">
-                            {isSessionHealthy ? '接続済み' : 'セッション不安定'}
-                          </span>
-                          {!isSessionHealthy && (
-                            <button
-                              onClick={handleRetry}
-                              disabled={isRetrying}
-                              className="ml-2 text-yellow-600 hover:text-yellow-700 transition-colors"
-                              title="再接続"
-                            >
-                              {isRetrying ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <RefreshCw className="h-3 w-3" />
-                              )}
-                            </button>
-                          )}
+                        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 px-3 py-2 rounded-lg border border-green-200 dark:border-green-800">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span className="text-sm font-medium">接続済み</span>
                         </div>
                       </div>
                     );
@@ -385,22 +310,42 @@ export function WalletConnector() {
             <p>• ウォレットのネットワーク設定を優先</p>
             <p>• MetaMask / Trust Wallet / Coinbase Wallet / HashPort Wallet 対応</p>
             <div className="flex flex-col gap-2 mt-2">
-              <button
-                onClick={async () => {
-                  try {
-                    if (typeof window !== 'undefined' && window.ethereum) {
-                      await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    } else {
-                      window.open('https://metamask.io/download/', '_blank');
-                    }
-                  } catch (error) {
-                    console.error('Failed to connect MetaMask:', error);
-                  }
-                }}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
-              >
-                🦊 MetaMaskをダウンロード
-              </button>
+              {(() => {
+                const walletInfo = detectWalletProvider();
+                if (walletInfo.available) {
+                  return (
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                      <p className="text-xs text-green-800 dark:text-green-200 font-medium">
+                        {walletInfo.icon} {walletInfo.type} が利用可能です
+                      </p>
+                      <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                        WalletConnect規格に準拠しています
+                      </p>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="space-y-2">
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                        <p className="text-xs text-yellow-800 dark:text-yellow-200 font-medium mb-1">
+                          ⚠️ ウォレットが検出されませんでした
+                        </p>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                          以下のウォレットをインストールしてください
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          window.open('https://metamask.io/download/', '_blank');
+                        }}
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors w-full"
+                      >
+                        🦊 MetaMaskをインストール
+                      </button>
+                    </div>
+                  );
+                }
+              })()}
               
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -419,7 +364,11 @@ export function WalletConnector() {
               
               {connectionAttempts >= 3 && (
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.reload();
+                    }
+                  }}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-xs font-medium transition-colors"
                 >
                   🔄 ページを更新
