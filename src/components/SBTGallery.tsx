@@ -83,9 +83,6 @@ export function SBTGallery({
     
     setAvailableShops(shops);
     setAvailableCategories(categories);
-    
-    console.log('🔍 Available shops:', Array.from(shops));
-    console.log('🔍 Available categories:', Array.from(categories));
   };
 
   const loadSBTs = async () => {
@@ -93,11 +90,7 @@ export function SBTGallery({
 
     try {
       setLoading(true);
-      console.log('🔍 SBTGallery: Loading SBTs for address:', userAddress);
-      console.log('📡 Current network:', chain?.name, 'Chain ID:', chain?.id);
       const fetchedSBTs = await fetchUserSBTs(userAddress);
-      
-      console.log('📥 SBTGallery: Raw fetched SBTs:', fetchedSBTs.length);
       
       // SBTに店舗情報とメタデータを拡張
       const enrichedSBTs = fetchedSBTs.map(sbt => {
@@ -107,13 +100,11 @@ export function SBTGallery({
         // 1. 既にSBTにshopIdが設定されている場合
         if (sbt.shopId) {
           shopInfo = REGISTERED_SHOPS[sbt.shopId as keyof typeof REGISTERED_SHOPS];
-          console.log('Found shop by shopId:', sbt.shopId, shopInfo);
         }
         
         // 2. メタデータからshopIdを取得
         if (!shopInfo && sbt.metadata?.shopId) {
           shopInfo = REGISTERED_SHOPS[sbt.metadata.shopId as keyof typeof REGISTERED_SHOPS];
-          console.log('Found shop by metadata shopId:', sbt.metadata.shopId, shopInfo);
         }
         
         // 3. wallet addressで検索（フォールバック）
@@ -121,7 +112,6 @@ export function SBTGallery({
           shopInfo = Object.values(REGISTERED_SHOPS).find(shop => 
             shop.wallet === sbt.issuerAddress
           );
-          console.log('Found shop by wallet address:', sbt.issuerAddress, shopInfo);
         }
         
         const enrichedSBT = {
@@ -134,19 +124,10 @@ export function SBTGallery({
           bannerUrl: shopInfo?.bannerUrl,
         };
         
-        console.log('🏪 Enriched SBT:', {
-          originalName: sbt.name,
-          enrichedName: enrichedSBT.shopName,
-          shopId: enrichedSBT.shopId,
-          issuer: enrichedSBT.issuer,
-          category: enrichedSBT.shopCategory
-        });
-        
         return enrichedSBT;
       });
       
       setSBTs(enrichedSBTs);
-      console.log('✅ SBTGallery: Loaded enriched SBTs:', enrichedSBTs.length);
     } catch (error) {
       console.error('❌ SBTGallery: Failed to load SBTs:', error);
     } finally {
@@ -215,14 +196,6 @@ export function SBTGallery({
     }
     
     return true;
-  });
-  
-  console.log('🔍 SBT Filtering Debug:', {
-    totalSBTs: sbts.length,
-    filteredSBTs: filteredSBTs.length,
-    availableShops: Array.from(availableShops),
-    availableCategories: Array.from(availableCategories),
-    currentFilters: { filterShop, filterTag, filterRank, searchQuery }
   });
 
   const groupedSBTs = groupByShop ? 

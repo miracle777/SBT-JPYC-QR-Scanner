@@ -22,14 +22,6 @@ export default function Home() {
   const [scannerError, setScannerError] = useState<string | null>(null);
   const [manualPaymentData, setManualPaymentData] = useState<any>(null);
   const [showManualProcessor, setShowManualProcessor] = useState(false);
-  
-  // デバッグ情報をコンソールに出力
-  console.log('🔍 Home component state:', {
-    isConnected,
-    address,
-    chainName: chain?.name,
-    chainId: chain?.id,
-  });
 
   const handleScanResult = (data: string) => {
     console.log('Scanned data:', data);

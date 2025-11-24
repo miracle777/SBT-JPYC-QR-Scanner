@@ -30,15 +30,8 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
 
   useEffect(() => {
     if (userAddress) {
-      console.log('🔄 SBTDisplay useEffect triggered:', {
-        userAddress,
-        chainName: chain?.name,
-        chainId: chain?.id
-      });
       loadSBTs();
       loadVisitCounts();
-    } else {
-      console.log('⚠️ SBTDisplay: No user address provided');
     }
   }, [userAddress, chain?.id]); // chain?.idも依存配列に追加
 
@@ -47,24 +40,8 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
 
     try {
       setLoading(true);
-      console.log('🔍 SBTDisplay: Loading SBTs for address:', userAddress);
-      console.log('📡 Current network:', chain?.name, 'Chain ID:', chain?.id);
       const fetchedSBTs = await fetchUserSBTs(userAddress);
       setSBTs(fetchedSBTs);
-      
-      console.log('📊 SBTDisplay: Loaded SBTs count:', fetchedSBTs.length);
-      fetchedSBTs.forEach((sbt, index) => {
-        console.log(`🏪 SBT ${index + 1}:`, {
-          name: sbt.name,
-          shopName: sbt.shopName,
-          shopId: sbt.shopId,
-          issuer: sbt.issuer,
-          category: sbt.shopCategory,
-          network: sbt.network,
-          chainId: sbt.chainId,
-          metadata: sbt.metadata ? 'Present' : 'Missing'
-        });
-      });
     } catch (error) {
       console.error('❌ SBTDisplay: Failed to load SBTs:', error);
     } finally {
@@ -81,7 +58,6 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
       counts[Number(shopId)] = count;
     }
     setVisitCounts(counts);
-    console.log('Visit counts:', counts);
   };
 
   const handleAddToMetaMask = async (sbt: SBT) => {
@@ -99,7 +75,6 @@ export function SBTDisplay({ userAddress, onSBTSelected, compact = false }: SBTD
           },
         });
         
-        console.log('SBT added to MetaMask successfully');
         alert(`✅ SBT「${sbt.name}」をMetaMaskに追加しました！\n\nMetaMaskのNFTタブで確認してください。`);
         
         // 追加のヒントを表示
