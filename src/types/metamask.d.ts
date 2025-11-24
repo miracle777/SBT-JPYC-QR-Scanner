@@ -32,6 +32,17 @@ export interface MetaMaskEthereumProvider {
   }): Promise<any>;
 
   isMetaMask?: boolean;
+  
+  // イベントリスナー関連
+  on?(event: string, callback: (...args: any[]) => void): void;
+  removeListener?(event: string, callback: (...args: any[]) => void): void;
+  removeAllListeners?(event?: string): void;
+  
+  // 接続状態管理
+  isConnected?(): boolean;
+  selectedAddress?: string | null;
+  chainId?: string;
+  networkVersion?: string;
 }
 
 declare global {

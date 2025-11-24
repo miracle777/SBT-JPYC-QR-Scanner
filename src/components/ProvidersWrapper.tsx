@@ -13,10 +13,21 @@ const Providers = dynamic(() => import('../app/providers').then(mod => ({ defaul
   )
 });
 
+// WalletSessionManagerをdynamic importする
+const WalletSessionManager = dynamic(() => import('./WalletSessionManager').then(mod => ({ default: mod.WalletSessionManager })), {
+  ssr: false
+});
+
 interface ProvidersWrapperProps {
   children: ReactNode;
 }
 
 export function ProvidersWrapper({ children }: ProvidersWrapperProps) {
-  return <Providers>{children}</Providers>;
+  return (
+    <Providers>
+      <WalletSessionManager>
+        {children}
+      </WalletSessionManager>
+    </Providers>
+  );
 }

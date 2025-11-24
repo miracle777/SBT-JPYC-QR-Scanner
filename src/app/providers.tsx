@@ -39,7 +39,9 @@ const queryClient = new QueryClient({
         return failureCount < 3;
       },
       refetchOnWindowFocus: false, // WalletConnect接続時の不要な再取得を防ぐ
-      staleTime: 5 * 60 * 1000, // 5分間キャッシュを有効とする
+      staleTime: 10 * 60 * 1000, // 10分間キャッシュを有効とする
+      gcTime: 30 * 60 * 1000, // 30分間ガベージコレクションを延期
+      refetchOnReconnect: 'always', // ネットワーク再接続時は常に再取得
     },
     mutations: {
       retry: (failureCount, error) => {
@@ -78,10 +80,20 @@ const config = getDefaultConfig({
     // Trust WalletとHashPort Wallet対応
     showQrModal: true,
     optionalChains: [1, 11155111, 137, 80002, 43114, 43113],
-    // 接続タイムアウトを延長
-    timeout: 60000,
+    // 接続タイムアウトを延長（PC環境での長時間接続を考慮）
+    timeout: 120000, // 2分に延長
     // モバイルリンクオプション
-    enableExplorer: true
+    enableExplorer: true,
+    // セッション管理の改善
+    sessionTimeout: 7 * 24 * 60 * 60 * 1000, // 7日間のセッション維持
+    reconnect: true, // 自動再接続を有効化
+  },
+  // SSR対応とクライアントサイドハイドレーションの改善
+  syncConnectedChain: true, // チェーン同期を有効化
+  // ストレージ設定（長期間の接続状態保存）
+  storage: {
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    key: 'jpyc-wallet-state',
   }
 });
 

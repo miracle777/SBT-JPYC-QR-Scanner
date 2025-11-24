@@ -1,19 +1,24 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useReconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
+import { Wallet, AlertCircle, CheckCircle2, X, RefreshCw, Loader2, Wifi } from 'lucide-react';
 import { WalletTroubleshootingGuide } from './WalletTroubleshootingGuide';
 
 export function WalletConnector() {
-  const { isConnected, isConnecting, isDisconnected } = useAccount();
+  const { isConnected, isConnecting, isDisconnected, address, connector } = useAccount();
   const { disconnect } = useDisconnect();
+  const { reconnect } = useReconnect();
   const [error, setError] = useState<string | null>(null);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [connectionTimeout, setConnectionTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [lastSessionCheck, setLastSessionCheck] = useState<number>(0);
+  const [isSessionHealthy, setIsSessionHealthy] = useState(true);
+  
+  const sessionCheckInterval = useRef<NodeJS.Timeout | null>(null);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -26,6 +31,71 @@ export function WalletConnector() {
       setConnectionTimeout(null);
     }
   }, [connectionTimeout]);
+
+  // セッションの健全性をチェック
+  const checkSessionHealth = useCallback(async (): Promise<boolean> => {
+    try {
+      if (!window.ethereum || !isConnected || !address) {
+        return false;
+      }
+
+      // MetaMaskの場合の詳細チェック
+      if (connector?.name?.toLowerCase().includes('metamask') || 
+          window.ethereum.isMetaMask) {
+        
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_accounts' 
+        });
+        
+        if (!accounts || accounts.length === 0) {
+          return false;
+        }
+        
+        const currentAccount = accounts[0];
+        if (currentAccount.toLowerCase() !== address.toLowerCase()) {
+          return false;
+        }
+        
+        // ネットワーク接続をテスト
+        await window.ethereum.request({ 
+          method: 'eth_chainId' 
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Session health check failed:', error);
+      return false;
+    }
+  }, [isConnected, address, connector]);
+
+  // セッション監視を開始
+  const startSessionMonitoring = useCallback(() => {
+    if (sessionCheckInterval.current) {
+      clearInterval(sessionCheckInterval.current);
+    }
+
+    sessionCheckInterval.current = setInterval(async () => {
+      if (isConnected) {
+        const isHealthy = await checkSessionHealth();
+        setIsSessionHealthy(isHealthy);
+        setLastSessionCheck(Date.now());
+        
+        if (!isHealthy) {
+          console.warn('Session unhealthy, may need reconnection');
+          setError('ウォレットセッションが無効になっています。再接続が必要です。');
+        }
+      }
+    }, 30000); // 30秒ごとにチェック
+  }, [isConnected, checkSessionHealth]);
+
+  // セッション監視を停止
+  const stopSessionMonitoring = useCallback(() => {
+    if (sessionCheckInterval.current) {
+      clearInterval(sessionCheckInterval.current);
+      sessionCheckInterval.current = null;
+    }
+  }, []);
 
   // 接続タイムアウトを設定
   const setConnectionTimeoutHandler = useCallback(() => {
@@ -45,8 +115,21 @@ export function WalletConnector() {
       clearConnectionTimeout();
       clearError();
       setIsRetrying(false);
+      setIsSessionHealthy(true);
+      startSessionMonitoring();
+    } else {
+      stopSessionMonitoring();
+      setIsSessionHealthy(true);
     }
-  }, [isConnected, clearConnectionTimeout, clearError]);
+  }, [isConnected, clearConnectionTimeout, clearError, startSessionMonitoring, stopSessionMonitoring]);
+
+  // コンポーネントアンマウント時のクリーンアップ
+  useEffect(() => {
+    return () => {
+      stopSessionMonitoring();
+      clearConnectionTimeout();
+    };
+  }, [stopSessionMonitoring, clearConnectionTimeout]);
 
   // 再接続処理
   const handleRetry = useCallback(async () => {
@@ -60,10 +143,18 @@ export function WalletConnector() {
     setConnectionAttempts(prev => prev + 1);
     
     try {
-      // 一度切断してから再接続
-      if (isConnected) {
+      // セッションが無効な場合は強制的に再接続
+      if (!isSessionHealthy && isConnected) {
+        console.log('Forcing reconnection due to unhealthy session');
         disconnect();
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await reconnect();
+      } else {
+        // 一度切断してから再接続
+        if (isConnected) {
+          disconnect();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
       
       setConnectionTimeoutHandler();
@@ -72,7 +163,7 @@ export function WalletConnector() {
       setError('再接続に失敗しました。');
       setIsRetrying(false);
     }
-  }, [connectionAttempts, isConnected, disconnect, setConnectionTimeoutHandler]);
+  }, [connectionAttempts, isConnected, isSessionHealthy, disconnect, reconnect, setConnectionTimeoutHandler]);
 
   // 接続済みの場合は何も表示しない
   if (isConnected) {
@@ -248,9 +339,33 @@ export function WalletConnector() {
 
                     return (
                       <div className="flex items-center justify-center">
-                        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 px-3 py-2 rounded-lg border border-green-200 dark:border-green-800">
-                          <CheckCircle2 className="h-4 w-4" />
-                          <span className="text-sm font-medium">接続済み</span>
+                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                          isSessionHealthy 
+                            ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800'
+                            : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800'
+                        }`}>
+                          {isSessionHealthy ? (
+                            <CheckCircle2 className="h-4 w-4" />
+                          ) : (
+                            <AlertCircle className="h-4 w-4" />
+                          )}
+                          <span className="text-sm font-medium">
+                            {isSessionHealthy ? '接続済み' : 'セッション不安定'}
+                          </span>
+                          {!isSessionHealthy && (
+                            <button
+                              onClick={handleRetry}
+                              disabled={isRetrying}
+                              className="ml-2 text-yellow-600 hover:text-yellow-700 transition-colors"
+                              title="再接続"
+                            >
+                              {isRetrying ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-3 w-3" />
+                              )}
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
