@@ -522,7 +522,7 @@ export default function Home() {
                 <div>• SBT（ソウルバウンドトークン）表示機能のデモンストレーション</div>
                 <div>• JPYC決済QRコードスキャン機能のテスト</div>
                 <div>• マルチチェーン対応ネットワーク検証機能の検証</div>
-                <div>• <strong>実際の商用利用を意図したものではありません</strong></div>
+                <div>• <strong>個人利用は無料です。事業化する場合は作者の許可が必要です</strong></div>
               </div>
             </div>
           </div>
@@ -674,7 +674,7 @@ export default function Home() {
                   </p>
                   <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
                     <p className="text-sm text-yellow-700">
-                      <strong>⚠️ 重要:</strong> このアプリは<strong>テスト・デモ用</strong>です。実際の商用利用は想定していません。
+                      <strong>✅ 個人利用歓迎:</strong> このアプリは<strong>個人の支払い利用は無料</strong>です。お店での決済にもご自由にお使いください。事業化する場合のみ作者の許可が必要です。
                     </p>
                   </div>
                 </div>

@@ -31,7 +31,7 @@ const faqData: FAQItem[] = [
         </div>
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
           <p className="text-sm text-yellow-700">
-            <strong>⚠️ 重要:</strong> このアプリは<strong>テスト・デモ用</strong>です。実際の商用利用は想定していません。
+            <strong>✅ 個人利用歓迎:</strong> このアプリは<strong>個人の支払い利用は無料</strong>です。お店での決済にもご自由にお使いください。事業化する場合のみ作者の許可が必要です。
           </p>
         </div>
       </div>
