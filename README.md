@@ -548,6 +548,30 @@ const discountedAmount = calculateDiscount(amount, discount);
   - SBT検証パターン
   - ネットワーク設定情報
 
+## 🔗 関連リンク・リソース
+
+### ⛽ JPYC ガス代支援サービス
+
+ブロックチェーン決済でガス代（手数料）が不足している場合は、以下の無料ガス代支援サービスをご利用ください：
+
+#### 🔴 Avalanche C-Chain 対応
+- **JPYC Gas Faucet (Avalanche)**
+- **URL**: <https://jpyc-gas.vercel.app/>
+- **対応ネットワーク**: Avalanche Mainnet (C-Chain)
+- **提供内容**: AVAXトークンの無料配布（ガス代用）
+- **利用条件**: JPYCホルダー向け
+
+#### 🟣 Polygon 対応
+- **JPYC Volunteer Gas Support (Polygon)**
+- **URL**: <https://jpyc-volunteer.vercel.app/>
+- **対応ネットワーク**: Polygon Mainnet
+- **提供内容**: MATICトークンの無料配布（ガス代用）
+- **利用条件**: JPYCホルダー向け
+
+> 💡 **ガス代支援について**: これらのサービスは、JPYC決済を行う際に必要なガス代（ネットワーク手数料）を無料で提供してくれます。JPYCを保有していても、ガス代となるネイティブトークン（AVAX、MATIC等）がないと取引ができないため、このようなサービスが提供されています。
+
+> ⚠️ **注意**: ガス代支援サービスは外部サービスです。利用前に各サイトの利用規約をご確認ください。
+
 ## 🔄 開発フロー
 
 ```

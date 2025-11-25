@@ -12,6 +12,87 @@ interface FAQItem {
 }
 
 const faqData: FAQItem[] = [
+  // ガス代・手数料
+  {
+    id: 'gas-fee-support',
+    question: 'ガス代が不足していて決済できません',
+    answer: (
+      <div className="space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-semibold text-blue-800 mb-3">💡 ガス代とは</h4>
+          <p className="text-sm text-blue-700 mb-2">
+            ガス代（ガス手数料）は、ブロックチェーン上でトランザクション（決済など）を実行する際に必要な手数料です。
+            JPYCでの決済には、JPYCトークンに加えて、各ネットワークのネイティブトークン（ETH、MATIC、AVAX等）がガス代として必要です。
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h4 className="font-semibold text-red-800 mb-3">🔴 Avalanche C-Chain のガス代支援</h4>
+            <div className="space-y-2">
+              <div className="bg-white p-3 rounded border">
+                <div className="font-medium text-sm text-red-700 mb-2">JPYC Gas Faucet (Avalanche)</div>
+                <a href="https://jpyc-gas.vercel.app/" target="_blank" rel="noopener noreferrer" 
+                   className="text-blue-600 hover:underline text-sm font-mono">
+                  https://jpyc-gas.vercel.app/
+                </a>
+                <ul className="text-xs text-gray-600 mt-2 space-y-1">
+                  <li>• <strong>対応ネットワーク</strong>: Avalanche Mainnet (C-Chain)</li>
+                  <li>• <strong>提供内容</strong>: AVAXトークンの無料配布</li>
+                  <li>• <strong>利用条件</strong>: JPYCホルダー向け</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 className="font-semibold text-purple-800 mb-3">🟣 Polygon のガス代支援</h4>
+            <div className="bg-white p-3 rounded border">
+              <div className="font-medium text-sm text-purple-700 mb-2">JPYC Volunteer Gas Support (Polygon)</div>
+              <a href="https://jpyc-volunteer.vercel.app/" target="_blank" rel="noopener noreferrer" 
+                 className="text-blue-600 hover:underline text-sm font-mono">
+                https://jpyc-volunteer.vercel.app/
+              </a>
+              <ul className="text-xs text-gray-600 mt-2 space-y-1">
+                <li>• <strong>対応ネットワーク</strong>: Polygon Mainnet</li>
+                <li>• <strong>提供内容</strong>: MATICトークンの無料配布</li>
+                <li>• <strong>利用条件</strong>: JPYCホルダー向け</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h4 className="font-semibold text-yellow-800 mb-3">📝 利用方法</h4>
+          <ol className="text-sm text-gray-600 space-y-1 ml-4 list-decimal">
+            <li>上記のガス代支援サイトにアクセス</li>
+            <li>ウォレットを接続</li>
+            <li>JPYCの保有量を確認</li>
+            <li>ガス代用トークン（AVAX/MATIC）を受け取り</li>
+            <li>このアプリに戻って決済を実行</li>
+          </ol>
+        </div>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h4 className="font-semibold text-gray-800 mb-3">その他のネットワーク</h4>
+          <ul className="text-sm text-gray-600 space-y-1 ml-4">
+            <li>• <strong>Ethereum</strong>: 公式Faucetまたは取引所でETHを購入</li>
+            <li>• <strong>テストネット</strong>: 各テストネットの公式Faucetを利用</li>
+            <li>• <strong>Sepolia</strong>: <a href="https://sepoliafaucet.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">SepoliaFaucet.com</a> など</li>
+          </ul>
+        </div>
+        
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+          <p className="text-sm text-green-700">
+            <strong>💡 ヒント:</strong> これらのガス代支援サービスは、JPYC決済の普及を目的とした無料サービスです。
+            JPYCを実際に保有している方が対象となります。
+          </p>
+        </div>
+      </div>
+    ),
+    category: 'ネットワーク・決済',
+  },
+  
   // アプリ概要
   {
     id: 'app-overview',
