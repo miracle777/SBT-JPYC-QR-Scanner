@@ -18,15 +18,13 @@ const faqData: FAQItem[] = [
     question: 'ガス代が不足していて決済できません',
     answer: (
       <div className="space-y-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="font-semibold text-blue-800 mb-3">💡 ガス代とは</h4>
           <p className="text-sm text-blue-700 mb-2">
             ガス代（ガス手数料）は、ブロックチェーン上でトランザクション（決済など）を実行する際に必要な手数料です。
-            JPYCでの決済には、JPYCトークンに加えて、各ネットワークのネイティブトークン（ETH、MATIC、AVAX等）がガス代として必要です。
+            JPYCでの決済には、JPYCトークンに加えて、各ネットワークのネイティブトークン（ETH、POL、AVAX等）がガス代として必要です。
           </p>
-        </div>
-        
-        <div className="space-y-3">
+        </div>        <div className="space-y-3">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <h4 className="font-semibold text-red-800 mb-3">🔴 Avalanche C-Chain のガス代支援</h4>
             <div className="space-y-2">
@@ -53,11 +51,11 @@ const faqData: FAQItem[] = [
                  className="text-blue-600 hover:underline text-sm font-mono">
                 https://jpyc-volunteer.vercel.app/
               </a>
-              <ul className="text-xs text-gray-600 mt-2 space-y-1">
-                <li>• <strong>対応ネットワーク</strong>: Polygon Mainnet</li>
-                <li>• <strong>提供内容</strong>: MATICトークンの無料配布</li>
-                <li>• <strong>利用条件</strong>: JPYCホルダー向け</li>
-              </ul>
+                <ul className="text-xs text-gray-600 mt-2 space-y-1">
+                  <li>• <strong>対応ネットワーク</strong>: Polygon Mainnet</li>
+                  <li>• <strong>提供内容</strong>: POLトークンの無料配布</li>
+                  <li>• <strong>利用条件</strong>: JPYCホルダー向け</li>
+                </ul>
             </div>
           </div>
         </div>
@@ -68,7 +66,7 @@ const faqData: FAQItem[] = [
             <li>上記のガス代支援サイトにアクセス</li>
             <li>ウォレットを接続</li>
             <li>JPYCの保有量を確認</li>
-            <li>ガス代用トークン（AVAX/MATIC）を受け取り</li>
+            <li>ガス代用トークン（AVAX/POL）を受け取り</li>
             <li>このアプリに戻って決済を実行</li>
           </ol>
         </div>
