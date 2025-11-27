@@ -101,6 +101,10 @@ export default function Home() {
                 📋 プライバシーポリシー・利用条件
               </h3>
               <div className="text-xs text-blue-700 space-y-2">
+                <div className="bg-yellow-50 p-3 rounded border border-yellow-300">
+                  <strong className="text-yellow-800">⚠️ 利用に関する同意について</strong>
+                  <p className="text-yellow-800 mt-1">このプログラムをご利用いただいた時点で、以下のプライバシーポリシー・利用条件にご同意いただいたものとみなされます。</p>
+                </div>
                 <div className="bg-white p-3 rounded border">
                   <strong>🌍 位置情報の利用について</strong>
                   <p>決済を行った場所を履歴に記録するため、位置情報を使用します。この情報はお客様の決済履歴の管理にのみ使用されます。</p>
