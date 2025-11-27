@@ -63,20 +63,20 @@
 #### Polygon Amoy Testnet (テスト用)
 
 - **公式AmoyテストJPYC**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-- **tJPYC（カスタム）**: `0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a`
+- **tJPYC（デバッグ用）**: `0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a` ※未配布
 - **チェーンID**: 80002 (0x13882)
 - **ブロックエクスプローラ**: [Polygon Amoy Explorer](https://amoy.polygonscan.com/)
 
-> **注意**: 公式のAmoyテストJPYCとカスタムtJPYCの両方が利用可能です。
+> **重要**: デバッグ用tJPYCは開発者専用で配布されていません。公式のFaucetで正式なJPYCテストトークンが配布されるまでは、各自でトークンのデプロイが必要かもしれません。
 
 #### Avalanche Fuji Testnet (テスト用)
 
 - **公式FujiテストJPYC**: `0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`
-- **カスタムJPYC (Fuji専用)**: `0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345`
+- **デバッグ用tJPYC (Fuji専用)**: `0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345` ※未配布
 - **チェーンID**: 43113 (0xa869)
 - **ブロックエクスプローラ**: [Snowtrace Testnet](https://testnet.snowtrace.io/)
 
-> **注意**: Fuji専用のカスタムJPYCと公式テストJPYCの両方が利用可能です。
+> **重要**: デバッグ用tJPYCは開発者専用で配布されていません。公式のFaucetで正式なJPYCテストトークンが配布されるまでは、各自でトークンのデプロイが必要かもしれません。
 
 > ⚠️ **重要**: Sepolia と Polygon Amoy はテストネット用のコントラクトです。本番環境では Polygon Mainnet をご利用ください。
 

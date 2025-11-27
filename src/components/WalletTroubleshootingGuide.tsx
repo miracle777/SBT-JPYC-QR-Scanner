@@ -141,6 +141,10 @@ export function WalletTroubleshootingGuide() {
         {
           question: 'Sepoliaテストネットで複数のアドレスがあるのはなぜ？',
           answer: '公式テストJPYCの配布が無いため、3種類存在します：\n• 公式SepoliaJPYC：0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29\n• JPYC公式Faucet：0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB\n• コミュニティJPYC：0xd3eF95d29A198868241FE374A999fc25F6152253'
+        },
+        {
+          question: 'Polygon AmoyやAvalanche Fujiのカスタムトークンは使える？',
+          answer: '⚠️ デバッグ用tJPYCは開発者専用で配布されていません。公式Faucetで正式なJPYCテストトークンが配布されるまでは、各自でトークンのデプロイが必要かもしれません。\n\n利用可能なアドレス：\n• 公式JPYC：0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29（Polygon Amoy/Avalanche Fuji共通）'
         }
       ]
     }

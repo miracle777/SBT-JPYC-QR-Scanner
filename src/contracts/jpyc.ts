@@ -57,16 +57,16 @@ export const JPYC_ADDRESSES = {
   
   // Polygon Mainnet - Official JPYC
   polygon: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
-  // Polygon Amoy Testnet - 公式テストJPYCとカスタムtJPYCの両方対応
+  // Polygon Amoy Testnet - 公式テストJPYCとデバッグ用tJPYC（未配布）
   'polygon-amoy': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),       // 公式Amoyテスト用JPYC
-  'polygon-amoy-custom': getAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'),  // カスタムtJPYC (現行)
+  'polygon-amoy-custom': getAddress('0xcD54D62DF66f54AB3788CA17aD90d402eCD8D34a'),  // デバッグ用tJPYC（開発者専用・未配布）
   'polygon-amoy-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'), // 公式Amoyテスト用JPYC
   
   // Avalanche C-Chain Mainnet - Official JPYC
   avalanche: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
-  // Avalanche Fuji Testnet - 公式テストJPYCとカスタムJPYCの両方対応
+  // Avalanche Fuji Testnet - 公式テストJPYCとデバッグ用tJPYC（未配布）
   'avalanche-fuji': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),       // 公式FujiテストJPYC
-  'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),  // カスタムJPYC (Fuji専用)
+  'avalanche-fuji-custom': getAddress('0xeAB2AF47cbc02CDD73d106CA15884cAB541F5345'),  // デバッグ用tJPYC（開発者専用・Fuji専用・未配布）
   'avalanche-fuji-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'), // 公式FujiテストJPYC
 } as const;
 
