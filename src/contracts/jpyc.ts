@@ -49,9 +49,9 @@ export const JPYC_ADDRESSES = {
   // Ethereum Mainnet - Official JPYC
   ethereum: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),
   
-  // Ethereum Sepolia Testnet - 公式テストJPYCとFaucetアドレスの両方対応
+  // Ethereum Sepolia Testnet - 3種類のJPYCトークンが存在
   sepolia: getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),        // 公式SepoliaテストJPYC
-  'sepolia-faucet': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),     // Faucet用JPYC (現行)
+  'sepolia-faucet': getAddress('0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'),     // JPYC公式Faucetトークン
   'sepolia-community': getAddress('0xd3eF95d29A198868241FE374A999fc25F6152253'), // コミュニティJPYC
   'sepolia-official': getAddress('0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'),   // 公式SepoliaテストJPYC
   

@@ -47,8 +47,9 @@ export function WalletTroubleshootingGuide() {
             '📱 Trust Walletの「設定」→「トークンを管理」を開く',
             '➕ 「カスタムトークンを追加」を選択',
             '🔗 Polygonネットワーク: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
-            '🧪 Sepolia（公式）: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
-            '🧪 Sepolia（Faucet用）: 0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB',
+            '🤖 Sepolia（公式）: 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29',
+            '🤖 Sepolia（JPYC公式Faucet）: 0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB',
+            '🤖 Sepolia（コミュニティ）: 0xd3eF95d29A198868241FE374A999fc25F6152253',
           ]
         },
         {
@@ -139,7 +140,7 @@ export function WalletTroubleshootingGuide() {
         },
         {
           question: 'Sepoliaテストネットで複数のアドレスがあるのはなぜ？',
-          answer: 'Faucetの都合で複数存在します：\n• 公式：0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29\n• Faucet用：0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB'
+          answer: '公式テストJPYCの配布が無いため、3種類存在します：\n• 公式SepoliaJPYC：0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29\n• JPYC公式Faucet：0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB\n• コミュニティJPYC：0xd3eF95d29A198868241FE374A999fc25F6152253'
         }
       ]
     }
