@@ -51,21 +51,21 @@ const nextConfig = {
     dirs: ['src'],
   },
   // Turbopackの問題を回避するため、webpackビルドを使用
-  experimental: {
-    forceSwcTransforms: true,
-  },
+  // experimental: {
+  //   forceSwcTransforms: true,
+  // },
   // webpackでビルド時にサーバー専用パッケージを外部化
   serverExternalPackages: [
-    'pino', 
-    'pino-pretty', 
-    'thread-stream', 
-    'lokijs', 
+    'pino',
+    'pino-pretty',
+    'thread-stream',
+    'lokijs',
     'encoding',
     'atomic-sleep',
     'sonic-boom',
     'pino-abstract-transport'
   ],
-  
+
   webpack: (config, { isServer }) => {
     // クライアント側でNode.js専用モジュールを外部化（シンプル版）
     if (!isServer) {
@@ -84,7 +84,7 @@ const nextConfig = {
         worker_threads: false,
         child_process: false,
       };
-      
+
       // React Native専用パッケージのfallback設定
       config.resolve.alias = {
         ...config.resolve.alias,
@@ -105,7 +105,7 @@ const nextConfig = {
         },
       });
     }
-    
+
     return config;
   },
   // スマホからのアクセスを許可
