@@ -9,7 +9,7 @@ export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 // ページビューを送信
 export const pageview = (url: string) => {
   if (!GA_MEASUREMENT_ID || typeof window === 'undefined' || !window.gtag) return;
-  
+
   window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: url,
   });
@@ -47,6 +47,29 @@ function GoogleAnalyticsTracker() {
     const url = window.location.pathname + window.location.search;
     pageview(url);
   }, [pathname]);
+
+  // PWAとして起動された時のイベント送信
+  useEffect(() => {
+    if (!GA_MEASUREMENT_ID || typeof window === 'undefined') return;
+
+    // スタンドアローンモード検出
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+      ('standalone' in window.navigator && (window.navigator as { standalone?: boolean }).standalone);
+
+    if (isStandalone) {
+      // セッションごとに1回だけ送信
+      const hasTrackedPWAOpen = sessionStorage.getItem('pwa-open-tracked');
+      if (!hasTrackedPWAOpen) {
+        console.log('PWA opened in standalone mode');
+        event({
+          action: 'pwa_open',
+          category: 'PWA',
+          label: 'standalone_mode',
+        });
+        sessionStorage.setItem('pwa-open-tracked', 'true');
+      }
+    }
+  }, []); // 初回マウント時のみ実行
 
   return null;
 }

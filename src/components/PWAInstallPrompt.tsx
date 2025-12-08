@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
+import { event as gaEvent } from './GoogleAnalytics';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -25,8 +26,8 @@ export function PWAInstallPrompt() {
   // スタンドアローンモード検出を初期化時に設定
   const [isStandalone] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(display-mode: standalone)').matches || 
-           ('standalone' in window.navigator && (window.navigator as { standalone?: boolean }).standalone);
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      ('standalone' in window.navigator && (window.navigator as { standalone?: boolean }).standalone);
   });
 
   useEffect(() => {
@@ -41,6 +42,13 @@ export function PWAInstallPrompt() {
       setShowPrompt(false);
       setDeferredPrompt(null);
       console.log('PWA was installed');
+
+      // Google Analyticsにインストールイベントを送信
+      gaEvent({
+        action: 'pwa_install',
+        category: 'PWA',
+        label: 'installed',
+      });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -68,13 +76,25 @@ export function PWAInstallPrompt() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === 'accepted') {
       console.log('User accepted PWA install');
+      // インストール受諾をトラッキング
+      gaEvent({
+        action: 'pwa_install_prompt',
+        category: 'PWA',
+        label: 'accepted',
+      });
     } else {
       console.log('User dismissed PWA install');
+      // インストール拒否をトラッキング
+      gaEvent({
+        action: 'pwa_install_prompt',
+        category: 'PWA',
+        label: 'dismissed',
+      });
     }
-    
+
     setDeferredPrompt(null);
     setShowPrompt(false);
   };
@@ -99,12 +119,12 @@ export function PWAInstallPrompt() {
               {isIOS ? <Smartphone className="h-5 w-5 text-blue-600" /> : <Download className="h-5 w-5 text-blue-600" />}
             </div>
           </div>
-          
+
           <div className="flex-1">
             <h3 className="text-sm font-medium text-gray-900 mb-1">
               アプリをインストール
             </h3>
-            
+
             {isIOS ? (
               <div className="text-xs text-gray-600 mb-3">
                 <p className="mb-1">ホーム画面に追加して快適に使用：</p>
@@ -118,7 +138,7 @@ export function PWAInstallPrompt() {
                 ホーム画面に追加してアプリのように使用できます
               </p>
             )}
-            
+
             <div className="flex gap-2">
               {!isIOS && deferredPrompt && (
                 <button
@@ -128,7 +148,7 @@ export function PWAInstallPrompt() {
                   インストール
                 </button>
               )}
-              
+
               <button
                 onClick={handleDismiss}
                 className="px-3 py-2 text-gray-500 hover:text-gray-700 transition-colors"
