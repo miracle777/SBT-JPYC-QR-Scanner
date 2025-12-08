@@ -303,6 +303,35 @@ npm run dev-http
 npm run build && npm run start
 ```
 
+## 📊 Google Analytics & PWA トラッキング
+
+このアプリケーションには Google Analytics 4 (GA4) が統合されており、PWA（Progressive Web App）の利用状況を詳細に追跡できます。
+
+### トラッキングイベント一覧
+
+| イベント名 | カテゴリ | ラベル | トリガータイミング |
+|-----------|---------|-------|------------------|
+| `pwa_open` | PWA | `standalone_mode` | PWAがスタンドアローンモードで起動された時（セッションごとに1回） |
+| `pwa_install` | PWA | `installed` | PWAのインストールが完了した時 |
+| `pwa_install_prompt` | PWA | `accepted` | ユーザーがインストールプロンプトを受諾した時 |
+| `pwa_install_prompt` | PWA | `dismissed` | ユーザーがインストールプロンプトを拒否した時 |
+
+### 収集できるデータ
+
+実装されたトラッキングにより、以下のデータを収集・分析できます：
+
+1. **PWA インストール率**: `pwa_install_prompt` の accepted/dismissed 比率
+2. **実際のインストール数**: `pwa_install` イベント数
+3. **PWA 起動数**: `pwa_open` イベント数（セッション単位）
+4. **PWA vs ブラウザ利用率**: スタンドアローンモードの利用率
+5. **コンバージョンファネル**: プロンプト表示 → 受諾 → インストール完了
+
+### セットアップ方法
+
+詳細なセットアップ手順は [`GOOGLE_ANALYTICS_SETUP.md`](./GOOGLE_ANALYTICS_SETUP.md) をご参照ください。
+
+環境変数 `NEXT_PUBLIC_GA_MEASUREMENT_ID` を設定してデプロイすれば、すぐにトラッキングが開始されます。
+
 ## 🔗 ウォレット接続ガイド
 
 このアプリは複数のウォレットに対応しており、それぞれ異なる接続方法があります。
