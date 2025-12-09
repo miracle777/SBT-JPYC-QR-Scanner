@@ -35,9 +35,9 @@ export default function Home() {
     setScannerError(error);
   };
 
-  const handleManualPayment = (data: { 
-    address: `0x${string}`; 
-    amount: string; 
+  const handleManualPayment = (data: {
+    address: `0x${string}`;
+    amount: string;
     memo?: string;
     network: string;
     chainId: number;
@@ -148,7 +148,7 @@ export default function Home() {
         {isConnected && address && (
           <>
             <JPYCBalance />
-            
+
             {/* SBTコレクションへのリンクボタン */}
             <div className="mb-6">
               <Link href="/sbt-gallery">
@@ -223,8 +223,8 @@ export default function Home() {
 
             {showPaymentProcessor && scannedData && (
               <div className="mb-6">
-                <PaymentProcessor 
-                  qrData={scannedData} 
+                <PaymentProcessor
+                  qrData={scannedData}
                   onComplete={handlePaymentComplete}
                 />
               </div>
@@ -302,7 +302,7 @@ export default function Home() {
               <div className="text-xs text-gray-600 break-words">ChainID: 43113</div>
             </div>
           </div>
-          
+
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <h3 className="font-semibold text-blue-800 mb-2">💡 JPYC対応状況</h3>
             <div className="text-sm text-blue-700 space-y-1">
@@ -321,7 +321,7 @@ export default function Home() {
             <span className="mr-2">📱</span>
             対応ウォレット・QRコードフォーマット
           </h2>
-          
+
           <div className="space-y-4">
             {/* 対応ウォレット */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -332,7 +332,7 @@ export default function Home() {
                 <div className="font-semibold text-orange-700 text-sm">MetaMask</div>
                 <div className="text-xs text-orange-600">✅ 完全対応</div>
               </div>
-              
+
               <div className="border border-blue-200 rounded-lg p-3 text-center bg-blue-50">
                 <div className="w-8 h-8 bg-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <span className="text-white font-bold text-sm">T</span>
@@ -340,7 +340,7 @@ export default function Home() {
                 <div className="font-semibold text-blue-700 text-sm">Trust Wallet</div>
                 <div className="text-xs text-blue-600">✅ 完全対応</div>
               </div>
-              
+
               <div className="border border-indigo-200 rounded-lg p-3 text-center bg-indigo-50">
                 <div className="w-8 h-8 bg-indigo-600 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <span className="text-white font-bold text-sm">C</span>
@@ -348,7 +348,7 @@ export default function Home() {
                 <div className="font-semibold text-indigo-700 text-sm">Coinbase</div>
                 <div className="text-xs text-indigo-600">✅ 新規対応</div>
               </div>
-              
+
               <div className="border border-purple-200 rounded-lg p-3 text-center bg-purple-50">
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <span className="text-white font-bold text-sm">R</span>
@@ -364,7 +364,7 @@ export default function Home() {
                 <span className="mr-2">📋</span>
                 対応QRコードフォーマット
               </h3>
-              
+
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div className="space-y-3">
                   <div className="bg-green-50 border border-green-200 rounded p-3">
@@ -378,7 +378,7 @@ export default function Home() {
                     <div className="text-xs text-green-600 mt-1">テスト・本番統一フォーマット</div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="bg-blue-50 border border-blue-200 rounded p-3">
                     <div className="font-semibold text-blue-800 flex items-center mb-1">
@@ -435,7 +435,7 @@ export default function Home() {
             >
               <div className="flex-shrink-0 w-10 h-10 bg-black rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </div>
               <div>
@@ -468,7 +468,7 @@ export default function Home() {
             </svg>
             ⚠️ 重要な注意事項
           </h2>
-          
+
           <div className="space-y-4 text-sm">
             {/* PWA注意事項 */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -498,18 +498,13 @@ export default function Home() {
               </h3>
               <div className="text-red-700">
                 <p className="mb-2">
-                  <strong className="bg-red-100 px-1 rounded">このアプリはテスト版です。</strong>
-                  本番環境のJPYCを誤って送金してしまった場合、<span className="font-semibold underline">開発者は一切の責任を負いません。</span>
+                  このアプリはユーザーのウォレットから直接送金する仕組みです。
+                  <br />
+                  送金内容をご確認のうえ実行してください。
                 </p>
-                <div className="bg-red-100 p-2 rounded text-xs space-y-1">
-                  <div><strong>• 本番JPYC送金時の損害について一切責任を負いません</strong></div>
-                  <div><strong>• 誤操作による資産損失について責任を負いません</strong></div>
-                  <div><strong>• ネットワーク手数料等の損失について責任を負いません</strong></div>
-                  <div><strong>• 利用は完全に自己責任でお願いします</strong></div>
+                <div className="bg-red-100 p-2 rounded text-xs font-bold">
+                  誤送金が発生した場合、ブロックチェーンの仕様上キャンセルができません。
                 </div>
-                <p className="mt-2 text-xs">
-                  <strong>推奨:</strong> 必ずテストネット（Sepoliaなど）でのみご利用ください。
-                </p>
               </div>
             </div>
 
@@ -536,7 +531,7 @@ export default function Home() {
             <p className="text-gray-700 mb-4">
               JPYC決済とSBT発行で、お客様との新しいつながりを創造しませんか？
             </p>
-            
+
             <div className="grid md:grid-cols-2 gap-4 mb-6">
               <div className="bg-white p-4 rounded-lg border border-green-200">
                 <h3 className="font-semibold text-green-700 mb-2 flex items-center">
@@ -550,7 +545,7 @@ export default function Home() {
                   <li>• 決済履歴とレポート機能</li>
                 </ul>
               </div>
-              
+
               <div className="bg-white p-4 rounded-lg border border-blue-200">
                 <h3 className="font-semibold text-blue-700 mb-2 flex items-center">
                   <span className="mr-2">🎫</span>
@@ -658,7 +653,7 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 {/* アプリ概要 */}
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6">
@@ -683,7 +678,7 @@ export default function Home() {
                     <span className="mr-2">🦊</span>
                     ウォレット接続について
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-green-700 mb-2">Q. 対応しているウォレットは？</h4>
@@ -695,7 +690,7 @@ export default function Home() {
                         <li>• <strong>Rainbow Wallet</strong> - スマートフォン専用</li>
                       </ul>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-green-700 mb-2">Q. ウォレット接続できません</h4>
                       <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
@@ -723,7 +718,7 @@ export default function Home() {
                     <span className="mr-2">🌐</span>
                     ネットワーク・決済について
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-blue-700 mb-2">Q. どのネットワークが使えますか？</h4>
@@ -752,7 +747,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-blue-700 mb-2">Q. JPYCが表示されません</h4>
                       <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
@@ -784,7 +779,7 @@ export default function Home() {
                     <span className="mr-2">🎫</span>
                     SBT（ソウルバウンドトークン）について
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-purple-700 mb-2">Q. SBTとは何ですか？</h4>
@@ -793,7 +788,7 @@ export default function Home() {
                         通常のNFTと異なり、売買や譲渡ができないため、個人の実績や体験を確実に証明できます。
                       </p>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-purple-700 mb-2">Q. SBTが表示されません</h4>
                       <p className="text-sm text-gray-600 mb-2">A. 以下を確認してください：</p>
@@ -821,7 +816,7 @@ export default function Home() {
                     <span className="mr-2">📸</span>
                     QRコードスキャン・決済について
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-orange-700 mb-2">Q. QRコードがスキャンできません</h4>
@@ -833,7 +828,7 @@ export default function Home() {
                         <li>• 照明が十分で反射していないか</li>
                       </ul>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-orange-700 mb-2">Q. ネットワーク警告が表示されます</h4>
                       <p className="text-sm text-gray-600">
@@ -860,7 +855,7 @@ export default function Home() {
                     <span className="mr-2">📱</span>
                     PWA・技術について
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-gray-700 mb-2">Q. PWA（アプリ化）できますか？</h4>
@@ -869,7 +864,7 @@ export default function Home() {
                         ブラウザメニューから「ホーム画面に追加」を選択してください。
                       </p>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-gray-700 mb-2">Q. データは保存されますか？</h4>
                       <p className="text-sm text-gray-600">
@@ -896,7 +891,7 @@ export default function Home() {
                     <span className="mr-2">🔧</span>
                     トラブルシューティング
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-red-700 mb-2">Q. アプリが動作しません</h4>
@@ -908,7 +903,7 @@ export default function Home() {
                         <li>デバイスの再起動</li>
                       </ol>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-red-700 mb-2">Q. エラーが発生しました</h4>
                       <p className="text-sm text-gray-600">
@@ -939,7 +934,7 @@ export default function Home() {
                     <span className="mr-2">📞</span>
                     サポート・お問い合わせ
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded border">
                       <h4 className="font-semibold text-green-700 mb-3">🐛 バグ報告・機能要望</h4>
@@ -962,13 +957,13 @@ export default function Home() {
                           className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                           </svg>
                           X (Twitter) @masaru21
                         </a>
                       </div>
                     </div>
-                    
+
                     <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
                       <p className="text-sm text-yellow-700">
                         <strong>⚠️ 注意:</strong> このアプリはテスト版です。実際の資産損失については一切責任を負いません。
